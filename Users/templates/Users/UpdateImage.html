@@ -1,0 +1,32 @@
+{% extends 'Base.html' %}
+
+{% block main_section %}
+{% include 'Navbar.html' %}
+<div class="container">
+    <h5 class="text-secondary mt-2">Here you can update your profile image</h5>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {% for field in update_image_form %}
+            {% if field.errors %}
+                <div class="alert alert-warning">
+                    {{ field.errors }}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-warning">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {{ update_image_form.image.label }}
+        {{ update_image_form.image }}
+        <button type="submit" class="btn btn-outline-warning mt-0">Update</button>
+    </form>
+</div>
+{% endblock main_section %}

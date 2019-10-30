@@ -1,0 +1,57 @@
+{% extends 'Base.html' %}
+
+{% block main_section %}
+{% include 'Navbar.html' %}
+<div class="container">
+    <h5 class="text-secondary mt-2">Here you can register in our site</h5>
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        {% for field in update_form %}
+            {% if field.errors %}
+                <div class="alert alert-warning">
+                    {{ field.errors }}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-warning">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="form-row">
+            <div class="form-group col-md-6 mt-2 mb-2">
+                {{ update_form.first_name.label }}
+                {{ update_form.first_name }}
+            </div>
+            <div class="form-group col-md-6 mt-2 mb-2">
+                {{ update_form.last_name.label }}
+                {{ update_form.last_name }}
+            </div>
+        </div>
+        <div class="mb-2">
+            {{ update_form.email.label }}
+            {{ update_form.email }}
+        </div>
+
+        {{ update_form.username.label }}
+        {{ update_form.username }}
+        <div class="form-row">
+            <div class="form-group col-md-6 mt-2">
+                {{ update_form.password_some.label }}
+                {{ update_form.password_some }}
+            </div>
+            <div class="form-group col-md-6 mt-2">
+                {{ update_form.password_confirm.label }}
+                {{ update_form.password_confirm }}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-outline-warning mt-0">Update</button>
+    </form>
+</div>
+{% endblock main_section %}
