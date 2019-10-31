@@ -3,12 +3,19 @@
 {% block main_section %}
 {% include 'Navbar.html' %}
 <div class="container">
-    <h5 class="text-secondary mt-2">Here you can register in our site</h5>
+    <h5 class="text-secondary mt-2">Here you can update info about our bot</h5>
 
     <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
 
-        <button type="submit" class="btn btn-outline-warning mt-2">SignUp</button>
-        <a href="{% url 'user_authentication_url' %}" class="text-success ml-2 mt-2">If you already have an account...</a>
+        {{ create_bot_form.access_token.label }}
+        {{ create_bot_form.access_token }}
+
+        {{ create_bot_form.file_script.label }} 
+        <div class="grid">
+            {{ create_bot_form.file_script }}
+        </div>
+        <button type="submit" class="btn btn-outline-warning mt-2">Create</button>
     </form>
 </div>
 {% endblock main_section %}

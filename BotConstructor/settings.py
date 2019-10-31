@@ -126,7 +126,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'GraduationProject/')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'BotConstructor/media')
 
 LOGOUT_REDIRECT_URL = 'base_view_url'
 

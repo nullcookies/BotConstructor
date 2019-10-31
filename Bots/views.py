@@ -31,6 +31,37 @@ class CreateFileBot(View):
         return redirect('show_bots_url')
 
 
+class CreateBot(View):
+    def get(self, request):
+        create_bot_form = CreateBotForm()
+
+        context = {
+            'title': 'Create Bot - BotConstructor',
+            'create_bot_form': create_bot_form
+        }
+        return render(request, 'CreateBot.html', context)
+
+    def post(self, request):
+        create_bot_form = CreateBotForm(request.POST, request.FILES)
+        current_user = Profile.objects.get(user=request.user)
+
+        if create_bot_form.is_valid():
+            access_token = create_bot_form.cleaned_data['access_token']
+            file = create_bot_form.cleaned_data['file_script']
+
+            current_bot = Bot.objects.create(
+                access_token=access_token, file_script=file, owner=current_user)
+            current_bot.save()
+
+            return redirect('show_bots_url')
+
+        context = {
+            'title': 'Create Bot - BotConstructor',
+            'create_bot_form': create_bot_form
+        }
+        return render(request, 'CreateBot.html', context)
+
+
 class UpdateBot(View):
     def get(self, request, bot_id):
         current_bot = Bot.objects.get(id=bot_id)

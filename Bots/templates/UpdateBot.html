@@ -8,7 +8,13 @@
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
 
-        {{ update_bot_form }}
+        {{ update_bot_form.access_token.label }}
+        {{ update_bot_form.access_token }}
+
+        {{ update_bot_form.file_script.label }} 
+        <div class="grid">
+            {{ update_bot_form.file_script }}
+        </div>
         <button type="submit" class="btn btn-outline-warning mt-2">Update</button>
     </form>
 </div>

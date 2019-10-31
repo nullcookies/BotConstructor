@@ -9,5 +9,4 @@ class CreateBotForm(forms.ModelForm):
         fields = ('access_token', 'file_script')
         widgets = {
             'access_token': forms.TextInput(attrs={'class': 'form-control'}),
-            'file_script': forms.TextInput(attrs={'class': 'form-control'}),
         }
