@@ -3,6 +3,7 @@ from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+import json
 
 from .models import Profile, Bot
 from .forms import CreateBotForm, GetAccessToken
@@ -134,8 +135,17 @@ class CreateBotStepOne(View):
 
         if first_form.is_valid():
             access_token = first_form.cleaned_data['access_token']
-            data['access_token'] = access_token
-            print(access_token)
+            name = first_form.cleaned_data['name']
+            username = first_form.cleaned_data['username']
+
+            data.update({
+                'access_token': access_token,
+                'name': name,
+                'username': username
+            })
+
+            with open('configuration.json', 'w', encoding='utf-8') as file:
+                json.dump(data, file, indent=4, ensure_ascii=False)
 
         context = {
             'title': 'First Step - BotConstructor',
