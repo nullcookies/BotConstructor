@@ -14,7 +14,7 @@ class CreateBotForm(forms.ModelForm):
 
 class GetAccessToken(forms.Form):
     access_token = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'form-control'}))
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Access Token'}))
     name = forms.CharField(
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Name'}))
     username = forms.CharField(
