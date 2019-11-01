@@ -2,12 +2,19 @@ from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Profile, Bot
-from .forms import CreateBotForm
+from .forms import CreateBotForm, GetAccessToken
 
 
-class ShowBots(View):
+data = {}
+
+
+class ShowBots(LoginRequiredMixin, View):
+    login_url = '/signIn/'
+    redirect_field_name = 'show_bots_url'
+
     def get(self, request):
         context = {
             'title': 'Your Bots - BotConstructor',
@@ -16,10 +23,12 @@ class ShowBots(View):
         try:
             current_user_profile = Profile.objects.get(user=request.user)
             all_bots = Bot.objects.filter(owner=current_user_profile)
+            if not all_bots:
+                messages.error(request, 'No bots here')
 
             context.update({'all_bots': all_bots})
         except ObjectDoesNotExist:
-            messages.error(request, 'Such  does not exist')
+            messages.error(request, 'Such object does not exist')
 
         return render(request, 'AllBots.html', context)
 
@@ -108,3 +117,28 @@ class DeleteBot(View):
         current_bot = Bot.objects.get(id=bot_id)
         current_bot.delete()
         return redirect('show_bots_url')
+
+
+class CreateBotStepOne(View):
+    def get(self, request):
+        first_form = GetAccessToken()
+
+        context = {
+            'title': 'First Step - BotConstructor',
+            'first_form': first_form
+        }
+        return render(request, 'FirstStep.html', context)
+
+    def post(self, request):
+        first_form = GetAccessToken(request.POST)
+
+        if first_form.is_valid():
+            access_token = first_form.cleaned_data['access_token']
+            data['access_token'] = access_token
+            print(access_token)
+
+        context = {
+            'title': 'First Step - BotConstructor',
+            'first_form': first_form
+        }
+        return render(request, 'FirstStep.html', context)

@@ -1,0 +1,33 @@
+{% extends 'Base.html' %}
+
+{% block main_section %}
+{% include 'Navbar.html' %}
+<div class="container">
+    <h4 class="mt-2">Steps, how to take API token</h4>
+    <ul>
+        <li>Go to the Telegram and find @BotFather</li>
+        <li>There follow the instructions and generate the token</li>
+        <li>Copy API token and input it in form</li>
+    </ul>
+    <hr>
+    <h5 class="text-secondary mt-2">You must to enter API token</h5>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {{ first_form.access_token.label }}
+        {{ first_form.access_token }}
+        
+        <div class="form-row">
+            <div class="form-group col-md-6 mt-2 mb-2">
+                {{ first_form.name }}
+            </div>
+            <div class="form-group col-md-6 mt-2 mb-2">
+                {{ first_form.username }}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-outline-success">Next</button>
+    </form>
+</div>
+{% endblock main_section %}
