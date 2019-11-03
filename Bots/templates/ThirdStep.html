@@ -1,0 +1,12 @@
+{% extends 'Base.html' %}
+
+{% block main_section %}
+{% include 'Navbar.html' %}
+<div class="container">
+    <h4 class="mt-2">Here you can download script or config</h4>
+    <div class="row">
+        <a href="{% url 'download_config_url' %}" class="btn btn-outline-primary btn-sm ml-3">Download config</a>
+        <a href="{% url 'download_script_url' %}" class="btn btn-outline-dark btn-sm ml-2">Download script</a>
+    </div>
+</div>
+{% endblock main_section %}

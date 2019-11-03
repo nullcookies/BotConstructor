@@ -3,7 +3,10 @@ from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.conf import settings
+from django.http import HttpResponse, Http404
 import json
+import os
 
 from .models import Profile, Bot
 from .forms import CreateBotForm, GetAccessToken
@@ -152,3 +155,35 @@ class CreateBotStepOne(View):
             'first_form': first_form
         }
         return render(request, 'FirstStep.html', context)
+
+
+class CreateBotStepThree(View):
+    def get(self, request):
+        context = {
+            'title': 'Third Step - BotConstructor'
+        }
+        return render(request, 'ThirdStep.html', context)
+
+
+class Download:
+    @staticmethod
+    def config(request):
+        file_path = os.path.join(settings.BASE_DIR, 'configuration.json')
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as file:
+                response = HttpResponse(
+                    file.read(), content_type='application/configuration.json')
+                response['Content-Disposition'] = f'inline; filename={os.path.basename(file_path)}'
+                return response
+        return Http404
+
+    @staticmethod
+    def script(request):
+        file_path = os.path.join(settings.BASE_DIR, 'TestBot.py')
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as file:
+                response = HttpResponse(
+                    file.read(), content_type='application/TestBot.py')
+                response['Content-Disposition'] = f'inline; filename={os.path.basename(file_path)}'
+                return response
+        return Http404
