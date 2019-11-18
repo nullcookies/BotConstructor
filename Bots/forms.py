@@ -19,3 +19,10 @@ class GetAccessToken(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Name'}))
     username = forms.CharField(
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}))
+
+
+class TextForm(forms.Form):
+    response_text = forms.CharField(widget=forms.TextInput(
+        attrs={'class': 'form-control', 'placeholder': 'Response Text'}))
+    react_text = forms.CharField(widget=forms.TextInput(
+        attrs={'class': 'form-control', 'placeholder': 'React Text'}))

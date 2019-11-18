@@ -131,3 +131,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'BotConstructor/media')
 LOGOUT_REDIRECT_URL = 'base_view_url'
 
 GOOGLE_SECRET_KEY = '6Lf21b8UAAAAAD79VRNA7A1Hmot9u8GpGPqkJgNd'
+
+LOGIN_URL = '/signIn/'
