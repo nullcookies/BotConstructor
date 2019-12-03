@@ -5,11 +5,19 @@
 <div class="container">
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-warning">
+            <div class="alert alert-warning mt-2">
                 {{ message }}
             </div>
         {% endfor %}
     {% endif %}
+
+    {% for field in text_form %}
+        {% if field.errors %}
+            <div class="alert alert-warning mt-2">
+                {{ field.errors }}
+            </div>
+        {% endif %}
+    {% endfor %}
 
     <h4 class="mt-2">Configure your bot here</h4>
     <ul>
@@ -19,67 +27,114 @@
     <hr>
 
     <div class="btn-group" style="display: flex;">
-        <a href="{% url 'create_bot_second_step_text_url' %}" class="btn btn-outline-dark" style="flex: 1;">Text</a>
-        <button class="btn btn-outline-dark" style="flex: 1;">Reply Buttons</button>
+        <a href="{% url 'create_bot_second_step_text_url' %}" class="btn btn-outline-dark {% if recognition_mark == 'text' %}active{% endif %}" style="flex: 1;">Text</a>
+        <a href="{% url 'create_bot_second_step_reply_markup_url' %}" class="btn btn-outline-dark {% if recognition_mark == 'reply_markup' %}active{% endif %}" style="flex: 1;">Reply Buttons</a>
         <button class="btn btn-outline-dark" style="flex: 1;">Inline Buttons</button>
     </div>
 
     <div class="mt-3">
-        {% if text_elements %}
-            <h5 class="text-dark">Required settings</h5>
-            <div class="row">
-                <div class="col-md-6">
-                    <li class="text-secondary mb-1" style="text-decoration: underline;">Response Text</li>
-                </div>
-                <div class="col-md-6" style="left: -10px;">
-                    <li class="text-secondary mb-1" style="text-decoration: underline;">React Text</li>
-                </div>
-            </div>
+        {% if recognition_mark == 'text' %}
+            {% if text_elements %}
+                <h5 class="text-dark">Required settings</h5>
 
-            {% for text_item in text_elements %}
-                <form action="{% url 'create_bot_second_step_text_update_url' %}" method="POST">
-                    {% csrf_token %}
+                {% for text_item in text_elements %}
+                    <form action="{% url 'create_bot_second_step_text_update_url' %}" method="POST">
+                        {% csrf_token %}
 
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <input class="form-control" aria-label="Sizing example input"
-                                aria-describedby="inputGroup-sizing-sm" name="response_text_{{ text_item.0 }}"
-                                value="{{ text_item.1.response_text }}">
+                        <div class="form-row mb-3">
+                            <div class="form-group col-md-11">
+                                <input class="form-control" aria-label="Sizing example input"
+                                    aria-describedby="inputGroup-sizing-sm" name="react_text_{{ text_item.0 }}"
+                                    value="{{ text_item.1.react_text }}">
+                                <textarea class="form-control mt-2" aria-label="Sizing example input" style="height: 70%;"
+                                    aria-describedby="inputGroup-sizing-sm" name="response_text_{{ text_item.0 }}">{{ text_item.1.response_text }}</textarea>
+                            </div>
+                            <div class="form-group col-md-1">
+                                <button type="submit" class="btn btn-outline-success btn-block">Update</button>
+                                <a href="{% url 'create_bot_second_step_text_delete_url' button_id=text_item.0 %}" class="btn btn-outline-danger btn-block">Delete</a>
+                            </div>
                         </div>
-                        <div class="form-group col-md-5">
-                            <input class="form-control" aria-label="Sizing example input"
-                                aria-describedby="inputGroup-sizing-sm" name="react_text_{{ text_item.0 }}"
-                                value="{{ text_item.1.react_text }}">
-                        </div>
-                        <div class="form-group col-md-1">
-                            <a href="{% url 'create_bot_second_step_text_delete_url' button_id=text_item.0 %}" class="btn btn-outline-danger btn-block">Delete</a>
-                        </div>
-                    </div>
-                    <input type="submit" style="position: absolute; left: -9999px">
-                </form>
-            {% endfor %}
-        {% else %}
-        <p class="text-warning mb-2" style="line-height: 0px">No such elements added</p>
-        <p class="text-success mb-4">If you want to add new text response check the form below</p>
+                    </form>
+                {% endfor %}
+            {% else %}
+                <p class="text-warning mb-2" style="line-height: 0px">No such elements added</p>
+                <p class="text-success mb-4">If you want to add new text response check the form below</p>
+            {% endif %}
         {% endif %}
     </div>
-    <hr style="margin-top: 5px;">
+    <hr style="margin-top: 20px;">
     <h5 class="text-secondary">Create new element below</h5>
-    <form action="{% url 'create_bot_second_step_text_url' %}" method="POST">
-        {% csrf_token %}
+    
+    {% if recognition_mark == 'text' %}
+        <form action="{% url 'create_bot_second_step_text_url' %}" method="POST">
+            {% csrf_token %}
 
-        <div class="form-row mt-0">
-            <div class="form-group col-md-6">
-                {{ text_form.response_text }}
+            <div class="form-row mt-0">
+                <div class="form-group col-md-11">
+                    <div>
+                        {{ text_form.react_text }}
+                    </div>
+                    <div class="mt-2">
+                        {{ text_form.response_text }}
+                    </div>
+                </div>
+                <div class="form-group col-md-1">
+                    <button type="submit" class="btn btn-outline-warning btn-block">Add</button>
+                </div>
             </div>
-            <div class="form-group col-md-5">
-                {{ text_form.react_text }}
-            </div>
-            <div class="form-group col-md-1">
-                <button type="submit" class="btn btn-outline-warning btn-block">Add</button>
-            </div>
-        </div>
-    </form>
+        </form>
+        {% elif recognition_mark == 'reply_markup' %}
+        <h5 class="text-dark">Required settings</h5>
+        <h6 class="text-secondary">Keyboard settings</h6>
+
+        <form action="{% url 'create_bot_second_step_reply_markup_url' %}" method="POST">
+            {% csrf_token %}
+     
+            {% if sub_recognition_mark == 'reply_buttons' %}
+                {{ reply_button_form.response_text }}
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="form-row mt-2">
+                            <div class="form-group ml-2">
+                                {{ reply_button_form.request_contact }}
+                                {{ reply_button_form.request_contact.label }}
+                            </div>
+                            <div class="form-group ml-3">
+                                {{ reply_button_form.request_location }}
+                                {{ reply_button_form.request_location.label }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7 mt-2">
+                        <button type="submit" class="btn btn-outline-primary btn-sm float-right">Create Button</button>
+                    </div>
+                </div>
+            {% elif sub_recognition_mark == 'reply_markup' %}
+                {{ reply_markup_form.react_text }}
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="form-row">
+                            <div class="form-group ml-2">
+                                {{ reply_markup_form.resize_keyboard }}
+                                {{ reply_markup_form.resize_keyboard.label }}
+                            </div>
+                            <div class="form-group ml-3">
+                                {{ reply_markup_form.one_time_keyboard }}
+                                {{ reply_markup_form.one_time_keyboard.label }}
+                            </div>
+                            <div class="form-group ml-3">
+                                {{ reply_markup_form.selective }}
+                                {{ reply_markup_form.selective.label }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <button type="submit" class="btn btn-outline-primary btn-sm float-right">Create Keyboard</button>
+                    </div>
+                </div>
+            {% endif %}
+        </form>
+    {% endif %}
         
     <form action="{% url 'create_bot_second_step_next_step_url' %}" style="margin-top: -8px;">
         {% csrf_token %}

@@ -19,13 +19,15 @@ class TextBuilder(Builder):
         with open('test_bot.py', 'w', encoding='utf-8') as file:
             file.write(textwrap.dedent(init_object))
 
-    def text_response(self, response_text, react_text) -> None:
-        object_text = f"""
-        @bot.message_handler(func=lambda message: message.text == '{react_text}')
-        def {response_text}(message):
-            bot.send_message(chat_id=message.chat.id, text='{response_text}')
+    def text_response(self, text_dictionary) -> None:
+        object_text = """
+        text_dictionary_messages = %s
+        @bot.message_handler(func=lambda message: message.text in text_dictionary_messages.keys())
+        def response_message(message):
+            print(text_dictionary_messages[message.text])
+            bot.send_message(chat_id=message.chat.id, text=f'{text_dictionary_messages[message.text]}')
 
-        """
+        """ % text_dictionary
 
         with open('test_bot.py', 'a', encoding='utf-8') as file:
             file.write(textwrap.dedent(object_text))
@@ -39,7 +41,6 @@ class TextBuilder(Builder):
             file.write(textwrap.dedent(polling_object))
 
 
-text_builder = TextBuilder('952347487:AAFYaR_Dca1phyvrX4OO1xZyTBPp5O8-xI4')
-text_builder.text_response('hello', 'hi')
-text_builder.text_response('some', 'thing')
-text_builder.polling_bot()
+some_object = TextBuilder('772271583:AAHh-K3sPqcTPTkoM9Ah_S7jdhOIdL_LmpM')
+some_object.text_response(text_dictionary={'dasdasd': 'asdasdasd'})
+some_object.polling_bot()
