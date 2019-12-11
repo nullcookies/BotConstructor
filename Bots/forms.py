@@ -1,6 +1,9 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.conf import settings
+
 import json
+import os
 
 from .models import Bot
 
@@ -29,17 +32,20 @@ class TextForm(forms.Form):
     react_text = forms.CharField(widget=forms.TextInput(
         attrs={'class': 'form-control', 'placeholder': 'React Text'}))
 
-    def clean_react_text(self):
-        new_react_text = self.cleaned_data['react_text']
+    # def clean_react_text(self):
+    #     new_react_text = self.cleaned_data['react_text']
 
-        with open('configuration.json', 'r', encoding='utf-8') as file:
-            object_text = json.load(file)['text']
+    #     path = os.path.join(settings.BASE_DIR, 'BotConstructor',
+    #                         'media', 'ScriptsBots', f'{request.user.username}_configuration.json')
+    #     with open('configuration.json', 'r', encoding='utf-8') as file:
+    #         object_text = json.load(file)['text']
 
-        for item in object_text:
-            if item['react_text'] == new_react_text:
-                raise ValidationError(f'Object "{new_react_text}" has already been created')
+    #     for item in object_text:
+    #         if item['react_text'] == new_react_text:
+    #             raise ValidationError(
+    #                 f'Object "{new_react_text}" has already been created')
 
-        return new_react_text
+    #     return new_react_text
 
 
 class ReplyMarkup(forms.Form):
@@ -50,6 +56,10 @@ class ReplyMarkup(forms.Form):
     selective = forms.BooleanField(label='Selective', required=False)
     react_text = forms.CharField(widget=forms.TextInput(
         attrs={'class': 'form-control mb-2', 'placeholder': 'React Text'}))
+    row_width = forms.IntegerField(max_value=5, widget=forms.NumberInput(
+        attrs={'class': 'form-control', 'placeholder': 'Row Width'}))
+    response_text_markup = forms.CharField(widget=forms.TextInput(
+        attrs={'class': 'form-control', 'placeholder': 'Response Text'}))
 
     class Meta:
         widgets = {
