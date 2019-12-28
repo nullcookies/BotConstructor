@@ -32,20 +32,26 @@ class TextForm(forms.Form):
     react_text = forms.CharField(widget=forms.TextInput(
         attrs={'class': 'form-control', 'placeholder': 'React Text'}))
 
-    # def clean_react_text(self):
-    #     new_react_text = self.cleaned_data['react_text']
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        super(TextForm, self).__init__(*args, **kwargs)
 
-    #     path = os.path.join(settings.BASE_DIR, 'BotConstructor',
-    #                         'media', 'ScriptsBots', f'{request.user.username}_configuration.json')
-    #     with open('configuration.json', 'r', encoding='utf-8') as file:
-    #         object_text = json.load(file)['text']
+    def clean_react_text(self):
+        new_react_text = self.cleaned_data['react_text']
 
-    #     for item in object_text:
-    #         if item['react_text'] == new_react_text:
-    #             raise ValidationError(
-    #                 f'Object "{new_react_text}" has already been created')
+        path = os.path.join(settings.BASE_DIR, 'BotConstructor',
+                            'media', 'ScriptsBots', f'{self.request.user.username}', f'{self.request.user.username}_configuration.json')
+        try:
+            with open(path, 'r', encoding='utf-8') as file:
+                object_text = json.load(file)['text']
 
-    #     return new_react_text
+            for item in object_text:
+                if item['react_text'] == new_react_text:
+                    raise forms.ValidationError(
+                        f'Object "{new_react_text}" has already been created')
+        except KeyError as key:
+            print(key)
+        return new_react_text
 
 
 class ReplyMarkup(forms.Form):
@@ -67,6 +73,27 @@ class ReplyMarkup(forms.Form):
             'one_time_keyboard': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'selective': forms.CheckboxInput(attrs={'class': 'form-check-input'})
         }
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        super(ReplyMarkup, self).__init__(*args, **kwargs)
+
+    def clean_react_text(self):
+        new_react_text = self.cleaned_data['react_text']
+
+        path = os.path.join(settings.BASE_DIR, 'BotConstructor',
+                            'media', 'ScriptsBots', f'{self.request.user.username}', f'{self.request.user.username}_configuration.json')
+        try:
+            with open(path, 'r', encoding='utf-8') as file:
+                object_text = json.load(file)['reply_markup']
+
+            for item in object_text:
+                if item['react_text'] == new_react_text:
+                    raise forms.ValidationError(
+                        f'Object "{new_react_text}" has already been created')
+        except KeyError as key:
+            print(key)
+        return new_react_text
 
 
 class ReplyButton(forms.Form):

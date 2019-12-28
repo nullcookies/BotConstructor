@@ -1,16 +1,27 @@
 {% extends 'Base.html' %}
+{% load static %}
 
 {% block main_section %}
 {% include 'Navbar.html' %}
 <div class="container">
-    <h4 class="mt-2">Here you can download script or config</h4>
-    <ul>
-        <li>It's final step. Now, you can download configuration or script of your bot</li>
-    </ul>
+    <div style="position: relative; overflow: hidden; height: 105px; border-radius: 3px;">
+        <img src="{% static 'pictures/yosemite-5120x2880-5k-4k-wallpaper-8k-forest-osx-apple-mountains-181.png' %}" class="img-fluid" style="width: 100%; top: -90%;">
+        <div style="position: absolute; top: 10px; left: 10px; color: white; padding-left: 20px; padding-right: 20px;">
+            <h4 class="text-light mt-2">Here you can download script or config</h4>
+            <ul class="text-light">
+                <li>It's final step. Now, you can download configuration or script of your bot</li>
+            </ul>
+        </div>
+    </div>
     <hr>
-    <div class="row">
-        <a href="{% url 'download_config_url' %}" class="btn btn-outline-primary btn-sm ml-3">Download config</a>
-        <a href="{% url 'download_script_url' %}" class="btn btn-outline-dark btn-sm ml-2">Download script</a>
+    <h4>Congratulations. You create your bot</h4>
+    <div class="form-row mt-3">
+        <div class="col-md-6">
+            <a href="{% url 'download_config_url' %}" class="btn btn-outline-primary btn-sm btn-block">📜 Download config</a>
+        </div>
+        <div class="col-md-6">
+            <a href="{% url 'download_script_url' %}" class="btn btn-outline-dark btn-sm btn-block">📃 Download script</a>
+        </div>
     </div>
 </div>
 {% endblock main_section %}

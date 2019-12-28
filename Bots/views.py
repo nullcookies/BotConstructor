@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.http import HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
+
 import random
 import json
 import os
@@ -18,7 +19,7 @@ from .program import TextBuilder
 data = {}
 
 
-def open_configuration(request):
+def open_configuration(request) -> str:
     path = os.path.join(settings.BASE_DIR, 'BotConstructor',
                         'media', 'ScriptsBots', f'{request.user.username}', f'{request.user.username}_configuration.json')
     if not os.path.exists(path):
@@ -31,7 +32,7 @@ def open_configuration(request):
     return path
 
 
-def open_test_bot(request):
+def open_test_bot(request) -> str:
     path = os.path.join(settings.BASE_DIR, 'BotConstructor',
                         'media', 'ScriptsBots', f'{request.user.username}', f'{request.user.username}_test_bot.py')
     if not os.path.exists(path):
@@ -43,7 +44,7 @@ def open_test_bot(request):
     return path
 
 
-def check_text_on_unique(request, text_element_1, text_element_2, index):
+def check_text_on_unique(request, text_element_1: str, text_element_2: str, index: int) -> bool:
     path = open_configuration(request)
     with open(path, 'r', encoding='utf-8') as file:
         object_text = json.load(file)['text']
@@ -54,6 +55,29 @@ def check_text_on_unique(request, text_element_1, text_element_2, index):
                 request, f'Object "{text_element_1}" has already been created')
             return False
     return True
+
+
+def form_final_dict(obligatory_fields: list, checkboxes: list, index: int, point: bool, data: dict) -> dict:
+    final_data = {}
+    for item in data.items():
+        if item[0] != 'csrfmiddlewaretoken':
+            if point:
+                key = item[0][:item[0].rfind('_')]
+            else:
+                key = item[0][:item[0].rfind('_') - 2]
+
+            if key in obligatory_fields:
+                if key in checkboxes and item[1][0] == 'on':
+                    element = True
+                else:
+                    element = item[1][0]
+
+                final_data[key] = [index, element]
+                obligatory_fields.remove(key)
+
+    for value in obligatory_fields:
+        final_data[value] = [index, False]
+    return final_data
 
 
 class ShowBots(LoginRequiredMixin, View):
@@ -67,7 +91,7 @@ class ShowBots(LoginRequiredMixin, View):
 
         try:
             current_user_profile = Profile.objects.get(user=request.user)
-            all_bots = Bot.objects.filter(owner=current_user_profile)
+            all_bots = Bot.objects.filter(owner=current_user_profile)[::-1]
             if not all_bots:
                 messages.error(request, 'No bots here')
 
@@ -79,7 +103,7 @@ class ShowBots(LoginRequiredMixin, View):
 
 
 class UpdateBot(View):
-    def get(self, request, bot_id):
+    def get(self, request, bot_id: int):
         current_bot = Bot.objects.get(id=bot_id)
         update_bot_form = CreateBotForm(instance=current_bot)
 
@@ -89,7 +113,7 @@ class UpdateBot(View):
         }
         return render(request, 'UpdateBot.html', context)
 
-    def post(self, request, bot_id):
+    def post(self, request, bot_id: int):
         current_bot = Bot.objects.get(id=bot_id)
         update_bot_form = CreateBotForm(
             request.POST, request.FILES, instance=current_bot)
@@ -114,13 +138,13 @@ class UpdateBot(View):
 
 
 class DeleteBot(View):
-    def get(self, request, bot_id):
+    def get(self, request, bot_id: int):
         context = {
             'title': 'Delete Bot - BotConstructor'
         }
         return render(request, 'DeleteBot.html', context)
 
-    def post(self, request, bot_id):
+    def post(self, request, bot_id: int):
         current_bot = Bot.objects.get(id=bot_id)
         current_bot.delete()
         return redirect('show_bots_url')
@@ -177,7 +201,7 @@ class CreateTextField(LoginRequiredMixin, View):
                 text_elements = list(enumerate(json.load(file)['text']))
         except KeyError:
             text_elements = []
-        text_form = TextForm()
+        text_form = TextForm(request=request)
 
         self.context.update({
             'title': 'Second Step - BotConstructor',
@@ -194,7 +218,7 @@ class CreateTextField(LoginRequiredMixin, View):
                 text_elements = list(enumerate(json.load(file)['text']))
         except KeyError:
             text_elements = []
-        text_form = TextForm(request.POST)
+        text_form = TextForm(request.POST, request=request)
 
         if text_form.is_valid():
             response_text = text_form.cleaned_data['response_text']
@@ -218,12 +242,20 @@ class CreateTextField(LoginRequiredMixin, View):
                           indent=4, ensure_ascii=False)
             return redirect('create_bot_second_step_text_url')
 
+        self.context.update({
+            'title': 'Second Step - BotConstructor',
+            'text_elements': text_elements,
+            'text_form': text_form,
+            'recognition_mark': 'text'
+        })
+        return render(request, 'SecondStep.html', self.context)
+
 
 class DeleteTextField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_text_url'
 
-    def post(self, request, button_id):
+    def get(self, request, button_id: int):
         path = open_configuration(request)
         with open(path, 'r', encoding='utf-8') as file:
             object_config = json.load(file)
@@ -284,7 +316,7 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
         except KeyError:
             reply_markup_elements = []
 
-        reply_markup_form = ReplyMarkup()
+        reply_markup_form = ReplyMarkup(request=request)
         self.context.update({
             'title': 'Second Step - BotConstructor',
             'reply_markup_form': reply_markup_form,
@@ -301,7 +333,7 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
                     enumerate(json.load(file)['reply_markup']))
         except KeyError:
             reply_markup_elements = []
-        reply_markup_form = ReplyMarkup(request.POST)
+        reply_markup_form = ReplyMarkup(request.POST, request=request)
 
         if reply_markup_form.is_valid():
             resize_keyboard = reply_markup_form.cleaned_data['resize_keyboard']
@@ -342,6 +374,14 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
             except KeyError:
                 reply_markup_elements = []
             return redirect('create_bot_second_step_reply_buttons_url')
+
+        self.context.update({
+            'title': 'Second Step - BotConstructor',
+            'reply_markup_form': reply_markup_form,
+            'reply_markup_elements': reply_markup_elements,
+            'recognition_mark': 'reply_markup'
+        })
+        return render(request, 'SecondStep.html', self.context)
 
 
 class CreateReplyButtonsField(LoginRequiredMixin, View):
@@ -417,11 +457,100 @@ class CreateReplyButtonsField(LoginRequiredMixin, View):
             return render(request, 'SecondStep.html', self.context)
 
 
+class UpdateReplyMarkupField(LoginRequiredMixin, View):
+    login_url = '/signIn/'
+    redirect_field_name = 'create_bot_second_step_reply_markup_url'
+
+    checkboxes = [
+        'resize_keyboard',
+        'one_time_keyboard',
+        'selective'
+    ]
+
+    def post(self, request):
+        obligatory_fields = [
+            'resize_keyboard',
+            'one_time_keyboard',
+            'selective',
+            'react_text',
+            'row_width',
+            'response_text_markup'
+        ]
+        data = dict(request.POST)
+
+        path = open_configuration(request)
+        with open(path, 'r', encoding='utf-8') as file:
+            object_config = json.load(file)
+
+        index = int(list(data.items())[1][0].split('_')[-1])
+        final_data = form_final_dict(obligatory_fields=obligatory_fields,
+                                     point=True, checkboxes=self.checkboxes,
+                                     index=index, data=data)
+
+        reply_markup_object = object_config['reply_markup']
+
+        reply_markup_object[index]['react_text'] = final_data['react_text'][1].strip(
+        )
+        reply_markup_object[index]['row_width'] = int(
+            final_data['row_width'][1].strip())
+        reply_markup_object[index]['response_text'] = final_data['response_text_markup'][1].strip(
+        )
+        reply_markup_object[index]['resize_keyboard'] = final_data['resize_keyboard'][1]
+        reply_markup_object[index]['one_time_keyboard'] = final_data['one_time_keyboard'][1]
+        reply_markup_object[index]['selective'] = final_data['selective'][1]
+
+        object_config['reply_markup'] = reply_markup_object
+        with open(path, 'w', encoding='utf-8') as file:
+            json.dump(object_config, file, indent=4, ensure_ascii=False)
+        return redirect('create_bot_second_step_reply_markup_url')
+
+
+class UpdateReplyButtonsField(LoginRequiredMixin, View):
+    login_url = '/signIn/'
+    redirect_field_name = 'create_bot_second_step_reply_buttons_url'
+
+    checkboxes = [
+        'request_contact',
+        'request_location'
+    ]
+
+    def post(self, request):
+        data = dict(request.POST)
+        obligatory_fields = [
+            'response_text',
+            'request_contact',
+            'request_location'
+        ]
+
+        path = open_configuration(request)
+        with open(path, 'r', encoding='utf-8') as file:
+            object_config = json.load(file)
+
+        index = (int(list(data.items())[1][0].split(
+            '_')[-2]), int(list(data.items())[1][0].split('_')[-1]))
+        final_data = form_final_dict(obligatory_fields=obligatory_fields,
+                                     point=False, checkboxes=self.checkboxes,
+                                     index=index, data=data)
+
+        reply_markup_object = object_config['reply_markup']
+        reply_markup_object[index[0]]['buttons'][index[1]
+                                                 ]['response_text'] = final_data['response_text'][1].strip()
+        reply_markup_object[index[0]]['buttons'][index[1]
+                                                 ]['request_contact'] = final_data['request_contact'][1]
+        reply_markup_object[index[0]]['buttons'][index[1]
+                                                 ]['request_location'] = final_data['request_location'][1]
+
+        object_config['reply_markup'] = reply_markup_object
+        with open(path, 'w', encoding='utf-8') as file:
+            json.dump(object_config, file, indent=4, ensure_ascii=False)
+        return redirect('create_bot_second_step_reply_buttons_url')
+
+
 class DeleteReplyButtonField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_reply_markup_url'
 
-    def post(self, request, markup_id, button_id):
+    def get(self, request, markup_id: int, button_id: int):
         path = open_configuration(request)
         with open(path, 'r', encoding='utf-8') as file:
             object_config = json.load(file)
@@ -439,7 +568,7 @@ class DeleteReplyMarkupField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_reply_markup_url'
 
-    def post(self, request, markup_id):
+    def get(self, request, markup_id):
         path = open_configuration(request)
         with open(path, 'r', encoding='utf-8') as file:
             object_config = json.load(file)
@@ -462,8 +591,8 @@ class GenerateFile(LoginRequiredMixin, View):
         with open(path, 'r', encoding='utf-8') as file:
             data = json.load(file)
 
-        program = TextBuilder(
-            token=data['access_token'], user_username=str(request.user.username))
+        program = TextBuilder(token=data['access_token'],
+                              user_username=str(request.user.username))
         final_text_dictionary = {}
         for text_element in data['text']:
             final_text_dictionary[text_element['react_text']
@@ -491,9 +620,9 @@ class GenerateFile(LoginRequiredMixin, View):
                 'buttons': buttons
             }
 
+        program.text_response(text_dictionary=final_text_dictionary)
         program.reply_markup_response(
             reply_markup_dictionary=final_reply_markup_keyboard)
-        program.text_response(text_dictionary=final_text_dictionary)
         program.polling_bot()
 
         file_script_path = 'ScriptBots/test_bot.py'
@@ -501,58 +630,12 @@ class GenerateFile(LoginRequiredMixin, View):
         current_user = Profile.objects.get(user=request.user)
         access_token = data['access_token']
 
-        bot_object = Bot(
-            file_script=file_script_path, file_config=file_config_path, owner=current_user, access_token=access_token)
+        bot_object = Bot(file_script=file_script_path,
+                         file_config=file_config_path, owner=current_user,
+                         access_token=access_token, title=data['name'],
+                         username=data['username'])
         bot_object.save()
         return redirect('create_bot_third_step_url')
-
-
-class CreateBotStepTwo(View):
-    @staticmethod
-    @login_required
-    def reply_markup_field_update(request):
-        data = dict(request.POST)
-        context = {}
-
-        path = open_configuration(request)
-        with open(path, 'r', encoding='utf-8') as file:
-            object_config = json.load(file)
-
-        text_object = object_config['reply_markup']
-        final_data = []
-        for button in data.items():
-            index = button[0].split('_')
-            # print(index)
-            text = button[1][0]
-            final_data.append([index, text])
-
-        # print(final_data)
-
-        # for item in range(len(text_object)):
-        #     if item == final_data[0][0]:
-        #         if check_text_on_unique(request, final_data[0][1], final_data[1][1], final_data[0][0]):
-        #             text_object[item]['react_text'] = final_data[0][1].strip()
-        #             text_object[item]['response_text'] = final_data[1][1]
-
-        # object_config['text'] = text_object
-        # with open('configuration.json', 'w', encoding='utf-8') as file:
-        #     json.dump(object_config, file, indent=4, ensure_ascii=False)
-        try:
-            with open(path, 'r', encoding='utf-8') as file:
-                reply_markup_elements = list(
-                    enumerate(json.load(file)['reply_markup']))
-        except KeyError:
-            reply_markup_elements = []
-
-        # context.update({
-        #     'sub_recognition_mark': 'reply_buttons',
-        #     'title': 'Second Step - BotConstructor',
-        #     'reply_button_form': reply_button_form,
-        #     'reply_markup_elements': reply_markup_elements,
-        #     'recognition_mark': 'reply_markup'
-        # })
-        # return render(request, 'SecondStep.html', context)
-        return redirect('create_bot_second_step_reply_markup_url')
 
 
 class CreateBotStepThree(LoginRequiredMixin, View):

@@ -8,9 +8,11 @@ from .models import *
 class UserRegistrationForm(forms.ModelForm):
     image = forms.FileField(required=False)
     password_some = forms.CharField(label='Password',
-                                    widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+                                    widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
     password_confirm = forms.CharField(label='Confirm password',
-                                       widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+                                       widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm password'}))
+    about = forms.CharField(max_length=500, widget=forms.Textarea(
+        attrs={'class': 'form-control mb-2 mt-2', 'style': 'height: 100px', 'placeholder': 'About'}))
 
     class Meta:
         model = User
@@ -18,27 +20,20 @@ class UserRegistrationForm(forms.ModelForm):
                   'password_some', 'password_confirm')
         widgets = {
             'image': forms.FileInput(attrs={'class': 'form-control'}),
-            'username': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'E-Mail'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last name'})
         }
 
-    def clean_email(self):
-        new_email = self.cleaned_data['email'].lower()
+    # def clean(self):
+    #     cleaned_data = super(UserRegistrationForm, self).clean()
+    #     password = cleaned_data.get('password_some')
+    #     confirm_password = cleaned_data.get('password_confirm')
 
-        if (new_email.startswith('example')) or (not (new_email.endswith('ru') or new_email.endswith('com') or new_email.endswith('net') or new_email.endswith('ua'))) or (not('gmail' in new_email or 'email' in new_email or 'mail' in new_email or 'ukr' in new_email)):
-            raise ValidationError('Please, enter correct email address')
-
-        return new_email
-
-    def clean(self):
-        cleaned_data = super(UserRegistrationForm, self).clean()
-        password = cleaned_data.get('password_some')
-        confirm_password = cleaned_data.get('password_confirm')
-
-        if password != confirm_password:
-            raise forms.ValidationError('Passwords do not match')
+    #     if password != confirm_password:
+    #         raise forms.ValidationError('Passwords do not match')
+    #     return cleaned_data
 
 
 class UserAuthenticationForm(forms.Form):

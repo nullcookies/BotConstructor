@@ -5,12 +5,12 @@
 <div class="container">
     <div class="row">
         <div class="col-md-6">
-            <h5 class="text-secondary mt-2">All your bots</h5> 
-        </div>
+            <h5 class="text-secondary mt-2">Your Telegram Bots</h5> 
+        </div>  
 
         <div class="col-md-6">
             <div class="row float-right mr-0">
-                <a href="{% url 'create_bot_first_step_url' %}" class="btn btn-outline-success btn-sm ml-2 mt-2">Create bot</a>
+                <a href="{% url 'create_bot_first_step_url' %}" class="btn btn-outline-success btn-sm ml-2 mt-2">🖌️ Create bot</a>
             </div>
         </div>
     </div>
@@ -26,12 +26,12 @@
     {% for bot in all_bots %}
         <div class="card mb-4 box-shadow mt-2">
             <div class="card-body">
+                <h5>{{ bot.title }} {{ bot.username }}</h5>
                 <p class="text-secondary">{{ bot.access_token }}</p>
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
-                        <a href="{% url 'update_bot_url' bot_id=bot.id %}" class="btn btn-sm btn-outline-primary">Update</a>
-                        <a href="{% url 'delete_bot_url' bot_id=bot.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
-                        <a href="{% url 'create_bot_third_step_url' %}" class="btn btn-sm btn-outline-light">Download</a>
+                        <a href="{% url 'delete_bot_url' bot_id=bot.id %}" class="btn btn-sm btn-outline-danger">🧹 󠁛󠁛󠁛Delete</a>
+                        <a href="{% url 'create_bot_third_step_url' %}" class="btn btn-sm btn-outline-light">⬇️ Download</a>
                     </div>
                     <small class="text-muted">{{ bot.owner.user.first_name }} {{ bot.owner.user.last_name }}</small>
                 </div>

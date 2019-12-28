@@ -39,7 +39,7 @@
 # bot.polling()
 
 
-import os
+# import os
 
 
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -47,5 +47,10 @@ import os
 # print(path)
 
 
-test = 'C:\\Users\\user\\Documents\\BotConstructor\\BotConstructor\\media\\ScriptsBots\\AlexanderIvanov'
-os.makedirs(test)
+# test = 'C:\\Users\\user\\Documents\\BotConstructor\\BotConstructor\\media\\ScriptsBots\\AlexanderIvanov'
+# os.makedirs(test)
+
+
+s = 'asd_a_w_sds'
+s = s[:s.rfind('_')]
+print(s)

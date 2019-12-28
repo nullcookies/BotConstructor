@@ -4,7 +4,8 @@ import textwrap
 import os
 
 
-PATH = os.path.join(settings.BASE_DIR, 'BotConstructor', 'media', 'ScriptsBots')
+PATH = os.path.join(settings.BASE_DIR, 'BotConstructor',
+                    'media', 'ScriptsBots')
 
 
 class Builder(ABC):
@@ -23,7 +24,8 @@ class TextBuilder(Builder):
         bot = telebot.TeleBot(token='{token}')
 
         """
-        path = os.path.join(PATH, f'{user_username}_test_bot.py')
+        final_path = os.path.join(PATH, f'{self.user_username}')
+        path = os.path.join(final_path, f'{self.user_username}_test_bot.py')
         with open(path, 'w', encoding='utf-8') as file:
             file.write(textwrap.dedent(init_object))
 
@@ -37,7 +39,9 @@ class TextBuilder(Builder):
 
         """ % text_dictionary
 
-        with open('test_bot.py', 'a', encoding='utf-8') as file:
+        final_path = os.path.join(PATH, f'{self.user_username}')
+        path = os.path.join(final_path, f'{self.user_username}_test_bot.py')
+        with open(path, 'a', encoding='utf-8') as file:
             file.write(textwrap.dedent(object_text))
 
     def reply_markup_response(self, reply_markup_dictionary):
@@ -56,7 +60,8 @@ class TextBuilder(Builder):
 
         """ % reply_markup_dictionary
 
-        path = os.path.join(PATH, f'{self.user_username}_test_bot.py')
+        final_path = os.path.join(PATH, f'{self.user_username}')
+        path = os.path.join(final_path, f'{self.user_username}_test_bot.py')
         with open(path, 'a', encoding='utf-8') as file:
             file.write(textwrap.dedent(object_text))
 
@@ -65,7 +70,8 @@ class TextBuilder(Builder):
         bot.polling(none_stop=True)
         """
 
-        path = os.path.join(PATH, f'{self.user_username}_test_bot.py')
+        final_path = os.path.join(PATH, f'{self.user_username}')
+        path = os.path.join(final_path, f'{self.user_username}_test_bot.py')
         with open(path, 'a', encoding='utf-8') as file:
             file.write(textwrap.dedent(polling_object))
 
