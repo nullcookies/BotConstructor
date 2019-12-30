@@ -18,17 +18,26 @@ class CreateBotForm(forms.ModelForm):
 
 
 class GetAccessToken(forms.Form):
-    access_token = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Access Token'}))
-    name = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Title'}))
-    username = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Telegram Nickname'}))
+    access_token = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Access Token'
+    }))
+    name = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Title'
+    }))
+    username = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Telegram Nickname'
+    }))
 
 
 class TextForm(forms.Form):
-    response_text = forms.CharField(widget=forms.Textarea(
-        attrs={'class': 'form-control', 'placeholder': 'Response Text', 'style': 'height: 80px'}))
+    response_text = forms.CharField(widget=forms.Textarea(attrs={
+        'class': 'form-control',
+        'placeholder': 'Response Text',
+        'style': 'height: 80px'
+    }))
     react_text = forms.CharField(widget=forms.TextInput(
         attrs={'class': 'form-control', 'placeholder': 'React Text'}))
 
@@ -40,7 +49,9 @@ class TextForm(forms.Form):
         new_react_text = self.cleaned_data['react_text']
 
         path = os.path.join(settings.BASE_DIR, 'BotConstructor',
-                            'media', 'ScriptsBots', f'{self.request.user.username}', f'{self.request.user.username}_configuration.json')
+                            'media', 'ScriptsBots',
+                            f'{self.request.user.username}',
+                            f'{self.request.user.username}_configuration.json')
         try:
             with open(path, 'r', encoding='utf-8') as file:
                 object_text = json.load(file)['text']
@@ -62,16 +73,25 @@ class ReplyMarkup(forms.Form):
     selective = forms.BooleanField(label='Selective', required=False)
     react_text = forms.CharField(widget=forms.TextInput(
         attrs={'class': 'form-control mb-2', 'placeholder': 'React Text'}))
-    row_width = forms.IntegerField(max_value=5, widget=forms.NumberInput(
-        attrs={'class': 'form-control', 'placeholder': 'Row Width'}))
+    row_width = forms.IntegerField(max_value=5, min_value=1,
+                                   widget=forms.NumberInput(attrs={
+                                       'class': 'form-control',
+                                       'placeholder': 'Row Width'
+                                   }))
     response_text_markup = forms.CharField(widget=forms.TextInput(
         attrs={'class': 'form-control', 'placeholder': 'Response Text'}))
 
     class Meta:
         widgets = {
-            'resize_keyboard': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'one_time_keyboard': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'selective': forms.CheckboxInput(attrs={'class': 'form-check-input'})
+            'resize_keyboard': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'one_time_keyboard': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'selective': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            })
         }
 
     def __init__(self, *args, **kwargs):
@@ -82,7 +102,9 @@ class ReplyMarkup(forms.Form):
         new_react_text = self.cleaned_data['react_text']
 
         path = os.path.join(settings.BASE_DIR, 'BotConstructor',
-                            'media', 'ScriptsBots', f'{self.request.user.username}', f'{self.request.user.username}_configuration.json')
+                            'media', 'ScriptsBots',
+                            f'{self.request.user.username}',
+                            f'{self.request.user.username}_configuration.json')
         try:
             with open(path, 'r', encoding='utf-8') as file:
                 object_text = json.load(file)['reply_markup']
@@ -106,6 +128,18 @@ class ReplyButton(forms.Form):
 
     class Meta:
         widgets = {
-            'request_contact': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'request_location': forms.CheckboxInput(attrs={'class': 'form-check-input'})
+            'request_contact': forms.RadioSelect(attrs={
+                'class': 'form-check-input'
+            }),
+            'request_location': forms.RadioSelect(attrs={
+                'class': 'form-check-input'
+            })
         }
+
+
+class InlineMarkup(forms.Form):
+    row_width = forms.IntegerField(max_value=5, min_value=1,
+                                   widget=forms.NumberInput(attrs={
+                                       'class': 'form-control',
+                                       'placeholder': 'Row Width'
+                                   }))

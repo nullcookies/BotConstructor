@@ -8,8 +8,8 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 import requests
 
-from .forms import UserRegistrationForm, UserAuthenticationForm, UpdateImageForm
 from .models import Profile
+from .forms import *
 
 
 def base_view(request):
@@ -18,6 +18,7 @@ def base_view(request):
 
 
 class ProfileView(LoginRequiredMixin, View):
+    context = {}
     login_url = '/signIn/'
     redirect_field_name = 'show_bots_url'
 
@@ -26,12 +27,12 @@ class ProfileView(LoginRequiredMixin, View):
         update_image_form = UpdateImageForm(instance=current_user)
         print(current_user.image)
 
-        context = {
+        self.context.update({
             'title': 'Profile - BotCostructor',
             'current_user': current_user,
             'update_image_form': update_image_form
-        }
-        return render(request, 'Users/Profile.html', context)
+        })
+        return render(request, 'Users/Profile.html', self.context)
 
     def post(self, request):
         current_user = Profile.objects.get(user=request.user)
@@ -42,23 +43,25 @@ class ProfileView(LoginRequiredMixin, View):
             update_image_form.save()
             return redirect('profile_url')
 
-        context = {
+        self.context.update({
             'title': 'Profile - BotConstructor',
             'current_user': current_user,
             'update_image_form': update_image_form
-        }
-        return render(request, 'Users/Profile.html', context)
+        })
+        return render(request, 'Users/Profile.html', self.context)
 
 
 class UserRegistration(View):
+    context = {}
+
     def get(self, request):
         register_form = UserRegistrationForm()
 
-        context = {
+        self.context.update({
             'title': 'Registration - BotConstructor',
             'register_form': register_form
-        }
-        return render(request, 'Users/SignUp.html', context)
+        })
+        return render(request, 'Users/SignUp.html', self.context)
 
     def post(self, request):
         register_form = UserRegistrationForm(request.POST, request.FILES)
@@ -78,7 +81,9 @@ class UserRegistration(View):
                 last_name = register_form.cleaned_data['last_name']
                 email = register_form.cleaned_data['email']
                 password = register_form.cleaned_data['password_some']
-                password_confirm = register_form.cleaned_data['password_confirm']
+                password_confirm = register_form.cleaned_data[
+                    'password_confirm'
+                ]
                 image = register_form.cleaned_data['image']
                 about = register_form.cleaned_data['about']
 
@@ -101,22 +106,24 @@ class UserRegistration(View):
             else:
                 messages.error(request, 'Sorry, you are the robot')
 
-        context = {
+        self.context.update({
             'title': 'Registration - BotConstructor',
             'register_form': register_form
-        }
-        return render(request, 'Users/SignUp.html', context)
+        })
+        return render(request, 'Users/SignUp.html', self.context)
 
 
 class UserAuthentication(View):
+    context = {}
+
     def get(self, request):
         auth_form = UserAuthenticationForm()
 
-        context = {
+        self.context.update({
             'title': 'Authentication - BotConstructor',
             'auth_form': auth_form
-        }
-        return render(request, 'Users/SignIn.html', context)
+        })
+        return render(request, 'Users/SignIn.html', self.context)
 
     def post(self, request):
         auth_form = UserAuthenticationForm(request.POST)
@@ -136,13 +143,14 @@ class UserAuthentication(View):
                     messages.error(request, 'Password is incorrect')
             except ObjectDoesNotExist:
                 messages.error(
-                    request, 'Such user does not exits or you enter incorrect username')
+                    request,
+                    'Such user does not exits or you enter incorrect username')
 
-        context = {
+        self.context.update({
             'title': 'Authentication - BotConstructor',
             'auth_form': auth_form
-        }
-        return render(request, 'Users/SignIn.html', context)
+        })
+        return render(request, 'Users/SignIn.html', self.context)
 
 
 class UserLogout(View):
@@ -152,17 +160,18 @@ class UserLogout(View):
 
 
 class UpdateProfile(LoginRequiredMixin, View):
+    context = {}
     login_url = '/signIn/'
     redirect_field_name = 'base_view_url'
 
     def get(self, request):
         update_form = UserRegistrationForm(instance=request.user)
 
-        context = {
+        self.context.update({
             'title': 'Update Profile - BotConstructor',
             'update_form': update_form
-        }
-        return render(request, 'Users/UpdateProfile.html', context)
+        })
+        return render(request, 'Users/UpdateProfile.html', self.context)
 
     def post(self, request):
         update_form = UserRegistrationForm(request.POST, instance=request.user)
@@ -190,11 +199,11 @@ class UpdateProfile(LoginRequiredMixin, View):
             login(request, new_user)
             return redirect('profile_url')
 
-        context = {
+        self.context.update({
             'title': 'Update Profile - BotConstructor',
             'update_form': update_form
-        }
-        return render(request, 'Users/UpdateProfile.html', context)
+        })
+        return render(request, 'Users/UpdateProfile.html', self.context)
 
 
 # class UpdateImage(LoginRequiredMixin, View):

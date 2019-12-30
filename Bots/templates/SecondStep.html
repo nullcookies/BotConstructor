@@ -28,9 +28,9 @@
         {% endif %}
     {% endfor %}
 
-    <div style="position: relative; overflow: hidden; height: 130px; border-radius: 3px;">
-        <img src="{% static 'pictures/14961556102_13f1b039b4_o.png' %}" class="img-fluid" style="width: 100%; top: -10%;">
-        <div style="position: absolute; top: 10px; left: 10px; color: white; padding-left: 20px; padding-right: 20px;">
+    <div class="image-with-text" style="height: 130px;">
+        <img src="{% static 'pictures/14961556102_13f1b039b4_o.png' %}" class="max-width img-fluid">
+        <div class="text-on-img-2">
             <h4 class="text-light mt-2">Configure your bot here</h4>
             <ul class="text-light">
                 <li>Click on one of the submenu items to start</li>
@@ -38,168 +38,173 @@
             </ul>
         </div>
     </div>
-    <hr>
-
-    <div class="btn-group" style="display: flex;">
-        <a href="{% url 'create_bot_second_step_text_url' %}" class="btn btn-outline-dark {% if recognition_mark == 'text' %}active{% endif %}" style="flex: 1;">Text</a>
-        <a href="{% url 'create_bot_second_step_reply_markup_url' %}" class="btn btn-outline-dark {% if recognition_mark == 'reply_markup' or recognition_mark == 'reply_buttons' %}active{% endif %}" style="flex: 1;">Reply Buttons</a>
-        <!-- <button class="btn btn-outline-dark" style="flex: 1;">Inline Buttons</button> -->
+    <div class="d-flex flex-row btn-group mt-2">
+        <a href="{% url 'create_bot_second_step_text_url' %}" class="col-md-4 btn btn-outline-dark {% if recognition_mark == 'text' %}active{% endif %}">Text</a>
+        <a href="{% url 'create_bot_second_step_reply_markup_url' %}" class="col-md-4 btn btn-outline-dark {% if recognition_mark == 'reply_markup' or recognition_mark == 'reply_buttons' %}active{% endif %}">Reply Buttons</a>
+        <a href="{% url 'create_bot_second_step_inline_markup_url' %}" class="col-md-4 btn btn-outline-dark {% if recognition_mark == 'inline_markup' %}active{% endif %}">Inline Buttons</a>
     </div>
 
-    <div class="mt-3">
-        {% if recognition_mark == 'text' %}
-            {% if text_elements %}
-                <h5 class="text-dark">Required settings</h5>
-
-                {% for text_item in text_elements %}
-                    <form action="{% url 'create_bot_second_step_text_update_url' %}" method="POST">
-                        {% csrf_token %}
-
-                        <div class="form-row mb-3">
-                            <div class="form-group col-md-11">
-                                <input class="form-control" aria-label="Sizing example input"
-                                    aria-describedby="inputGroup-sizing-sm" name="react_text_{{ text_item.0 }}"
-                                    value="{{ text_item.1.react_text }}">
-                                <textarea class="form-control mt-2" aria-label="Sizing example input" style="height: 70%;"
-                                    aria-describedby="inputGroup-sizing-sm" name="response_text_{{ text_item.0 }}">{{ text_item.1.response_text }}</textarea>
-                            </div>
-                            <div class="form-group col-md-1">
-                                <button type="submit" class="btn btn-outline-success btn-block">Update</button>
-                                <a href="{% url 'create_bot_second_step_text_delete_url' button_id=text_item.0 %}" class="btn btn-outline-danger btn-block">Delete</a>
-                            </div>
-                        </div>
-                    </form>
-                {% endfor %}
-            {% else %}
-                <p class="text-warning mb-2" style="line-height: 0px">No such elements added</p>
-                <p class="text-success mb-4">If you want to add new text response check the form below</p>
-            {% endif %}
-        {% endif %}
-    </div>
-    <hr style="margin-top: 20px;">
-    <h5 class="text-secondary">Create new element below</h5>
-    
     {% if recognition_mark == 'text' %}
+        {% if text_elements %}
+            {% for text_item in text_elements %}
+                <form action="{% url 'create_bot_second_step_text_update_url' %}" method="POST" class="mt-3">
+                    {% csrf_token %}
+
+                    <div class="form-row mb-3">
+                        <div class="form-group col-md-11">
+                            <input class="form-control" aria-label="Sizing example input"
+                                aria-describedby="inputGroup-sizing-sm" name="react_text_{{ text_item.0 }}"
+                                value="{{ text_item.1.react_text }}">
+                            <textarea class="form-control mt-2" aria-label="Sizing example input" style="height: 70%;"
+                                aria-describedby="inputGroup-sizing-sm" name="response_text_{{ text_item.0 }}">{{ text_item.1.response_text }}</textarea>
+                        </div>
+                        <div class="form-group col-md-1">
+                            <button type="submit" class="btn btn-outline-success btn-block">Update</button>
+                            <a href="{% url 'create_bot_second_step_text_delete_url' button_id=text_item.0 %}" class="btn btn-outline-danger btn-block">Delete</a>
+                        </div>
+                    </div>
+                </form>
+            {% endfor %}
+        {% else %}
+            <p class="text-warning mb-2">No such elements added</p>
+            <p class="height-between text-success mb-4">If you want to add new text response check the form below</p>
+        {% endif %}
+    {% endif %}
+
+    {% if recognition_mark == 'text' %}
+        <div class="form-row">
+            <h5 class="ml-1 text-dark">Create response text</h5>
+            <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
+        </div>
+
         <form action="{% url 'create_bot_second_step_text_url' %}" method="POST">
             {% csrf_token %}
 
             <div class="form-row mt-0">
-                <div class="form-group col-md-11">
+                <div class="col-md-10">
                     <div>
                         {{ text_form.react_text }}
                     </div>
-                    <div class="mt-2">
-                        {{ text_form.response_text }}
-                    </div>
                 </div>
-                <div class="form-group col-md-1">
-                    <button type="submit" class="btn btn-outline-warning btn-block">Add</button>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-primary btn-block">Create Text</button>
                 </div>
+            </div>
+            <div class="mt-2">
+                {{ text_form.response_text }}
             </div>
         </form>
     {% elif recognition_mark == 'reply_markup' or recognition_mark == 'reply_buttons' %}
         {% if reply_markup_elements %}
             {% for reply_markup_element in reply_markup_elements %}
-                    <div class="form-row mt-3">
-                        <div class="col-md-5">
-                            <form action="{% url 'create_bot_second_step_reply_markup_update_url' %}" method="POST">
+                <div class="form-row mt-3">
+                    <div class="col-md-5">
+                        <form action="{% url 'create_bot_second_step_reply_markup_update_url' %}" method="POST" class="mb-3">
+                            {% csrf_token %}
+
+                            <div class="form-row row">
+                                <div class="col-md-8">
+                                    <input class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="react_text_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.react_text }}">
+                                </div>
+                                <div class="col-md-4">
+                                    <input class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="row_width_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.row_width }}">
+                                </div>
+                            </div>
+                            <input class="form-control mt-2" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="response_text_markup_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.response_text }}">
+                    
+                            <div class="form-row mt-2">
+                                <div class="form-group ml-2">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="resize_keyboard_{{ reply_markup_element.0 }}" class="form-check-input" {% if reply_markup_element.1.resize_keyboard %}checked{% endif %} id="res_key_{{ reply_markup_element.0 }}">
+                                        <label for="res_key_{{ reply_markup_element.0 }}" class="form-check-label">Resize keyboard</label>
+                                    </div>
+                                </div>
+                                <div class="form-group ml-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="one_time_keyboard_{{ reply_markup_element.0 }}" class="form-check-input" {% if reply_markup_element.1.one_time_keyboard %}checked{% endif %} id="o_t_k_{{ reply_markup_element.0 }}">
+                                        <label for="o_t_k_{{ reply_markup_element.0 }}" class="form-check-label">One time keyboard</label>
+                                    </div>
+                                </div>
+                                <div class="form-group ml-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="selective_{{ reply_markup_element.0 }}" class="form-check-input" {% if reply_markup_element.1.selective %}checked{% endif %} id="s_{{ reply_markup_element.0 }}">
+                                        <label for="s_{{ reply_markup_element.0 }}" class="form-check-label">Selective</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update keyboard</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <a href="{% url 'create_bot_second_step_reply_markup_delete_url' markup_id=reply_markup_element.0 %}" class="btn btn-outline-danger btn-sm btn-block">Delete keyboard</a>
+                                </div>
+                                <div class="col-md-4">
+                                    <a href="{% url 'create_bot_second_step_reply_buttons_url' %}" class="btn btn-outline-dark btn-sm btn-block">Add button</a>
+                                </div>
+                            </div>
+                            <a href="{% url 'create_bot_second_step_reply_markup_url' %}" class="btn btn-outline-success btn-sm btn-block mt-2">New Keyboard</a>
+                        </form>
+                    </div>
+    
+                    <div class="col-md-7">
+                        {% for button_element in reply_markup_element.1.buttons %}
+                            <form action="{% url 'create_bot_second_step_reply_buttons_update_url' %}" method="POST" class="mb-3">
                                 {% csrf_token %}
 
-                                <div class="form-row row">
-                                    <div class="col-md-8">
-                                        <input class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="react_text_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.react_text }}">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <input class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="row_width_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.row_width }}">
-                                    </div>
-                                </div>
-                                <input class="form-control mt-2" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="response_text_markup_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.response_text }}">
-                        
-                                <div class="form-row mt-2">
-                                    <div class="form-group ml-2">
-                                        <div class="form-check">
-                                            <input type="checkbox" name="resize_keyboard_{{ reply_markup_element.0 }}" class="form-check-input" {% if reply_markup_element.1.resize_keyboard %}checked{% endif %} id="res_key_{{ reply_markup_element.0 }}">
-                                            <label for="res_key_{{ reply_markup_element.0 }}" class="form-check-label">Resize keyboard</label>
-                                        </div>
-                                    </div>
-                                    <div class="form-group ml-3">
-                                        <div class="form-check">
-                                            <input type="checkbox" name="one_time_keyboard_{{ reply_markup_element.0 }}" class="form-check-input" {% if reply_markup_element.1.one_time_keyboard %}checked{% endif %} id="o_t_k_{{ reply_markup_element.0 }}">
-                                            <label for="o_t_k_{{ reply_markup_element.0 }}" class="form-check-label">One time keyboard</label>
-                                        </div>
-                                    </div>
-                                    <div class="form-group ml-3">
-                                        <div class="form-check">
-                                            <input type="checkbox" name="selective_{{ reply_markup_element.0 }}" class="form-check-input" {% if reply_markup_element.1.selective %}checked{% endif %} id="s_{{ reply_markup_element.0 }}">
-                                            <label for="s_{{ reply_markup_element.0 }}" class="form-check-label">Selective</label>
-                                        </div>
-                                    </div>
-                                </div>
-
+                                <input class="form-control" aria-label="Sizing example input" name="response_text_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ button_element.response_text }}">
+                                
                                 <div class="form-row">
-                                    <div class="col-md-4">
-                                        <button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update keyboard</button>
+                                    <div class="form-group ml-2 mt-1">
+                                        <div class="form-check">
+                                            <input type="checkbox" name="request_contact_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}" class="form-check-input" {% if button_element.request_contact %}checked{% endif %} id="req_con_{{ forloop.counter0 }}">
+                                            <label for="req_con_{{ forloop.counter0 }}" class="form-check-label">Request contact</label>
+                                        </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <a href="{% url 'create_bot_second_step_reply_markup_delete_url' markup_id=reply_markup_element.0 %}" class="btn btn-outline-danger btn-sm btn-block">Delete keyboard</a>
+                                    <div class="form-group ml-3 mt-1">
+                                        <div class="form-check">
+                                            <input type="checkbox" name="request_location_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}" class="form-check-input" {% if button_element.request_location %}checked{% endif %} id="req_loc_{{ forloop.counter0 }}">
+                                            <label for="req_loc_{{ forloop.counter0 }}" class="form-check-label">Request location</label>
+                                        </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <a href="{% url 'create_bot_second_step_reply_buttons_url' %}" class="btn btn-outline-dark btn-sm btn-block">Add button</a>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="col-md-6">
+                                        <button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update button</button>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <a href="{% url 'create_bot_second_step_reply_button_delete_url' markup_id=reply_markup_element.0 button_id=forloop.counter0 %}" class="btn btn-outline-danger btn-sm btn-block">Delete button</a>
                                     </div>
                                 </div>
                             </form>
-                        </div>
-    
-                        <div class="col-md-7">
-                            {% for button_element in reply_markup_element.1.buttons %}
-                                <form action="{% url 'create_bot_second_step_reply_buttons_update_url' %}" method="POST" class="mb-3">
-                                    {% csrf_token %}
-
-                                    <input class="form-control" aria-label="Sizing example input" name="response_text_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ button_element.response_text }}">
-                                    
-                                    <div class="form-row">
-                                        <div class="form-group ml-2 mt-1">
-                                            <div class="form-check">
-                                                <input type="checkbox" name="request_contact_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}" class="form-check-input" {% if button_element.request_contact %}checked{% endif %} id="req_con_{{ forloop.counter0 }}">
-                                                <label for="req_con_{{ forloop.counter0 }}" class="form-check-label">Request contact</label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group ml-3 mt-1">
-                                            <div class="form-check">
-                                                <input type="checkbox" name="request_location_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}" class="form-check-input" {% if button_element.request_location %}checked{% endif %} id="req_loc_{{ forloop.counter0 }}">
-                                                <label for="req_loc_{{ forloop.counter0 }}" class="form-check-label">Request location</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="form-row">
-                                        <div class="col-md-6">
-                                            <button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update button</button>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <a href="{% url 'create_bot_second_step_reply_button_delete_url' markup_id=reply_markup_element.0 button_id=forloop.counter0 %}" class="btn btn-outline-danger btn-sm btn-block">Delete button</a>
-                                        </div>
-                                    </div>
-                                </form>
-                            {% endfor %}
-                        </div>
+                        {% endfor %}
                     </div>
+                </div>
             {% endfor %}
         {% else %}
-            <p class="text-warning mb-2" style="line-height: 0px">No such elements added</p>
-            <p class="text-success mb-4">If you want to add new text response check the form below</p>
+            <p class="text-warning mb-2">No such elements added</p>
+            <p class="height-between text-success mb-4">If you want to add new text response check the form below</p>
         {% endif %}
-
-        <hr>
-
-        <h5 class="text-dark">Required settings</h5>
-        <h6 class="text-secondary">Keyboard settings</h6>
+        <div class="form-row">
+            <h5 class="text-dark ml-1">Create reply markup</h5>
+            <h6 class="mt-1 ml-2 text-secondary">Keyboard settings</h6>    
+        </div>
 
         {% if recognition_mark == 'reply_buttons' %}
             <form action="{% url 'create_bot_second_step_reply_buttons_url' %}" method="POST">
                 {% csrf_token %}
-        
-                {{ reply_button_form.response_text }}
+
+                <div class="form-row">
+                    <div class="col-md-10">
+                        {{ reply_button_form.response_text }}
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary btn-block">Create Button</button>
+                    </div>
+                </div>
+    
                 <div class="row">
                     <div class="col-md-5">
                         <div class="form-row mt-2">
@@ -214,7 +219,6 @@
                         </div>
                     </div>
                     <div class="col-md-7 mt-2">
-                        <button type="submit" class="btn btn-outline-primary btn-sm float-right">Create Button</button>
                     </div>
                 </div>
             </form>
@@ -232,7 +236,14 @@
                 </div>
 
                 <div class="mb-2">
-                    {{ reply_markup_form.response_text_markup }}
+                    <div class="form-row">
+                        <div class="col-md-10">
+                            {{ reply_markup_form.response_text_markup }}
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-outline-primary btn-block">Create Keyboard</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="row">
@@ -252,16 +263,29 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-7">
-                        <button type="submit" class="btn btn-outline-primary btn-sm float-right">Create Keyboard</button>
-                    </div>
                 </div>
             </form>
         {% endif %}
-    {% endif %}
-        
-    <hr style="margin-top: 10px;">
+    {% elif recognition_mark == 'inline_markup' %}
+        <div class="form-row">
+            <h5 class="ml-1 text-dark">Create inline markup</h5>
+            <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
+        </div>
 
+        <form action="{% url 'create_bot_second_step_inline_markup_url' %}" method="POST">
+            {% csrf_token %}
+
+            <div class="form-row">
+                <div class="col-md-10">
+                    {{ inline_markup_form.row_width }}
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-success btn-block">Create inline</button>
+                </div>
+            </div>
+        </form>
+    {% endif %}
+    <hr>
     <h6 class="text-secondary mb-3">To go to the next page, press the button</h6>
     <form action="{% url 'create_bot_second_step_next_step_url' %}" class="mb-4">
         {% csrf_token %}

@@ -8,11 +8,19 @@ from .models import *
 class UserRegistrationForm(forms.ModelForm):
     image = forms.FileField(required=False)
     password_some = forms.CharField(label='Password',
-                                    widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
+                                    widget=forms.PasswordInput(attrs={
+                                        'class': 'form-control',
+                                        'placeholder': 'Password'
+                                    }))
     password_confirm = forms.CharField(label='Confirm password',
-                                       widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm password'}))
-    about = forms.CharField(max_length=500, widget=forms.Textarea(
-        attrs={'class': 'form-control mb-2 mt-2', 'style': 'height: 100px', 'placeholder': 'About'}))
+                                       widget=forms.PasswordInput(attrs={
+                                           'class': 'form-control',
+                                           'placeholder': 'Confirm password'
+                                       }))
+    about = forms.CharField(max_length=500, widget=forms.Textarea(attrs={
+        'class': 'form-control mb-2 mt-2',
+        'style': 'height: 100px', 'placeholder': 'About'
+    }))
 
     class Meta:
         model = User
@@ -20,20 +28,31 @@ class UserRegistrationForm(forms.ModelForm):
                   'password_some', 'password_confirm')
         widgets = {
             'image': forms.FileInput(attrs={'class': 'form-control'}),
-            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'E-Mail'}),
-            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First name'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last name'})
+            'username': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Username'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'E-Mail'
+            }),
+            'first_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'First name'
+            }),
+            'last_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Last name'
+            })
         }
 
-    # def clean(self):
-    #     cleaned_data = super(UserRegistrationForm, self).clean()
-    #     password = cleaned_data.get('password_some')
-    #     confirm_password = cleaned_data.get('password_confirm')
+    def clean_password_some(self):
+        new_password_some = self.cleaned_data['password_some']
+        new_password_confirm = self.cleaned_data['password_confirm']
 
-    #     if password != confirm_password:
-    #         raise forms.ValidationError('Passwords do not match')
-    #     return cleaned_data
+        if new_password_some != new_password_confirm:
+            raise forms.ValidationError('Passwords do not match')
+        return new_password_some
 
 
 class UserAuthenticationForm(forms.Form):

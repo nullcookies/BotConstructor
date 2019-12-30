@@ -51,10 +51,12 @@ class TextBuilder(Builder):
         def response_markup(message):
             keybord = ReplyKeyboardMarkup(
             resize_keyboard=reply_markup_dictionary[message.text]['resize_keyboard'], one_time_keyboard=reply_markup_dictionary[message.text]['one_time_keyboard'], selective=reply_markup_dictionary[message.text]['selective'], row_width=reply_markup_dictionary[message.text]['row_width'])
+            some_list = []
 
             for item in reply_markup_dictionary[message.text]['buttons']:
                 button = KeyboardButton(text=f"{item['response']}", request_contact=item['request_contact'], request_location=item['request_location'])
-                keybord.add(button)
+                some_list.append(button)
+            keybord.add(*some_list)
 
             bot.send_message(chat_id=message.chat.id, text=f"{reply_markup_dictionary[message.text]['response_text']}", reply_markup=keybord)
 
@@ -74,8 +76,3 @@ class TextBuilder(Builder):
         path = os.path.join(final_path, f'{self.user_username}_test_bot.py')
         with open(path, 'a', encoding='utf-8') as file:
             file.write(textwrap.dedent(polling_object))
-
-
-# some_object = TextBuilder('772271583:AAHh-K3sPqcTPTkoM9Ah_S7jdhOIdL_LmpM')
-# some_object.text_response(text_dictionary={'dasdasd': 'asdasdasd'})
-# some_object.polling_bot()
