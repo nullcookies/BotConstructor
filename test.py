@@ -4,7 +4,6 @@
 # from telebot.types import *
 
 
-
 # some = {
 #     'react': {
 #         'resize_keyboard': True,
@@ -51,6 +50,9 @@
 # os.makedirs(test)
 
 
-s = 'asd_a_w_sds'
-s = s[:s.rfind('_')]
+# s = 'asd_a_w_sds'
+# s = s[:s.rfind('_')]
+# print(s)
+
+s = 'asdsdasd\nsdfsdf'
 print(s)

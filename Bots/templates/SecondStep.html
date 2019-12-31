@@ -39,9 +39,9 @@
         </div>
     </div>
     <div class="d-flex flex-row btn-group mt-2">
-        <a href="{% url 'create_bot_second_step_text_url' %}" class="col-md-4 btn btn-outline-dark {% if recognition_mark == 'text' %}active{% endif %}">Text</a>
-        <a href="{% url 'create_bot_second_step_reply_markup_url' %}" class="col-md-4 btn btn-outline-dark {% if recognition_mark == 'reply_markup' or recognition_mark == 'reply_buttons' %}active{% endif %}">Reply Buttons</a>
-        <a href="{% url 'create_bot_second_step_inline_markup_url' %}" class="col-md-4 btn btn-outline-dark {% if recognition_mark == 'inline_markup' %}active{% endif %}">Inline Buttons</a>
+        <a href="{% url 'create_bot_second_step_text_url' %}" class="col-md-4 btn btn-outline-secondary {% if recognition_mark == 'text' %}active{% endif %}">Text</a>
+        <a href="{% url 'create_bot_second_step_reply_markup_url' %}" class="col-md-4 btn btn-outline-secondary {% if recognition_mark == 'reply_markup' or recognition_mark == 'reply_buttons' %}active{% endif %}">Reply Buttons</a>
+        <a href="{% url 'create_bot_second_step_inline_markup_url' %}" class="col-md-4 btn btn-outline-secondary {% if recognition_mark == 'inline_markup' %}active{% endif %}">Inline Buttons</a>
     </div>
 
     {% if recognition_mark == 'text' %}
@@ -267,7 +267,44 @@
             </form>
         {% endif %}
     {% elif recognition_mark == 'inline_markup' %}
-        <div class="form-row">
+        {% if inline_markup_elements %}
+            {% for inline_markup_element in inline_markup_elements %}
+                <div class="form-row mt-3">
+                    <div class="col-md-5">
+                        <form action="{% url 'create_bot_second_step_inline_markup_update_url' %}" method="POST">
+                            {% csrf_token %}
+
+                            <input class="form-control" type="text" name="response_text_inline_{{ inline_markup_element.0 }}" value="{{ inline_markup_element.1.response_text }}">
+                            <div class="form-row">
+                                <div class="col-md-10">
+                                    <input class="form-control mt-2" type="text" name="react_text_inline_{{ inline_markup_element.0 }}" value="{{ inline_markup_element.1.react_text }}">
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control mt-2" type="number" min="1" max="5" name="row_width_inline_{{ inline_markup_element.0 }}" value="{{ inline_markup_element.1.row_width }}">
+                                </div>
+                            </div>
+    
+                            <div class="form-row">
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-outline-warning btn-sm mt-2 btn-block">Update markup</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <a href="{% url 'create_bot_second_step_inline_markup_delete_url' markup_id=inline_markup_element.0 %}" class="btn btn-outline-danger btn-sm mt-2 btn-block">Delete markup</a>
+                                </div>
+                                <div class="col-md-4">
+                                    <a href="" class="btn btn-outline-dark btn-sm mt-2 btn-block">Add button</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-warning mb-2">No such elements added</p>
+            <p class="height-between text-success mb-4">If you want to add new text response check the form below</p>
+        {% endif %}
+
+        <div class="form-row mt-3">
             <h5 class="ml-1 text-dark">Create inline markup</h5>
             <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
         </div>
@@ -277,9 +314,15 @@
 
             <div class="form-row">
                 <div class="col-md-10">
-                    {{ inline_markup_form.row_width }}
+                    {{ inline_markup_form.react_text }}
                 </div>
                 <div class="col-md-2">
+                    {{ inline_markup_form.row_width }}
+                </div>
+                <div class="col-md-10 mt-2">
+                    {{ inline_markup_form.response_text }}
+                </div>
+                <div class="col-md-2 mt-2">
                     <button type="submit" class="btn btn-outline-success btn-block">Create inline</button>
                 </div>
             </div>

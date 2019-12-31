@@ -68,3 +68,10 @@
 .height-between {
     line-height: 0px;
 }
+
+.code-editor {
+    top: 15px;
+    left: 0px;
+    height: 503px;
+    border-radius: 3px;
+}

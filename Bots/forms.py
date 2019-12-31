@@ -143,3 +143,11 @@ class InlineMarkup(forms.Form):
                                        'class': 'form-control',
                                        'placeholder': 'Row Width'
                                    }))
+    response_text = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Response Text'
+    }))
+    react_text = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'React Text'
+    }))

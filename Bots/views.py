@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.http import HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
+from pylint import epylint as lint
 
 import random
 import json
@@ -64,6 +65,17 @@ def check_text_on_unique(request, text_element_1: str, text_element_2: str,
                 request, f'Object "{text_element_1}" has already been created')
             return False
     return True
+
+
+def enumerate_elements(request, get_object: str) -> list:
+    try:
+        path = open_configuration(request)
+        with open(path, 'r', encoding='utf-8') as file:
+            elements = list(
+                enumerate(json.load(file)[get_object]))
+    except KeyError:
+        elements = []
+    return elements
 
 
 def form_final_dict(obligatory_fields: list, checkboxes: list, index: int,
@@ -205,12 +217,7 @@ class CreateTextField(LoginRequiredMixin, View):
     redirect_field_name = 'create_bot_second_step_text_url'
 
     def get(self, request):
-        try:
-            path = open_configuration(request)
-            with open(path, 'r', encoding='utf-8') as file:
-                text_elements = list(enumerate(json.load(file)['text']))
-        except KeyError:
-            text_elements = []
+        text_elements = enumerate_elements(request, get_object='text')
         text_form = TextForm(request=request)
 
         self.context.update({
@@ -222,18 +229,14 @@ class CreateTextField(LoginRequiredMixin, View):
         return render(request, 'SecondStep.html', self.context)
 
     def post(self, request):
-        try:
-            path = open_configuration(request)
-            with open(path, 'r', encoding='utf-8') as file:
-                text_elements = list(enumerate(json.load(file)['text']))
-        except KeyError:
-            text_elements = []
+        text_elements = enumerate_elements(request, get_object='text')
         text_form = TextForm(request.POST, request=request)
 
         if text_form.is_valid():
             response_text = text_form.cleaned_data['response_text']
             react_text = text_form.cleaned_data['react_text'].strip()
 
+            path = open_configuration(request)
             with open(path, 'r+', encoding='utf-8') as file_name:
                 object_config = json.load(file_name)
 
@@ -319,14 +322,8 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
     redirect_field_name = 'create_bot_second_step_reply_markup_url'
 
     def get(self, request):
-        try:
-            path = open_configuration(request)
-            with open(path, 'r', encoding='utf-8') as file:
-                reply_markup_elements = list(
-                    enumerate(json.load(file)['reply_markup']))
-        except KeyError:
-            reply_markup_elements = []
-
+        reply_markup_elements = enumerate_elements(request,
+                                                   get_object='reply_markup')
         reply_markup_form = ReplyMarkup(request=request)
         self.context.update({
             'title': 'Second Step - BotConstructor',
@@ -337,12 +334,8 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
         return render(request, 'SecondStep.html', self.context)
 
     def post(self, request):
-        try:
-            path = open_configuration(request)
-            with open(path, 'r', encoding='utf-8') as file:
-                reply_markup_elements = list(enumerate(json.load(file)['reply_markup']))
-        except KeyError:
-            reply_markup_elements = []
+        reply_markup_elements = enumerate_elements(request,
+                                                   get_object='reply_markup')
         reply_markup_form = ReplyMarkup(request.POST, request=request)
 
         if reply_markup_form.is_valid():
@@ -357,6 +350,7 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
                 'response_text_markup'
             ]
 
+            path = open_configuration(request)
             with open(path, 'r+', encoding='utf-8') as file_name:
                 object_config = json.load(file_name)
 
@@ -404,13 +398,8 @@ class CreateReplyButtonsField(LoginRequiredMixin, View):
     redirect_field_name = 'create_bot_second_step_reply_buttons_url'
 
     def get(self, request):
-        try:
-            path = open_configuration(request)
-            with open(path, 'r', encoding='utf-8') as file:
-                reply_markup_elements = list(
-                    enumerate(json.load(file)['reply_markup']))
-        except KeyError:
-            reply_markup_elements = []
+        reply_markup_elements = enumerate_elements(request,
+                                                   get_object='reply_markup')
         reply_button_form = ReplyButton()
 
         self.context.update({
@@ -422,13 +411,8 @@ class CreateReplyButtonsField(LoginRequiredMixin, View):
         return render(request, 'SecondStep.html', self.context)
 
     def post(self, request):
-        try:
-            path = open_configuration(request)
-            with open(path, 'r', encoding='utf-8') as file:
-                reply_markup_elements = list(
-                    enumerate(json.load(file)['reply_markup']))
-        except KeyError:
-            reply_markup_elements = []
+        reply_markup_elements = enumerate_elements(request,
+                                                   get_object='reply_markup')
         reply_button_form = ReplyButton(request.POST)
 
         if reply_button_form.is_valid():
@@ -442,6 +426,7 @@ class CreateReplyButtonsField(LoginRequiredMixin, View):
                 'request_location'
             ]
 
+            path = open_configuration(request)
             with open(path, 'r+', encoding='utf-8') as file_name:
                 object_config = json.load(file_name)
 
@@ -622,14 +607,8 @@ class CreateInlineMarkupField(LoginRequiredMixin, View):
     redirect_field_name = 'create_bot_second_step_inline_markup_url'
 
     def get(self, request):
-        try:
-            path = open_configuration(request)
-            with open(path, 'r', encoding='utf-8') as file:
-                inline_markup_elements = list(
-                    enumerate(json.load(file)['inline_markup']))
-        except KeyError:
-            inline_markup_elements = []
-
+        inline_markup_elements = enumerate_elements(request,
+                                                    get_object='inline_markup')
         inline_markup_form = InlineMarkup()
         self.context.update({
             'title': 'Second Step - BotConstructor',
@@ -638,6 +617,103 @@ class CreateInlineMarkupField(LoginRequiredMixin, View):
             'recognition_mark': 'inline_markup'
         })
         return render(request, 'SecondStep.html', self.context)
+
+    def post(self, request):
+        inline_markup_elements = enumerate_elements(request,
+                                                    get_object='inline_markup')
+        inline_markup_form = InlineMarkup(request.POST)
+
+        if inline_markup_form.is_valid():
+            row_width = inline_markup_form.cleaned_data['row_width']
+            response_text = inline_markup_form.cleaned_data['response_text']
+            react_text = inline_markup_form.cleaned_data['react_text']
+
+            path = open_configuration(request)
+            with open(path, 'r+', encoding='utf-8') as file:
+                object_config = json.load(file)
+
+                try:
+                    object_config['inline_markup'].append({
+                        'row_width': row_width,
+                        'response_text': response_text,
+                        'react_text': react_text
+                    })
+                except KeyError:
+                    object_config['inline_markup'] = [{
+                        'row_width': row_width,
+                        'react_text': react_text,
+                        'response_text': response_text
+                    }]
+                file.seek(0)
+                json.dump(object_config, file,
+                          indent=4, ensure_ascii=False)
+                return redirect('create_bot_second_step_inline_markup_url')
+
+        self.context.update({
+            'title': 'Second Step - BotConstructor',
+            'inline_markup_form': inline_markup_form,
+            'inline_markup_elements': inline_markup_elements,
+            'recognition_mark': 'inline_markup'
+        })
+        return render(request, 'SecondStep.html', self.context)
+
+
+class UpdateInlineMarkupField(LoginRequiredMixin, View):
+    login_url = '/signIn/'
+    redirect_field_name = 'create_bot_second_step_inline_markup_url'
+
+    def post(self, request):
+        data = dict(request.POST)
+        print(data)
+
+        path = open_configuration(request)
+        with open(path, 'r', encoding='utf-8') as file:
+            object_config = json.load(file)
+
+        inline_markup_object = object_config['inline_markup']
+        final_data = []
+        index = int(list(data.items())[1][0].split('_')[-1])
+
+        for inline_markup in data.items():
+            if inline_markup[0] != 'csrfmiddlewaretoken':
+                text = inline_markup[1][0]
+                final_data.append([index, text])
+
+        for item in range(len(inline_markup_object)):
+            if item == index:
+                # if check_text_on_unique(request, final_data[0][1],
+                #                         final_data[1][1], final_data[0][0]):
+                inline_markup_object[item][
+                    'react_text'
+                ] = final_data[1][1].strip()
+                inline_markup_object[item][
+                    'response_text'
+                ] = final_data[0][1].strip()
+                inline_markup_object[item]['row_width'] = final_data[2][1]
+
+        object_config['inline_markup'] = inline_markup_object
+        with open(path, 'w', encoding='utf-8') as file:
+            json.dump(object_config, file, indent=4, ensure_ascii=False)
+
+        return redirect('create_bot_second_step_inline_markup_url')
+
+
+class DeleteInlineMarkupField(LoginRequiredMixin, View):
+    login_url = '/signIn/'
+    redirect_field_name = 'create_bot_second_step_inline_markup_url'
+
+    def get(self, request, markup_id):
+        path = open_configuration(request)
+        with open(path, 'r', encoding='utf-8') as file:
+            object_config = json.load(file)
+
+        reply_markup_object = object_config['inline_markup']
+        reply_markup_object.remove(reply_markup_object[markup_id])
+
+        object_config['inline_markup'] = reply_markup_object
+        with open(path, 'w', encoding='utf-8') as file:
+            json.dump(object_config, file, indent=4, ensure_ascii=False)
+        return redirect('create_bot_second_step_inline_markup_url')
 
 
 class GenerateFile(LoginRequiredMixin, View):
@@ -701,10 +777,28 @@ class CreateBotStepThree(LoginRequiredMixin, View):
     redirect_field_name = 'create_bot_third_step_url'
 
     def get(self, request):
+        path = open_test_bot(request)
+        with open(path, 'r', encoding='utf-8') as file:
+            content = file.read()
+
         context = {
-            'title': 'Third Step - BotConstructor'
+            'title': 'Third Step - BotConstructor',
+            'content': content
         }
         return render(request, 'ThirdStep.html', context)
+
+    def post(self, request):
+        data = dict(request.POST)
+        code = data['code_editor'][0].replace('\r', '')
+        print(code)
+
+        path = open_test_bot(request)
+        # pylint_stdout, pylint_stderr = lint.py_run(path, return_std=True)
+        # print(pylint_stdout, pylint_stderr)
+        with open(path, 'w', encoding='utf-8') as file:
+            file.write(code)
+
+        return redirect('create_bot_third_step_url')
 
 
 class Download:
