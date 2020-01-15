@@ -51,16 +51,24 @@
                     {% csrf_token %}
 
                     <div class="form-row mb-3">
-                        <div class="form-group col-md-11">
+                        <div class="col-md-9">
                             <input class="form-control" aria-label="Sizing example input"
                                 aria-describedby="inputGroup-sizing-sm" name="react_text_{{ text_item.0 }}"
                                 value="{{ text_item.1.react_text }}">
-                            <textarea class="form-control mt-2" aria-label="Sizing example input" style="height: 70%;"
-                                aria-describedby="inputGroup-sizing-sm" name="response_text_{{ text_item.0 }}">{{ text_item.1.response_text }}</textarea>
                         </div>
-                        <div class="form-group col-md-1">
-                            <button type="submit" class="btn btn-outline-success btn-block">Update</button>
-                            <a href="{% url 'create_bot_second_step_text_delete_url' button_id=text_item.0 %}" class="btn btn-outline-danger btn-block">Delete</a>
+                        <div class="col-md-3">
+                            <div class="form-row">
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn btn-outline-success btn-block">Update</button>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="{% url 'create_bot_second_step_text_delete_url' button_id=text_item.0 %}" class="btn btn-outline-danger btn-block">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <textarea class="form-control mt-2" aria-label="Sizing example input" style="height: 100%;"
+                                      aria-describedby="inputGroup-sizing-sm" name="response_text_{{ text_item.0 }}">{{ text_item.1.response_text }}</textarea>
                         </div>
                     </div>
                 </form>
@@ -141,10 +149,13 @@
                                     <a href="{% url 'create_bot_second_step_reply_markup_delete_url' markup_id=reply_markup_element.0 %}" class="btn btn-outline-danger btn-sm btn-block">Delete keyboard</a>
                                 </div>
                                 <div class="col-md-4">
-                                    <a href="{% url 'create_bot_second_step_reply_buttons_url' %}" class="btn btn-outline-dark btn-sm btn-block">Add button</a>
+                                    {% if recognition_mark == 'reply_buttons' %}
+                                        <a href="{% url 'create_bot_second_step_reply_markup_url' %}" class="btn btn-outline-success btn-sm btn-block">New Keyboard</a>
+                                    {% elif recognition_mark == 'reply_markup' %}
+                                        <a href="{% url 'create_bot_second_step_reply_buttons_url' %}" class="btn btn-outline-dark btn-sm btn-block">Add button</a>
+                                    {% endif %}
                                 </div>
-                            </div>
-                            <a href="{% url 'create_bot_second_step_reply_markup_url' %}" class="btn btn-outline-success btn-sm btn-block mt-2">New Keyboard</a>
+                            </div>                                
                         </form>
                     </div>
     
@@ -266,7 +277,7 @@
                 </div>
             </form>
         {% endif %}
-    {% elif recognition_mark == 'inline_markup' %}
+    {% elif recognition_mark == 'inline_markup' or recognition_mark == 'inline_buttons' %}
         {% if inline_markup_elements %}
             {% for inline_markup_element in inline_markup_elements %}
                 <div class="form-row mt-3">
@@ -297,6 +308,43 @@
                             </div>
                         </form>
                     </div>
+
+                    <div class="col-md-7">                    
+                        {% for inline_button in inline_markup_element.1.buttons %}
+                            <form action="{% url 'create_bot_second_step_inline_buttons_update_url' %}" method="POST" class="mb-3">
+                                {% csrf_token %}
+
+                                <div class="form-row">
+                                    <div class="col-md-6">
+                                        <input class="form-control" type="text" name="text_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.text }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input class="form-control" type="text" name="url_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.url }}">
+                                    </div>
+                                </div>
+
+                                <div class="form-row mt-2">
+                                    <div class="col-md-6">
+                                        <input class="form-control" type="text" name="switch_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.switch_inline }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input class="form-control" type="text" name="switch_inline_current_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.switch_inline_current }}">
+                                    </div>
+                                </div>
+
+                                <input class="form-control mt-2" type="text" name="callback_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.callback }}">
+
+                                <div class="form-row mt-2">
+                                    <div class="col-md-6">
+                                        <button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update button</button>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <a href="{% url 'create_bot_second_step_inline_buttons_delete_url' markup_id=inline_markup_element.0 button_id=forloop.counter0 %}" class="btn btn-outline-danger btn-sm btn-block">Delete button</a>
+                                    </div>
+                                </div>
+                            </form>
+                        {% endfor %}
+                    </div>
                 </div>
             {% endfor %}
         {% else %}
@@ -309,24 +357,52 @@
             <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
         </div>
 
-        <form action="{% url 'create_bot_second_step_inline_markup_url' %}" method="POST">
-            {% csrf_token %}
+        
+        {% if recognition_mark == 'inline_markup' %}
+            <form action="{% url 'create_bot_second_step_inline_markup_url' %}" method="POST">
+                {% csrf_token %}
 
-            <div class="form-row">
-                <div class="col-md-10">
-                    {{ inline_markup_form.react_text }}
+                <div class="form-row">
+                    <div class="col-md-10">
+                        {{ inline_markup_form.react_text }}
+                    </div>
+                    <div class="col-md-2">
+                        {{ inline_markup_form.row_width }}
+                    </div>
+                    <div class="col-md-10 mt-2">
+                        {{ inline_markup_form.response_text }}
+                    </div>
+                    <div class="col-md-2 mt-2">
+                        <button type="submit" class="btn btn-outline-success btn-block">Create inline</button>
+                    </div>
                 </div>
-                <div class="col-md-2">
-                    {{ inline_markup_form.row_width }}
+            </form>
+        {% elif recognition_mark == 'inline_buttons' %}
+            <form action="{% url 'create_bot_second_step_inline_buttons_url' %}" method="POST">
+                {% csrf_token %}
+
+                <div class="form-row">
+                    <div class="col-md-6">
+                        {{ inline_button_form.text }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ inline_button_form.url }}
+                    </div>
+                    <div class="col-md-12 mt-2">
+                        {{ inline_button_form.switch_inline }}
+                    </div>
+                    <div class="col-md-12 mt-2">
+                        {{ inline_button_form.switch_inline_current }}
+                    </div>
+                    <div class="col-md-10 mt-2">
+                        {{ inline_button_form.callback }}
+                    </div>
+                    <div class="col-md-2 mt-2">
+                        <button type="submit" class="btn btn-outline-success btn-block">Create button</button>
+                    </div>
                 </div>
-                <div class="col-md-10 mt-2">
-                    {{ inline_markup_form.response_text }}
-                </div>
-                <div class="col-md-2 mt-2">
-                    <button type="submit" class="btn btn-outline-success btn-block">Create inline</button>
-                </div>
-            </div>
-        </form>
+            </form>
+        {% endif %}
     {% endif %}
     <hr>
     <h6 class="text-secondary mb-3">To go to the next page, press the button</h6>

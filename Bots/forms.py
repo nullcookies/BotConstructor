@@ -1,5 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
 from django.conf import settings
 
 import json
@@ -151,3 +152,39 @@ class InlineMarkup(forms.Form):
         'class': 'form-control',
         'placeholder': 'React Text'
     }))
+
+
+class InlineButton(forms.Form):
+    text = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Text'
+    }))
+    url = forms.URLField(required=False, widget=forms.URLInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Url'
+    }))
+    callback = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Callback Data'
+    }), max_length=64)
+    switch_inline = forms.CharField(required=False,
+                                    widget=forms.TextInput(attrs={
+                                        'class': 'form-control',
+                                        'placeholder': 'Switch Inline Query'
+                                    }), max_length=50)
+    switch_inline_current = forms.CharField(required=False,
+                                            widget=forms.TextInput(attrs={
+                                                'class': 'form-control',
+                                                'placeholder': 'Switch Inline '
+                                                               'Current Chat'
+                                            }), max_length=50)
+
+    def clean_url(self):
+        new_url = self.cleaned_data['url']
+        validate = URLValidator()
+
+        try:
+            validate(new_url)
+            return new_url
+        except ValidationError:
+            raise forms.ValidationError(f'URL {new_url} does not exist')

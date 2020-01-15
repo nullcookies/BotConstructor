@@ -35,7 +35,8 @@ class TextBuilder(Builder):
         @bot.message_handler(func=lambda message: message.text in text_dictionary_messages.keys())
         def response_message(message):
             print(text_dictionary_messages[message.text])
-            bot.send_message(chat_id=message.chat.id, text=f'{text_dictionary_messages[message.text]}')
+            bot.send_message(chat_id=message.chat.id,
+                             text=f'{text_dictionary_messages[message.text]}')
 
         """ % text_dictionary
 
@@ -49,16 +50,22 @@ class TextBuilder(Builder):
         reply_markup_dictionary = %s
         @bot.message_handler(func=lambda message: message.text in reply_markup_dictionary.keys())
         def response_markup(message):
-            keybord = ReplyKeyboardMarkup(
-            resize_keyboard=reply_markup_dictionary[message.text]['resize_keyboard'], one_time_keyboard=reply_markup_dictionary[message.text]['one_time_keyboard'], selective=reply_markup_dictionary[message.text]['selective'], row_width=reply_markup_dictionary[message.text]['row_width'])
+            keybord = ReplyKeyboardMarkup(resize_keyboard=reply_markup_dictionary[message.text]['resize_keyboard'],
+                                          one_time_keyboard=reply_markup_dictionary[message.text]['one_time_keyboard'],
+                                          selective=reply_markup_dictionary[message.text]['selective'],
+                                          row_width=reply_markup_dictionary[message.text]['row_width'])
             some_list = []
 
             for item in reply_markup_dictionary[message.text]['buttons']:
-                button = KeyboardButton(text=f"{item['response']}", request_contact=item['request_contact'], request_location=item['request_location'])
+                button = KeyboardButton(text=f"{item['response']}",
+                                        request_contact=item['request_contact'],
+                                        request_location=item['request_location'])
                 some_list.append(button)
             keybord.add(*some_list)
 
-            bot.send_message(chat_id=message.chat.id, text=f"{reply_markup_dictionary[message.text]['response_text']}", reply_markup=keybord)
+            bot.send_message(chat_id=message.chat.id,
+                             text=f"{reply_markup_dictionary[message.text]['response_text']}",
+                             reply_markup=keybord)
 
         """ % reply_markup_dictionary
 
