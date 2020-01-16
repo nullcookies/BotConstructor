@@ -1,16 +1,50 @@
 {% extends 'Base.html' %}
+{% load static %}
 
 {% block main_section %}
 {% include 'Navbar.html' %}
 <div class="container">
-    <h4 class="mt-2">Here you can download script or config</h4>
-    <ul>
-        <li>It's final step. Now, you can download configuration or script of your bot</li>
-    </ul>
-    <hr>
-    <div class="row">
-        <a href="{% url 'download_config_url' %}" class="btn btn-outline-primary btn-sm ml-3">Download config</a>
-        <a href="{% url 'download_script_url' %}" class="btn btn-outline-dark btn-sm ml-2">Download script</a>
+    <div class="image-with-text" style="height: 105px;">
+        <img src="{% static 'pictures/yosemite-5120x2880-5k-4k-wallpaper-8k-forest-osx-apple-mountains-181.png' %}" class="max-width img-fluid">
+        <div class="text-on-img-2">
+            <h4 class="text-light mt-2">Here you can download script or config</h4>
+            <ul class="text-light">
+                <li>It's final step. Now, you can download configuration or script of your bot</li>
+            </ul>
+        </div>
     </div>
+    <hr>
+    <h4>Congratulations. You create your bot</h4>
+    <div class="form-row mt-3">
+        <div class="col-md-6">
+            <a href="{% url 'download_config_url' %}" class="btn btn-outline-primary btn-sm btn-block">📜 Download config</a>
+        </div>
+        <div class="col-md-6">
+            <a href="{% url 'download_script_url' %}" class="btn btn-outline-dark btn-sm btn-block">📃 Download script</a>
+        </div>
+    </div>
+    <h6 class="mt-2">Below, you can edit the generated code</h6>
+    <p class="text-warning height-between">All changes will be applied at your own risk</p>
+
+    <div id="editor" class="code-editor">{{ content }}</div>
+    <form action="{% url 'create_bot_third_step_url' %}" method="POST">
+        {% csrf_token %}
+
+        <input type="hidden" name="code_editor" id="code_hello_world" value="">
+        <button type="submit" onclick="buttonClick()" class="btn btn-outline-success btn-sm btn-block mt-5">Edit</button>
+    </form>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.3.3/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/github");
+    editor.session.setMode("ace/mode/python");
+    editor.setFontSize(15);
+
+    function buttonClick() {
+        var code = editor.getValue();
+        document.getElementById('code_hello_world').value = code;
+    }
+</script>
 {% endblock main_section %}

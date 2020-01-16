@@ -17,3 +17,61 @@
     margin-top: -180px;
     clear: both;
 }
+
+.main-title {
+    font-size: 5vw !important;
+}
+
+.image-with-text {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 3px;
+    position: relative;
+}
+
+.cur-img {
+    width: 100%;
+    position: relative;
+    top: -70%;
+    border-radius: 3px;
+}
+
+.text-on-img {
+    position: absolute;
+    top: 62px;
+    left: 420px;
+}
+
+.border-class {
+    border-radius: 3px;
+}
+
+.profile-img-class {
+    border-radius: 3px;
+    width: 100%;
+    display: block;
+}
+
+.max-width {
+    width: 100%;
+}
+
+.text-on-img-2 {
+    position: absolute;
+    top: 10px; 
+    left: 10px; 
+    color: white; 
+    padding-left: 20px; 
+    padding-right: 20px;
+}
+
+.height-between {
+    line-height: 0px;
+}
+
+.code-editor {
+    top: 15px;
+    left: 0px;
+    height: 503px;
+    border-radius: 3px;
+}
