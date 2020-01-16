@@ -1,0 +1,28 @@
+{
+    "access_token": "cbX",
+    "name": "VXCV",
+    "username": "sdf",
+    "text": [
+        {
+            "response_text": "ячсяч",
+            "react_text": "ячсячЯЧС"
+        }
+    ],
+    "reply_markup": [
+        {
+            "resize_keyboard": true,
+            "one_time_keyboard": true,
+            "selective": false,
+            "react_text": "ячсяЯ",
+            "row_width": 2,
+            "response_text": "сыв",
+            "buttons": [
+                {
+                    "response_text": "чсмч",
+                    "request_contact": true,
+                    "request_location": true
+                }
+            ]
+        }
+    ]
+}
