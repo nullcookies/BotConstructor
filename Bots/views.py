@@ -266,24 +266,6 @@ class CreateTextField(LoginRequiredMixin, View):
         return render(request, 'SecondStep.html', self.context)
 
 
-class DeleteTextField(LoginRequiredMixin, View):
-    login_url = '/signIn/'
-    redirect_field_name = 'create_bot_second_step_text_url'
-
-    def get(self, request, button_id: int):
-        path = open_configuration(request)
-        with open(path, 'r', encoding='utf-8') as file:
-            object_config = json.load(file)
-
-        text_object = object_config['text']
-        text_object.remove(text_object[button_id])
-
-        object_config['text'] = text_object
-        with open(path, 'w', encoding='utf-8') as file:
-            json.dump(object_config, file, indent=4, ensure_ascii=False)
-        return redirect('create_bot_second_step_text_url')
-
-
 class UpdateTextField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_text_url'
@@ -311,6 +293,24 @@ class UpdateTextField(LoginRequiredMixin, View):
                                         final_data[1][1], final_data[0][0]):
                     text_object[item]['react_text'] = final_data[0][1].strip()
                     text_object[item]['response_text'] = final_data[1][1]
+
+        object_config['text'] = text_object
+        with open(path, 'w', encoding='utf-8') as file:
+            json.dump(object_config, file, indent=4, ensure_ascii=False)
+        return redirect('create_bot_second_step_text_url')
+
+
+class DeleteTextField(LoginRequiredMixin, View):
+    login_url = '/signIn/'
+    redirect_field_name = 'create_bot_second_step_text_url'
+
+    def get(self, request, button_id: int):
+        path = open_configuration(request)
+        with open(path, 'r', encoding='utf-8') as file:
+            object_config = json.load(file)
+
+        text_object = object_config['text']
+        text_object.remove(text_object[button_id])
 
         object_config['text'] = text_object
         with open(path, 'w', encoding='utf-8') as file:
@@ -392,6 +392,78 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
         return render(request, 'SecondStep.html', self.context)
 
 
+class UpdateReplyMarkupField(LoginRequiredMixin, View):
+    login_url = '/signIn/'
+    redirect_field_name = 'create_bot_second_step_reply_markup_url'
+
+    checkboxes = [
+        'resize_keyboard',
+        'one_time_keyboard',
+        'selective'
+    ]
+
+    def post(self, request):
+        obligatory_fields = [
+            'resize_keyboard',
+            'one_time_keyboard',
+            'selective',
+            'react_text',
+            'row_width',
+            'response_text_markup'
+        ]
+        data = dict(request.POST)
+
+        path = open_configuration(request)
+        with open(path, 'r', encoding='utf-8') as file:
+            object_config = json.load(file)
+
+        index = int(list(data.items())[1][0].split('_')[-1])
+        final_data = form_final_dict(obligatory_fields=obligatory_fields,
+                                     point=True, checkboxes=self.checkboxes,
+                                     index=index, data=data)
+
+        reply_markup_object = object_config['reply_markup']
+
+        reply_markup_object[index]['react_text'] = final_data[
+            'react_text'
+        ][1].strip()
+        reply_markup_object[index]['row_width'] = int(
+            final_data['row_width'][1].strip())
+        reply_markup_object[index]['response_text'] = final_data[
+            'response_text_markup'
+        ][1].strip()
+        reply_markup_object[index]['resize_keyboard'] = final_data[
+            'resize_keyboard'
+        ][1]
+        reply_markup_object[index]['one_time_keyboard'] = final_data[
+            'one_time_keyboard'
+        ][1]
+        reply_markup_object[index]['selective'] = final_data['selective'][1]
+
+        object_config['reply_markup'] = reply_markup_object
+        with open(path, 'w', encoding='utf-8') as file:
+            json.dump(object_config, file, indent=4, ensure_ascii=False)
+        return redirect('create_bot_second_step_reply_markup_url')
+
+
+class DeleteReplyMarkupField(LoginRequiredMixin, View):
+    login_url = '/signIn/'
+    redirect_field_name = 'create_bot_second_step_reply_markup_url'
+
+    def get(self, request, markup_id):
+        path = open_configuration(request)
+        with open(path, 'r', encoding='utf-8') as file:
+            object_config = json.load(file)
+
+        reply_markup_object = object_config['reply_markup']
+        reply_markup_object.remove(reply_markup_object[markup_id])
+
+        object_config['reply_markup'] = reply_markup_object
+        with open(path, 'w', encoding='utf-8') as file:
+            json.dump(object_config, file, indent=4, ensure_ascii=False)
+        return redirect('create_bot_second_step_reply_markup_url')
+
+
 class CreateReplyButtonsField(LoginRequiredMixin, View):
     context = {}
     login_url = '/signIn/'
@@ -457,60 +529,6 @@ class CreateReplyButtonsField(LoginRequiredMixin, View):
         return render(request, 'SecondStep.html', self.context)
 
 
-class UpdateReplyMarkupField(LoginRequiredMixin, View):
-    login_url = '/signIn/'
-    redirect_field_name = 'create_bot_second_step_reply_markup_url'
-
-    checkboxes = [
-        'resize_keyboard',
-        'one_time_keyboard',
-        'selective'
-    ]
-
-    def post(self, request):
-        obligatory_fields = [
-            'resize_keyboard',
-            'one_time_keyboard',
-            'selective',
-            'react_text',
-            'row_width',
-            'response_text_markup'
-        ]
-        data = dict(request.POST)
-
-        path = open_configuration(request)
-        with open(path, 'r', encoding='utf-8') as file:
-            object_config = json.load(file)
-
-        index = int(list(data.items())[1][0].split('_')[-1])
-        final_data = form_final_dict(obligatory_fields=obligatory_fields,
-                                     point=True, checkboxes=self.checkboxes,
-                                     index=index, data=data)
-
-        reply_markup_object = object_config['reply_markup']
-
-        reply_markup_object[index]['react_text'] = final_data[
-            'react_text'
-        ][1].strip()
-        reply_markup_object[index]['row_width'] = int(
-            final_data['row_width'][1].strip())
-        reply_markup_object[index]['response_text'] = final_data[
-            'response_text_markup'
-        ][1].strip()
-        reply_markup_object[index]['resize_keyboard'] = final_data[
-            'resize_keyboard'
-        ][1]
-        reply_markup_object[index]['one_time_keyboard'] = final_data[
-            'one_time_keyboard'
-        ][1]
-        reply_markup_object[index]['selective'] = final_data['selective'][1]
-
-        object_config['reply_markup'] = reply_markup_object
-        with open(path, 'w', encoding='utf-8') as file:
-            json.dump(object_config, file, indent=4, ensure_ascii=False)
-        return redirect('create_bot_second_step_reply_markup_url')
-
-
 class UpdateReplyButtonsField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_reply_buttons_url'
@@ -572,24 +590,6 @@ class DeleteReplyButtonField(LoginRequiredMixin, View):
         object_config[
             'reply_markup'
         ][markup_id]['buttons'] = reply_button_object
-        with open(path, 'w', encoding='utf-8') as file:
-            json.dump(object_config, file, indent=4, ensure_ascii=False)
-        return redirect('create_bot_second_step_reply_markup_url')
-
-
-class DeleteReplyMarkupField(LoginRequiredMixin, View):
-    login_url = '/signIn/'
-    redirect_field_name = 'create_bot_second_step_reply_markup_url'
-
-    def get(self, request, markup_id):
-        path = open_configuration(request)
-        with open(path, 'r', encoding='utf-8') as file:
-            object_config = json.load(file)
-
-        reply_markup_object = object_config['reply_markup']
-        reply_markup_object.remove(reply_markup_object[markup_id])
-
-        object_config['reply_markup'] = reply_markup_object
         with open(path, 'w', encoding='utf-8') as file:
             json.dump(object_config, file, indent=4, ensure_ascii=False)
         return redirect('create_bot_second_step_reply_markup_url')
