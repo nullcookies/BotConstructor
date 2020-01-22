@@ -41,7 +41,7 @@
     <div class="d-flex flex-row btn-group mt-2">
         <a href="{% url 'create_bot_second_step_text_url' %}" class="col-md-4 btn btn-outline-secondary {% if recognition_mark == 'text' %}active{% endif %}">Text</a>
         <a href="{% url 'create_bot_second_step_reply_markup_url' %}" class="col-md-4 btn btn-outline-secondary {% if recognition_mark == 'reply_markup' or recognition_mark == 'reply_buttons' %}active{% endif %}">Reply Buttons</a>
-        <a href="{% url 'create_bot_second_step_inline_markup_url' %}" class="col-md-4 btn btn-outline-secondary {% if recognition_mark == 'inline_markup' %}active{% endif %}">Inline Buttons</a>
+        <a href="{% url 'create_bot_second_step_inline_markup_url' %}" class="col-md-4 btn btn-outline-secondary {% if recognition_mark == 'inline_markup' or recognition_mark == 'inline_buttons' %}active{% endif %}">Inline Buttons</a>
     </div>
 
     {% if recognition_mark == 'text' %}
@@ -303,7 +303,11 @@
                                     <a href="{% url 'create_bot_second_step_inline_markup_delete_url' markup_id=inline_markup_element.0 %}" class="btn btn-outline-danger btn-sm mt-2 btn-block">Delete markup</a>
                                 </div>
                                 <div class="col-md-4">
-                                    <a href="" class="btn btn-outline-dark btn-sm mt-2 btn-block">Add button</a>
+                                    {% if recognition_mark == 'inline_buttons' %}
+                                        <a href="{% url 'create_bot_second_step_inline_markup_url' %}" class="btn btn-outline-success btn-sm mt-2 btn-block">Add keyboard</a>
+                                    {% else %}
+                                        <a href="{% url 'create_bot_second_step_inline_buttons_url' %}" class="btn btn-outline-dark btn-sm mt-2 btn-block">Add button</a>
+                                    {% endif %}
                                 </div>
                             </div>
                         </form>
@@ -314,25 +318,23 @@
                             <form action="{% url 'create_bot_second_step_inline_buttons_update_url' %}" method="POST" class="mb-3">
                                 {% csrf_token %}
 
-                                <div class="form-row">
-                                    <div class="col-md-6">
-                                        <input class="form-control" type="text" name="text_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.text }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input class="form-control" type="text" name="url_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.url }}">
-                                    </div>
-                                </div>
+                                <input class="form-control" type="text" name="text_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.text }}">
+                                
+                                {% if inline_button.url != '' %}
+                                    <input class="form-control mt-2" type="text" name="url_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.url }}">
+                                {% endif %}
+                                
+                                {% if inline_button.switch_inline != '' %}
+                                    <input class="form-control mt-2" type="text" name="switch_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.switch_inline }}">
+                                {% endif %}
 
-                                <div class="form-row mt-2">
-                                    <div class="col-md-6">
-                                        <input class="form-control" type="text" name="switch_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.switch_inline }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input class="form-control" type="text" name="switch_inline_current_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.switch_inline_current }}">
-                                    </div>
-                                </div>
-
-                                <input class="form-control mt-2" type="text" name="callback_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.callback }}">
+                                {% if inline_button.switch_inline_current != '' %}
+                                    <input class="form-control mt-2" type="text" name="switch_inline_current_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.switch_inline_current }}">
+                                {% endif %}
+                            
+                                {% if inline_button.callback != '' %}
+                                    <input class="form-control mt-2" type="text" name="callback_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.callback }}">
+                                {% endif %}    
 
                                 <div class="form-row mt-2">
                                     <div class="col-md-6">
@@ -378,7 +380,7 @@
                 </div>
             </form>
         {% elif recognition_mark == 'inline_buttons' %}
-            <form action="{% url 'create_bot_second_step_inline_buttons_url' %}" method="POST">
+            <form action="{% url 'create_bot_second_step_inline_buttons_url' %}" method="POST" onchange="getInlineValues(this)">
                 {% csrf_token %}
 
                 <div class="form-row">

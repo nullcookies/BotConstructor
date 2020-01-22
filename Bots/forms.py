@@ -166,7 +166,7 @@ class InlineButton(forms.Form):
     callback = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control',
         'placeholder': 'Callback Data'
-    }), max_length=64)
+    }), max_length=64, required=False)
     switch_inline = forms.CharField(required=False,
                                     widget=forms.TextInput(attrs={
                                         'class': 'form-control',
@@ -181,10 +181,14 @@ class InlineButton(forms.Form):
 
     def clean_url(self):
         new_url = self.cleaned_data['url']
-        validate = URLValidator()
 
-        try:
-            validate(new_url)
+        if new_url.strip() != '':
+            validate = URLValidator()
+
+            try:
+                validate(new_url)
+                return new_url
+            except ValidationError:
+                raise forms.ValidationError(f'URL {new_url} does not exist')
+        else:
             return new_url
-        except ValidationError:
-            raise forms.ValidationError(f'URL {new_url} does not exist')
