@@ -1,0 +1,15 @@
+{% extends 'Base.html' %}
+
+{% block main_section %}
+{% include 'Navbar.html' %}
+<div class="container">
+    <h5 class="text-secondary mt-2">Are you sure that you want to delete your profile</h5>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <button type="submit" class="btn btn-outline-danger">Delete</button>
+        <a href="{% url 'base_view_url' %}" class="text-success ml-2">Return back...</a>
+    </form>
+</div>
+{% endblock main_section %}

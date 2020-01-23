@@ -1,0 +1,21 @@
+{% extends 'Base.html' %}
+
+{% block main_section %}
+{% include 'Navbar.html' %}
+<div class="container">
+    <h5 class="text-secondary mt-2">Here you can update info about our bot</h5>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ update_bot_form.access_token.label }}
+        {{ update_bot_form.access_token }}
+
+        {{ update_bot_form.file_script.label }} 
+        <div class="grid">
+            {{ update_bot_form.file_script }}
+        </div>
+        <button type="submit" class="btn btn-outline-warning mt-2">Update</button>
+    </form>
+</div>
+{% endblock main_section %}
