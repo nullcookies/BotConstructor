@@ -28,7 +28,14 @@
     </div>
     <h6 class="mt-2">Below, you can edit the generated code</h6>
     <p class="text-warning height-between">All changes will be applied at your own risk</p>
-
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-warning mt-2">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    
     <div id="editor" class="code-editor">{{ content }}</div>
     <form action="{% url 'create_bot_third_step_url' %}" method="POST">
         {% csrf_token %}

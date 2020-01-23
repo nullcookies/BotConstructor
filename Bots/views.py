@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 
 import json
 import os
-# import pycodestyle
+import autopep8
 
 from .models import Profile, Bot
 from .program import TextBuilder
@@ -207,6 +207,13 @@ class GenerateFile(LoginRequiredMixin, View):
         )
         program.polling_bot()
 
+        some_path = open_test_bot(request=request)
+        with open(some_path, 'r+', encoding='utf-8') as file:
+            content_code = file.read()
+            fixed_code = autopep8.fix_code(content_code)
+            file.seek(0)
+            file.write(fixed_code)
+
         file_script_path = 'ScriptBots/test_bot.py'
         file_config_path = 'ScriptBots/configuration.json'
         current_user = Profile.objects.get(user=request.user)
@@ -240,14 +247,23 @@ class CreateBotStepThree(LoginRequiredMixin, View):
         code = data['code_editor'][0].replace('\r', '')
 
         path = open_test_bot(request)
-        # pylint_stdout, pylint_stderr = lint.py_run(path, return_std=True)
-        # print(pylint_stdout, pylint_stderr)
-        # some = pycodestyle.Checker(filename=path).run_check()
-        # print(some)
-        with open(path, 'w', encoding='utf-8') as file:
-            file.write(code)
+        fixed_code = autopep8.fix_code(code)
+        try:
+            is_right_sliced = autopep8.check_syntax(code[:-30])
+            exec(is_right_sliced)
 
-        return redirect('create_bot_third_step_url')
+            with open(path, 'w', encoding='utf-8') as file:
+                file.write(fixed_code)
+            return redirect('create_bot_third_step_url')
+        except (NameError, ValueError, TypeError, AttributeError):
+            messages.error(request,
+                           'You made a mistake in changing the program')
+
+        context = {
+            'title': 'Third Step - BotConstructor',
+            'content': fixed_code
+        }
+        return render(request, 'ThirdStep.html', context)
 
 
 class RunBot(LoginRequiredMixin, View):
