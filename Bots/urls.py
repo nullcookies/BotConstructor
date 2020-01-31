@@ -38,7 +38,7 @@ urlpatterns = [
     path('createBot/secondStep/inlineMarkup/',
          CreateInlineMarkupField.as_view(),
          name='create_bot_second_step_inline_markup_url'),
-    path('createBot/secondStep/inlineMarkup/inlineButtons',
+    path('createBot/secondStep/inlineMarkup/inlineButtons/',
          CreateInlineButtonsField.as_view(),
          name='create_bot_second_step_inline_buttons_url'),
     path('createBot/secondStep/inlineMarkup/updateInlineButtons',
@@ -61,5 +61,7 @@ urlpatterns = [
     path('deleteBot/<int:bot_id>/', DeleteBot.as_view(),
          name='delete_bot_url'),
     path('createBot/thirdStep/AutoDeploy', RunBot.as_view(),
-         name='auto_deploy_url')
+         name='auto_deploy_url'),
+    path('createBot/secondStep/templates/', ShowTemplates.as_view(),
+         name='templates')
 ]

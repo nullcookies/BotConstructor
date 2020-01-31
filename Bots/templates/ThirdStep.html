@@ -23,14 +23,19 @@
             <a href="{% url 'download_script_url' %}" class="btn btn-outline-dark btn-sm btn-block">📃 Download script</a>
         </div>
         <div class="col-md-4">
-            <a href="{% url 'auto_deploy_url' %}" class="btn btn-outline-success btn-sm btn-block">Auto deploy</a>
+            <a href="{% url 'auto_deploy_url' %}" class="btn btn-outline-success btn-sm btn-block">Deploy</a>
         </div>
     </div>
-    <h6 class="mt-2">Below, you can edit the generated code</h6>
-    <p class="text-warning height-between">All changes will be applied at your own risk</p>
+
+    <div class="alert alert-success mt-2">
+        <h6>Below, you can edit the generated code</h6>
+        <hr class="mb-2">
+        <p class="mb-0">All changes will be applied at your own risk</p>
+    </div>
+
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-warning mt-2">
+            <div class="alert alert-warning">
                 {{ message }}
             </div>
         {% endfor %}

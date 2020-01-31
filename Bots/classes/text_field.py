@@ -18,8 +18,7 @@ class CreateTextField(LoginRequiredMixin, View):
         self.context.update({
             'title': 'Second Step - BotConstructor',
             'text_elements': text_elements,
-            'text_form': text_form,
-            'recognition_mark': 'text'
+            'text_form': text_form
         })
         return render(request, 'SecondStep.html', self.context)
 
@@ -53,8 +52,7 @@ class CreateTextField(LoginRequiredMixin, View):
         self.context.update({
             'title': 'Second Step - BotConstructor',
             'text_elements': text_elements,
-            'text_form': text_form,
-            'recognition_mark': 'text'
+            'text_form': text_form
         })
         return render(request, 'SecondStep.html', self.context)
 

@@ -9,6 +9,20 @@ import os
 from .models import Bot
 
 
+CHECKBOX_CHOICES = (
+    ('resize_keyboard', 'Resize Keyboard'),
+    ('one_time_keyboard', 'One Time Keyboard'),
+    ('selective', 'Selective')
+)
+CHOICES = (
+    ('linkedin_mailer', 'Linked In Mailer'),
+)
+REPLY_BUTTONS_CHOICES = (
+    ('request_contact', 'Request Contact'),
+    ('request_location', 'Request Location')
+)
+
+
 class CreateBotForm(forms.ModelForm):
     class Meta:
         model = Bot
@@ -67,11 +81,14 @@ class TextForm(forms.Form):
 
 
 class ReplyMarkup(forms.Form):
-    resize_keyboard = forms.BooleanField(
-        label='Resize keyboard', required=False)
-    one_time_keyboard = forms.BooleanField(
-        label='One time keyboard', required=False)
-    selective = forms.BooleanField(label='Selective', required=False)
+    checkboxes = forms.MultipleChoiceField(
+        required=False, choices=CHECKBOX_CHOICES,
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+                'class': 'custom-control-input'
+            }
+        )
+    )
     react_text = forms.CharField(widget=forms.TextInput(
         attrs={'class': 'form-control mb-2', 'placeholder': 'React Text'}))
     row_width = forms.IntegerField(max_value=5, min_value=1,
@@ -81,19 +98,6 @@ class ReplyMarkup(forms.Form):
                                    }))
     response_text_markup = forms.CharField(widget=forms.TextInput(
         attrs={'class': 'form-control', 'placeholder': 'Response Text'}))
-
-    class Meta:
-        widgets = {
-            'resize_keyboard': forms.CheckboxInput(attrs={
-                'class': 'form-check-input'
-            }),
-            'one_time_keyboard': forms.CheckboxInput(attrs={
-                'class': 'form-check-input'
-            }),
-            'selective': forms.CheckboxInput(attrs={
-                'class': 'form-check-input'
-            })
-        }
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
@@ -122,20 +126,9 @@ class ReplyMarkup(forms.Form):
 class ReplyButton(forms.Form):
     response_text = forms.CharField(required=False, widget=forms.TextInput(
         attrs={'class': 'form-control', 'placeholder': 'Response Text'}))
-    request_contact = forms.BooleanField(
-        label='Request contact', required=False)
-    request_location = forms.BooleanField(
-        label='Request location', required=False)
-
-    class Meta:
-        widgets = {
-            'request_contact': forms.RadioSelect(attrs={
-                'class': 'form-check-input'
-            }),
-            'request_location': forms.RadioSelect(attrs={
-                'class': 'form-check-input'
-            })
-        }
+    radio_buttons = forms.CharField(
+        widget=forms.RadioSelect(choices=REPLY_BUTTONS_CHOICES)
+    )
 
 
 class InlineMarkup(forms.Form):
@@ -192,3 +185,7 @@ class InlineButton(forms.Form):
                 raise forms.ValidationError(f'URL {new_url} does not exist')
         else:
             return new_url
+
+
+class ChooseTamplates(forms.Form):
+    templates = forms.CharField(widget=forms.RadioSelect(choices=CHOICES))

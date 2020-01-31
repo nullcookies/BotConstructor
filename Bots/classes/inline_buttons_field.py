@@ -19,8 +19,7 @@ class CreateInlineButtonsField(LoginRequiredMixin, View):
         self.context.update({
             'title': 'Second Step - BotConstructor',
             'inline_button_form': inline_button_form,
-            'inline_markup_elements': inline_markup_elements,
-            'recognition_mark': 'inline_buttons'
+            'inline_markup_elements': inline_markup_elements
         })
         return render(request, 'SecondStep.html', self.context)
 
@@ -68,8 +67,7 @@ class CreateInlineButtonsField(LoginRequiredMixin, View):
         self.context.update({
             'title': 'Second Step - BotConstructor',
             'inline_button_form': inline_button_form,
-            'inline_markup_elements': inline_markup_elements,
-            'recognition_mark': 'inline_buttons'
+            'inline_markup_elements': inline_markup_elements
         })
         return render(request, 'SecondStep.html', self.context)
 

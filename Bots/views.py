@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.http import HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
+from django.core.files import File
 # from pylint import epylint as lint
 
 import json
@@ -111,6 +112,7 @@ class CreateBotStepOne(LoginRequiredMixin, View):
 
     def post(self, request):
         first_form = GetAccessToken(request.POST)
+        data = {}
 
         if first_form.is_valid():
             access_token = first_form.cleaned_data['access_token']
@@ -133,6 +135,57 @@ class CreateBotStepOne(LoginRequiredMixin, View):
             'first_form': first_form
         }
         return render(request, 'FirstStep.html', context)
+
+
+class ShowTemplates(LoginRequiredMixin, View):
+    login_url = '/signIn/'
+    redirect_field_name = 'templates'
+    context = {}
+
+    def get(self, request):
+        template_form = ChooseTamplates()
+
+        self.context.update({
+            'title': 'Second Step - BotConstructor',
+            'template_form': template_form
+        })
+        return render(request, 'SecondStep.html', self.context)
+
+    def post(self, request):
+        template_form = ChooseTamplates(request.POST)
+
+        if template_form.is_valid():
+            current_bot_template = template_form.cleaned_data['templates']
+
+            path_template = os.path.join(settings.BASE_DIR, 'Bots',
+                                         'bot_templates',
+                                         f'{current_bot_template}.py')
+            with open(path_template, 'r', encoding='utf-8') as file:
+                content = file.read()
+
+            path_config = open_configuration(request=request)
+            with open(path_config, 'r', encoding='utf-8') as file:
+                access_token = json.load(file)['access_token']
+
+            new_content = """
+            import telebot
+
+
+            bot = telebot.TeleBot(token='{0}')
+            """.format(access_token)
+            content = new_content + content
+
+            fixed_code = autopep8.fix_code(content)
+            path = open_test_bot(request=request)
+            with open(path, 'w', encoding='utf-8') as file:
+                file.write(fixed_code)
+            return redirect('create_bot_third_step_url')
+
+        self.context({
+            'title': 'Second Step - BotConstructor',
+            'template_form': template_form
+        })
+        return render(request, 'SecondStep.html', self.context)
 
 
 class GenerateFile(LoginRequiredMixin, View):
@@ -214,15 +267,20 @@ class GenerateFile(LoginRequiredMixin, View):
             file.seek(0)
             file.write(fixed_code)
 
-        file_script_path = 'ScriptBots/test_bot.py'
-        file_config_path = 'ScriptBots/configuration.json'
+        file_script_path = open_test_bot(request=request)
+        file_config_path = open_configuration(request=request)
         current_user = Profile.objects.get(user=request.user)
         access_token = data['access_token']
 
-        bot_object = Bot(file_script=file_script_path,
-                         file_config=file_config_path, owner=current_user,
+        print(file_script_path, file_config_path)
+
+        django_script_file = File(file_script_path)
+        django_config_file = File(file_config_path)
+
+        bot_object = Bot(owner=current_user,
                          access_token=access_token, title=data['name'],
                          username=data['username'])
+        bot_object.file_script.save('')
         bot_object.save()
         return redirect('create_bot_third_step_url')
 
@@ -255,9 +313,12 @@ class CreateBotStepThree(LoginRequiredMixin, View):
             with open(path, 'w', encoding='utf-8') as file:
                 file.write(fixed_code)
             return redirect('create_bot_third_step_url')
-        except (NameError, ValueError, TypeError, AttributeError):
-            messages.error(request,
-                           'You made a mistake in changing the program')
+        except (NameError, ValueError, TypeError, AttributeError) as error:
+            messages.error(
+                request,
+                'You made a mistake in changing the program. '
+                f'Current problem: {error}'
+            )
 
         context = {
             'title': 'Third Step - BotConstructor',

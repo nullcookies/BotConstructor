@@ -25,7 +25,8 @@
 .image-with-text {
     width: 100%;
     overflow: hidden;
-    border-radius: 3px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
     position: relative;
 }
 

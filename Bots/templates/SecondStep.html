@@ -33,18 +33,40 @@
         <div class="text-on-img-2">
             <h4 class="text-light mt-2">Configure your bot here</h4>
             <ul class="text-light">
-                <li>Click on one of the submenu items to start</li>
-                <li>Correctly fill out all of the form data</li>
+                {% if request.path == '/createBot/secondStep/templates/' %}
+                    <li>Select one of the proposed options here to continue editing it</li>
+                    <li>After the election you will be missing the rest of the editing settings.</li>
+                {% else %}
+                    <li>Click on one of the submenu items to start</li>
+                    <li>Correctly fill out all of the form data</li>
+                {% endif %}
             </ul>
         </div>
     </div>
     <div class="d-flex flex-row btn-group mt-2">
-        <a href="{% url 'create_bot_second_step_text_url' %}" class="col-md-4 btn btn-outline-secondary {% if recognition_mark == 'text' %}active{% endif %}">Text</a>
-        <a href="{% url 'create_bot_second_step_reply_markup_url' %}" class="col-md-4 btn btn-outline-secondary {% if recognition_mark == 'reply_markup' or recognition_mark == 'reply_buttons' %}active{% endif %}">Reply Buttons</a>
-        <a href="{% url 'create_bot_second_step_inline_markup_url' %}" class="col-md-4 btn btn-outline-secondary {% if recognition_mark == 'inline_markup' or recognition_mark == 'inline_buttons' %}active{% endif %}">Inline Buttons</a>
+        <a href="{% url 'create_bot_second_step_text_url' %}" class="col-md-3 btn btn-outline-secondary {% if recognition_mark == 'text' %}active{% endif %}" id="text">Text</a>
+        <a href="{% url 'create_bot_second_step_reply_markup_url' %}" class="col-md-3 btn btn-outline-secondary {% if recognition_mark == 'reply_markup' or recognition_mark == 'reply_buttons' %}active{% endif %}" id="reply">Reply Buttons</a>
+        <a href="{% url 'create_bot_second_step_inline_markup_url' %}" class="col-md-3 btn btn-outline-secondary {% if recognition_mark == 'inline_markup' or recognition_mark == 'inline_buttons' %}active{% endif %}" id="inline">Inline Buttons</a>
+        <a href="{% url 'templates' %}" class="col-md-3 btn btn-outline-secondary {% if request.path == '/createBot/secondStep/templates/' %}active{% endif %}">Templates</a>
     </div>
 
-    {% if recognition_mark == 'text' %}
+    
+    {% if request.path == '/createBot/secondStep/templates/' %}
+        <form action="{% url 'templates' %}" method="POST" class="mt-2" onchange="onCheck()">
+            {% csrf_token %}
+
+            {% for pk, choice in template_form.templates.field.widget.choices %}
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input id="id_{{ template_form.templates.name }}_{{ forloop.counter0 }}" name="{{template_form.templates.name}}" type="{{ template_form.templates.field.widget.input_type }}" value="{{ pk }}" class="custom-control-input" {% ifequal template_form.templates.data pk.0 %}checked="checked"{% endifequal %}>
+                    <label for="id_{{ template_form.templates.name }}_{{ forloop.counter0 }}" class="custom-control-label">{{ choice }}</label>
+                </div>
+            {% endfor %}
+                
+            <button type="submit" class="btn btn-outline-primary btn-sm float-right" style="width: 24.4%;">Select</button>
+        </form>
+    {% endif %}
+
+    {% if request.path == '/createBot/secondStep/text/' %}
         {% if text_elements %}
             {% for text_item in text_elements %}
                 <form action="{% url 'create_bot_second_step_text_update_url' %}" method="POST" class="mt-3">
@@ -74,12 +96,15 @@
                 </form>
             {% endfor %}
         {% else %}
-            <p class="text-warning mb-2">No such elements added</p>
-            <p class="height-between text-success mb-4">If you want to add new text response check the form below</p>
+            <div class="alert alert-success mt-3" role="alert">
+                <h5 class="alert-heading mb-0 mt-0">No such elements added</h5>
+                <hr>
+                <p class="mt-0 mb-0">If you want to add new text response check the form below</p>
+            </div>
         {% endif %}
     {% endif %}
 
-    {% if recognition_mark == 'text' %}
+    {% if request.path == '/createBot/secondStep/text/' %}
         <div class="form-row">
             <h5 class="ml-1 text-dark">Create response text</h5>
             <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
@@ -102,7 +127,7 @@
                 {{ text_form.response_text }}
             </div>
         </form>
-    {% elif recognition_mark == 'reply_markup' or recognition_mark == 'reply_buttons' %}
+    {% elif request.path == '/createBot/secondStep/replyMarkup/' or request.path == '/createBot/secondStep/replyMarkup/replyButtons/' %}
         {% if reply_markup_elements %}
             {% for reply_markup_element in reply_markup_elements %}
                 <div class="form-row mt-3">
@@ -114,29 +139,32 @@
                                 <div class="col-md-8">
                                     <input class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="react_text_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.react_text }}">
                                 </div>
+
                                 <div class="col-md-4">
                                     <input class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="row_width_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.row_width }}">
                                 </div>
                             </div>
                             <input class="form-control mt-2" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="response_text_markup_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.response_text }}">
                     
-                            <div class="form-row mt-2">
-                                <div class="form-group ml-2">
-                                    <div class="form-check">
-                                        <input type="checkbox" name="resize_keyboard_{{ reply_markup_element.0 }}" class="form-check-input" {% if reply_markup_element.1.resize_keyboard %}checked{% endif %} id="res_key_{{ reply_markup_element.0 }}">
-                                        <label for="res_key_{{ reply_markup_element.0 }}" class="form-check-label">Resize keyboard</label>
+                            <div class="form-row mt-2 mb-2">
+                                <div class="ml-1">
+                                    <div class="custom-control custom-checkbox custom-control-inline">
+                                        <input type="checkbox" name="resize_keyboard_{{ reply_markup_element.0 }}" class="custom-control-input" {% if reply_markup_element.1.resize_keyboard %}checked{% endif %} id="res_key_{{ reply_markup_element.0 }}">
+                                        <label for="res_key_{{ reply_markup_element.0 }}" class="custom-control-label">Resize keyboard</label>
                                     </div>
                                 </div>
-                                <div class="form-group ml-3">
-                                    <div class="form-check">
-                                        <input type="checkbox" name="one_time_keyboard_{{ reply_markup_element.0 }}" class="form-check-input" {% if reply_markup_element.1.one_time_keyboard %}checked{% endif %} id="o_t_k_{{ reply_markup_element.0 }}">
-                                        <label for="o_t_k_{{ reply_markup_element.0 }}" class="form-check-label">One time keyboard</label>
+
+                                <div class="ml-1">
+                                    <div class="custom-control custom-checkbox custom-control-inline">
+                                        <input type="checkbox" name="one_time_keyboard_{{ reply_markup_element.0 }}" class="custom-control-input" {% if reply_markup_element.1.one_time_keyboard %}checked{% endif %} id="o_t_k_{{ reply_markup_element.0 }}">
+                                        <label for="o_t_k_{{ reply_markup_element.0 }}" class="custom-control-label">One time keyboard</label>
                                     </div>
                                 </div>
-                                <div class="form-group ml-3">
-                                    <div class="form-check">
-                                        <input type="checkbox" name="selective_{{ reply_markup_element.0 }}" class="form-check-input" {% if reply_markup_element.1.selective %}checked{% endif %} id="s_{{ reply_markup_element.0 }}">
-                                        <label for="s_{{ reply_markup_element.0 }}" class="form-check-label">Selective</label>
+
+                                <div class="ml-1">
+                                    <div class="custom-control custom-checkbox custom-control-inline">
+                                        <input type="checkbox" name="selective_{{ reply_markup_element.0 }}" class="custom-control-input" {% if reply_markup_element.1.selective %}checked{% endif %} id="s_{{ reply_markup_element.0 }}">
+                                        <label for="s_{{ reply_markup_element.0 }}" class="custom-control-label">Selective</label>
                                     </div>
                                 </div>
                             </div>
@@ -145,39 +173,37 @@
                                 <div class="col-md-4">
                                     <button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update keyboard</button>
                                 </div>
+
                                 <div class="col-md-4">
                                     <a href="{% url 'create_bot_second_step_reply_markup_delete_url' markup_id=reply_markup_element.0 %}" class="btn btn-outline-danger btn-sm btn-block">Delete keyboard</a>
                                 </div>
+
                                 <div class="col-md-4">
-                                    {% if recognition_mark == 'reply_buttons' %}
+                                    {% if request.path == '/createBot/secondStep/replyMarkup/replyButtons/' %}
                                         <a href="{% url 'create_bot_second_step_reply_markup_url' %}" class="btn btn-outline-success btn-sm btn-block">New Keyboard</a>
-                                    {% elif recognition_mark == 'reply_markup' %}
+                                    {% elif request.path == '/createBot/secondStep/replyMarkup/' %}
                                         <a href="{% url 'create_bot_second_step_reply_buttons_url' %}" class="btn btn-outline-dark btn-sm btn-block">Add button</a>
                                     {% endif %}
                                 </div>
                             </div>                                
                         </form>
                     </div>
-    
+
                     <div class="col-md-7">
                         {% for button_element in reply_markup_element.1.buttons %}
                             <form action="{% url 'create_bot_second_step_reply_buttons_update_url' %}" method="POST" class="mb-3">
                                 {% csrf_token %}
 
                                 <input class="form-control" aria-label="Sizing example input" name="response_text_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ button_element.response_text }}">
-                                
-                                <div class="form-row">
-                                    <div class="form-group ml-2 mt-1">
-                                        <div class="form-check">
-                                            <input type="checkbox" name="request_contact_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}" class="form-check-input" {% if button_element.request_contact %}checked{% endif %} id="req_con_{{ forloop.counter0 }}">
-                                            <label for="req_con_{{ forloop.counter0 }}" class="form-check-label">Request contact</label>
-                                        </div>
+                                <div class="form-row mt-1 mb-1 ml-0">
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" name="radio_buttons_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}" value="request_contact" class="custom-control-input" {% if button_element.request_contact %}checked="checked"{% endif %} id="req_con_{{ forloop.counter0 }}">
+                                        <label for="req_con_{{ forloop.counter0 }}" class="custom-control-label">Request contact</label>
                                     </div>
-                                    <div class="form-group ml-3 mt-1">
-                                        <div class="form-check">
-                                            <input type="checkbox" name="request_location_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}" class="form-check-input" {% if button_element.request_location %}checked{% endif %} id="req_loc_{{ forloop.counter0 }}">
-                                            <label for="req_loc_{{ forloop.counter0 }}" class="form-check-label">Request location</label>
-                                        </div>
+
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" name="radio_buttons_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}" value="request_location" class="custom-control-input" {% if button_element.request_location %}checked="checked"{% endif %} id="req_loc_{{ forloop.counter0 }}">
+                                        <label for="req_loc_{{ forloop.counter0 }}" class="custom-control-label">Request location</label>
                                     </div>
                                 </div>
                                 
@@ -195,15 +221,18 @@
                 </div>
             {% endfor %}
         {% else %}
-            <p class="text-warning mb-2">No such elements added</p>
-            <p class="height-between text-success mb-4">If you want to add new text response check the form below</p>
+            <div class="alert alert-success mt-3" role="alert">
+                <h5 class="alert-heading mb-0 mt-0">No such elements added</h5>
+                <hr>
+                <p class="mt-0 mb-0">If you want to add new text response check the form below</p>
+            </div>
         {% endif %}
         <div class="form-row">
             <h5 class="text-dark ml-1">Create reply markup</h5>
             <h6 class="mt-1 ml-2 text-secondary">Keyboard settings</h6>    
         </div>
 
-        {% if recognition_mark == 'reply_buttons' %}
+        {% if request.path == '/createBot/secondStep/replyMarkup/replyButtons/' %}
             <form action="{% url 'create_bot_second_step_reply_buttons_url' %}" method="POST">
                 {% csrf_token %}
 
@@ -215,25 +244,17 @@
                         <button type="submit" class="btn btn-outline-primary btn-block">Create Button</button>
                     </div>
                 </div>
-    
-                <div class="row">
-                    <div class="col-md-5">
-                        <div class="form-row mt-2">
-                            <div class="form-group ml-2">
-                                {{ reply_button_form.request_contact }}
-                                {{ reply_button_form.request_contact.label }}
-                            </div>
-                            <div class="form-group ml-3">
-                                {{ reply_button_form.request_location }}
-                                {{ reply_button_form.request_location.label }}
-                            </div>
+
+                <div class="form-row ml-0 mt-1">
+                    {% for pk, choice in reply_button_form.radio_buttons.field.widget.choices %}
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input id="id_{{ reply_button_form.radio_buttons.name }}_{{ forloop.counter0 }}" name="{{ reply_button_form.radio_buttons.name }}" type="{{ reply_button_form.radio_buttons.field.widget.input_type }}" value="{{ pk }}" class="custom-control-input" {% ifequal reply_button_form.radio_buttons.data pk.0 %}checked="checked"{% endifequal %}>
+                            <label for="id_{{ reply_button_form.radio_buttons.name }}_{{ forloop.counter0 }}" class="custom-control-label">{{ choice }}</label>
                         </div>
-                    </div>
-                    <div class="col-md-7 mt-2">
-                    </div>
+                    {% endfor %}
                 </div>
             </form>
-        {% elif recognition_mark == 'reply_markup' %}
+        {% elif request.path == '/createBot/secondStep/replyMarkup/' %}
             <form action="{% url 'create_bot_second_step_reply_markup_url' %}" method="POST">
                 {% csrf_token %}
 
@@ -259,25 +280,19 @@
 
                 <div class="row">
                     <div class="col-md-5">
-                        <div class="row">
-                            <div class="ml-3">
-                                {{ reply_markup_form.resize_keyboard }}
-                                {{ reply_markup_form.resize_keyboard.label }}
+                        <div class="form-row ml-0">
+                            {% for pk, choice in reply_markup_form.checkboxes.field.widget.choices %}
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input id="id_{{ reply_markup_form.checkboxes.name }}_{{ forloop.counter0 }}" name="{{ reply_markup_form.checkboxes.name }}" type="{{ reply_markup_form.checkboxes.field.widget.input_type }}" value="{{ pk }}" class="custom-control-input" {% ifequal reply_markup_form.checkboxes.data pk.0 %}checked="checked"{% endifequal %}>
+                                <label for="id_{{ reply_markup_form.checkboxes.name }}_{{ forloop.counter0 }}" class="custom-control-label">{{ choice }}</label>
                             </div>
-                            <div class="ml-3">
-                                {{ reply_markup_form.one_time_keyboard }}
-                                {{ reply_markup_form.one_time_keyboard.label }}
-                            </div>
-                            <div class="ml-3">
-                                {{ reply_markup_form.selective }}
-                                {{ reply_markup_form.selective.label }}
-                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
             </form>
         {% endif %}
-    {% elif recognition_mark == 'inline_markup' or recognition_mark == 'inline_buttons' %}
+    {% elif request.path == '/createBot/secondStep/inlineMarkup/' or request.path == '/createBot/secondStep/inlineMarkup/inlineButtons/' %}
         {% if inline_markup_elements %}
             {% for inline_markup_element in inline_markup_elements %}
                 <div class="form-row mt-3">
@@ -303,7 +318,7 @@
                                     <a href="{% url 'create_bot_second_step_inline_markup_delete_url' markup_id=inline_markup_element.0 %}" class="btn btn-outline-danger btn-sm mt-2 btn-block">Delete markup</a>
                                 </div>
                                 <div class="col-md-4">
-                                    {% if recognition_mark == 'inline_buttons' %}
+                                    {% if request.path == '/createBot/secondStep/inlineMarkup/inlineButtons/' %}
                                         <a href="{% url 'create_bot_second_step_inline_markup_url' %}" class="btn btn-outline-success btn-sm mt-2 btn-block">Add keyboard</a>
                                     {% else %}
                                         <a href="{% url 'create_bot_second_step_inline_buttons_url' %}" class="btn btn-outline-dark btn-sm mt-2 btn-block">Add button</a>
@@ -319,20 +334,20 @@
                                 {% csrf_token %}
 
                                 <input class="form-control" type="text" name="text_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.text }}">
-                                
-                                {% if inline_button.url != '' %}
+
+                                {% if inline_button.url != False and inline_button.url != '' %}
                                     <input class="form-control mt-2" type="text" name="url_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.url }}">
                                 {% endif %}
                                 
-                                {% if inline_button.switch_inline != '' %}
+                                {% if inline_button.switch_inline != False and inline_button.switch_inline != '' %}
                                     <input class="form-control mt-2" type="text" name="switch_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.switch_inline }}">
                                 {% endif %}
 
-                                {% if inline_button.switch_inline_current != '' %}
+                                {% if inline_button.switch_inline_current != False and inline_button.switch_inline_current != '' %}
                                     <input class="form-control mt-2" type="text" name="switch_inline_current_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.switch_inline_current }}">
                                 {% endif %}
                             
-                                {% if inline_button.callback != '' %}
+                                {% if inline_button.callback != False and inline_button.callback != '' %}
                                     <input class="form-control mt-2" type="text" name="callback_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.callback }}">
                                 {% endif %}    
 
@@ -350,8 +365,11 @@
                 </div>
             {% endfor %}
         {% else %}
-            <p class="text-warning mb-2">No such elements added</p>
-            <p class="height-between text-success mb-4">If you want to add new text response check the form below</p>
+            <div class="alert alert-success mt-3" role="alert">
+                <h5 class="alert-heading mb-0 mt-0">No such elements added</h5>
+                <hr>
+                <p class="mt-0 mb-0">If you want to add new text response check the form below</p>
+            </div>
         {% endif %}
 
         <div class="form-row mt-3">
@@ -360,7 +378,7 @@
         </div>
 
         
-        {% if recognition_mark == 'inline_markup' %}
+        {% if request.path == '/createBot/secondStep/inlineMarkup/' %}
             <form action="{% url 'create_bot_second_step_inline_markup_url' %}" method="POST">
                 {% csrf_token %}
 
@@ -379,7 +397,7 @@
                     </div>
                 </div>
             </form>
-        {% elif recognition_mark == 'inline_buttons' %}
+        {% elif request.path == '/createBot/secondStep/inlineMarkup/inlineButtons/' %}
             <form action="{% url 'create_bot_second_step_inline_buttons_url' %}" method="POST" onchange="getInlineValues(this)">
                 {% csrf_token %}
 
@@ -406,12 +424,22 @@
             </form>
         {% endif %}
     {% endif %}
-    <hr>
-    <h6 class="text-secondary mb-3">To go to the next page, press the button</h6>
-    <form action="{% url 'create_bot_second_step_next_step_url' %}" class="mb-4">
-        {% csrf_token %}
 
-        <button type="submit" class="btn btn-outline-primary btn-sm" style="width: 20%;">Next</button>
-    </form>
+    <div style="position: relative; bottom: 0;">
+        <hr>
+        <div class="form-row">
+            <div class="col-md-9">
+                <h5 class="btn btn-outline-dark btn-sm btn-block text-dark disabled">To go to the next page you must press the button</h5>
+            </div>
+            
+            <div class="col-md-3">
+                <form action="{% url 'create_bot_second_step_next_step_url' %}" class="mb-2">
+                    {% csrf_token %}
+                    
+                    <button type="submit" class="btn btn-secondary btn-block btn-sm">Next</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock main_section %}

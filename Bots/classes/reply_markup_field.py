@@ -11,6 +11,12 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_reply_markup_url'
 
+    required_fields = [
+        'resize_keyboard',
+        'one_time_keyboard',
+        'selective'
+    ]
+
     def get(self, request):
         reply_markup_elements = enumerate_elements(request,
                                                    get_object='reply_markup')
@@ -19,8 +25,7 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
         self.context.update({
             'title': 'Second Step - BotConstructor',
             'reply_markup_form': reply_markup_form,
-            'reply_markup_elements': reply_markup_elements,
-            'recognition_mark': 'reply_markup'
+            'reply_markup_elements': reply_markup_elements
         })
         return render(request, 'SecondStep.html', self.context)
 
@@ -30,16 +35,19 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
         reply_markup_form = ReplyMarkup(request.POST, request=request)
 
         if reply_markup_form.is_valid():
-            resize_keyboard = reply_markup_form.cleaned_data['resize_keyboard']
-            one_time_keyboard = reply_markup_form.cleaned_data[
-                'one_time_keyboard'
-            ]
-            selective = reply_markup_form.cleaned_data['selective']
             react_text = reply_markup_form.cleaned_data['react_text']
             row_width = reply_markup_form.cleaned_data['row_width']
             response_text = reply_markup_form.cleaned_data[
                 'response_text_markup'
             ]
+            keyboard_settings = reply_markup_form.cleaned_data['checkboxes']
+
+            check_checkboxes = {}
+            for item in self.required_fields:
+                if item in keyboard_settings:
+                    check_checkboxes[item] = True
+                else:
+                    check_checkboxes[item] = False
 
             path = open_configuration(request)
             with open(path, 'r+', encoding='utf-8') as file_name:
@@ -47,18 +55,22 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
 
                 try:
                     object_config['reply_markup'].append({
-                        'resize_keyboard': resize_keyboard,
-                        'one_time_keyboard': one_time_keyboard,
-                        'selective': selective,
+                        'resize_keyboard': check_checkboxes['resize_keyboard'],
+                        'one_time_keyboard': check_checkboxes[
+                            'one_time_keyboard'
+                        ],
+                        'selective': check_checkboxes['selective'],
                         'react_text': react_text,
                         'row_width': row_width,
                         'response_text': response_text
                     })
                 except KeyError:
                     object_config['reply_markup'] = [{
-                        'resize_keyboard': resize_keyboard,
-                        'one_time_keyboard': one_time_keyboard,
-                        'selective': selective,
+                        'resize_keyboard': check_checkboxes['resize_keyboard'],
+                        'one_time_keyboard': check_checkboxes[
+                            'one_time_keyboard'
+                        ],
+                        'selective': check_checkboxes['selective'],
                         'react_text': react_text,
                         'row_width': row_width,
                         'response_text': response_text
@@ -74,8 +86,7 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
         self.context.update({
             'title': 'Second Step - BotConstructor',
             'reply_markup_form': reply_markup_form,
-            'reply_markup_elements': reply_markup_elements,
-            'recognition_mark': 'reply_markup'
+            'reply_markup_elements': reply_markup_elements
         })
         return render(request, 'SecondStep.html', self.context)
 

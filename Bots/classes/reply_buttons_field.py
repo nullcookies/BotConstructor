@@ -10,6 +10,10 @@ class CreateReplyButtonsField(LoginRequiredMixin, View):
     context = {}
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_reply_buttons_url'
+    required_fields = [
+        'request_contact',
+        'request_location'
+    ]
 
     def get(self, request):
         reply_markup_elements = enumerate_elements(request,
@@ -19,8 +23,7 @@ class CreateReplyButtonsField(LoginRequiredMixin, View):
         self.context.update({
             'title': 'Second Step - BotConstructor',
             'reply_button_form': reply_button_form,
-            'reply_markup_elements': reply_markup_elements,
-            'recognition_mark': 'reply_buttons'
+            'reply_markup_elements': reply_markup_elements
         })
         return render(request, 'SecondStep.html', self.context)
 
@@ -33,12 +36,16 @@ class CreateReplyButtonsField(LoginRequiredMixin, View):
             response_text = reply_button_form.cleaned_data[
                 'response_text'
             ]
-            request_contact = reply_button_form.cleaned_data[
-                'request_contact'
+            radio_buttons = reply_button_form.cleaned_data[
+                'radio_buttons'
             ]
-            request_location = reply_button_form.cleaned_data[
-                'request_location'
-            ]
+
+            check_radio = {}
+            for item in self.required_fields:
+                if item in radio_buttons:
+                    check_radio[item] = True
+                else:
+                    check_radio[item] = False
 
             path = open_configuration(request)
             with open(path, 'r+', encoding='utf-8') as file_name:
@@ -47,26 +54,25 @@ class CreateReplyButtonsField(LoginRequiredMixin, View):
                 try:
                     object_config['reply_markup'][-1]['buttons'].append({
                         'response_text': response_text,
-                        'request_contact': request_contact,
-                        'request_location': request_location
+                        'request_contact': check_radio['request_contact'],
+                        'request_location': check_radio['request_location']
                     })
                 except KeyError:
                     object_config['reply_markup'][-1]['buttons'] = [{
                         'response_text': response_text,
-                        'request_contact': request_contact,
-                        'request_location': request_location
+                        'request_contact': check_radio['request_contact'],
+                        'request_location': check_radio['request_location']
                     }]
                 file_name.seek(0)
                 json.dump(object_config, file_name,
                           indent=4, ensure_ascii=False)
-                return redirect('create_bot_second_step_reply_buttons_url')
+            return redirect('create_bot_second_step_reply_buttons_url')
 
         reply_markup_elements = enumerate_elements(request, 'reply_markup')
         self.context.update({
             'title': 'Second Step - BotConstructor',
             'reply_button_form': reply_button_form,
-            'reply_markup_elements': reply_markup_elements,
-            'recognition_mark': 'reply_buttons'
+            'reply_markup_elements': reply_markup_elements
         })
         return render(request, 'SecondStep.html', self.context)
 
@@ -75,17 +81,16 @@ class UpdateReplyButtonsField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_reply_buttons_url'
 
-    checkboxes = [
+    required_radios = [
         'request_contact',
         'request_location'
     ]
 
     def post(self, request):
         data = dict(request.POST)
+        print(data)
         obligatory_fields = [
-            'response_text',
-            'request_contact',
-            'request_location'
+            'response_text'
         ]
 
         path = open_configuration(request)
@@ -95,8 +100,17 @@ class UpdateReplyButtonsField(LoginRequiredMixin, View):
         index = (int(list(data.items())[1][0].split('_')[-2]),
                  int(list(data.items())[1][0].split('_')[-1]))
         final_data = form_final_dict(obligatory_fields=obligatory_fields,
-                                     point=False, checkboxes=self.checkboxes,
-                                     index=index, data=data)
+                                     point=False, index=index,
+                                     checkboxes=self.required_radios,
+                                     data=data)
+
+        for item in self.required_radios:
+            if item in list(data.values())[-1]:
+                final_data[item] = [index, True]
+            else:
+                final_data[item] = [index, False]
+
+        print(final_data)
 
         reply_markup_object = object_config['reply_markup']
         reply_markup_object[index[0]]['buttons'][index[1]][
