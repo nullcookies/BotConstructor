@@ -2,30 +2,30 @@
 # print(f'sdsd{string.strip()}ada')
 # import telebot
 
-import telebot
-from telebot.types import *
+# import telebot
+# from telebot.types import *
 
-bot = telebot.TeleBot(token='944380578:AAEFvaqShiw164lLumAu2wI6w2ZnzSAJ7lM')
-
-
-@bot.inline_handler(func=lambda query: True)
-def query_text(query: InlineQuery) -> None:
-    try:
-        r = InlineQueryResultArticle(
-            id='1',
-            title='Something',
-            input_message_content=InputTextMessageContent(
-                'hello'
-            ),
-            url='https://google.com',
-            description='Somewhere'
-        )
-        bot.answer_inline_query(query.id, [r])
-    except Exception as error:
-        print(error)
+# bot = telebot.TeleBot(token='944380578:AAEFvaqShiw164lLumAu2wI6w2ZnzSAJ7lM')
 
 
-bot.polling()
+# @bot.inline_handler(func=lambda query: True)
+# def query_text(query: InlineQuery) -> None:
+#     try:
+#         r = InlineQueryResultArticle(
+#             id='1',
+#             title='Something',
+#             input_message_content=InputTextMessageContent(
+#                 'hello'
+#             ),
+#             url='https://google.com',
+#             description='Somewhere'
+#         )
+#         bot.answer_inline_query(query.id, [r])
+#     except Exception as error:
+#         print(error)
+
+
+# bot.polling()
 
 
 # import os

@@ -7,7 +7,6 @@ from django.conf import settings
 from django.http import HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.core.files import File
-# from pylint import epylint as lint
 
 import json
 import os
@@ -23,6 +22,9 @@ from .classes.reply_buttons_field import *
 from .classes.inline_markup_field import *
 from .classes.inline_buttons_field import *
 from .functions import *
+
+
+data = {}
 
 
 class ShowBots(LoginRequiredMixin, View):
@@ -199,65 +201,104 @@ class GenerateFile(LoginRequiredMixin, View):
 
         program = TextBuilder(token=data['access_token'],
                               user_username=str(request.user.username))
-        final_text_dictionary = {}
-        for text_element in data['text']:
-            final_text_dictionary[text_element['react_text']
-                                  ] = text_element['response_text']
 
-        final_reply_markup_keyboard = {}
-        for reply_markup_element in data['reply_markup']:
-            buttons = []
+        try:
+            final_text_dictionary = {}
+            for text_element in data['text']:
+                final_text_dictionary[text_element['react_text']
+                                      ] = text_element['response_text']
+            program.text_response(text_dictionary=final_text_dictionary)
+        except KeyError as k_error:
+            print(k_error)
 
-            for button_element in reply_markup_element['buttons']:
-                buttons.append(
-                    {
-                        'response': button_element['response_text'],
-                        'request_contact': button_element['request_contact'],
-                        'request_location': button_element['request_location']
-                    }
+        try:
+            final_reply_markup_keyboard = {}
+            for reply_markup_element in data['reply_markup']:
+                buttons = []
+
+                for button_element in reply_markup_element['buttons']:
+                    buttons.append(
+                        {
+                            'response': button_element['response_text'],
+                            'request_contact': button_element[
+                                'request_contact'
+                            ],
+                            'request_location': button_element[
+                                'request_location'
+                            ]
+                        }
+                    )
+
+                final_reply_markup_keyboard[
+                    reply_markup_element['react_text']
+                ] = {
+                    'resize_keyboard': reply_markup_element['resize_keyboard'],
+                    'one_time_keyboard': reply_markup_element[
+                        'one_time_keyboard'
+                    ],
+                    'selective': reply_markup_element['selective'],
+                    'row_width': reply_markup_element['row_width'],
+                    'response_text': reply_markup_element['response_text'],
+                    'buttons': buttons
+                }
+            program.reply_markup_response(
+                reply_markup_dictionary=final_reply_markup_keyboard
+            )
+        except KeyError as k_error:
+            k_error = str(k_error)
+
+            message = ''
+            if k_error == "'buttons'":
+                message += ' You have not added buttons to the reply keyboard.'
+
+                messages.error(
+                    request,
+                    f'You have a problem: {k_error}.' + message
                 )
+                return redirect('create_bot_second_step_reply_buttons_url')
 
-            final_reply_markup_keyboard[reply_markup_element['react_text']] = {
-                'resize_keyboard': reply_markup_element['resize_keyboard'],
-                'one_time_keyboard': reply_markup_element['one_time_keyboard'],
-                'selective': reply_markup_element['selective'],
-                'row_width': reply_markup_element['row_width'],
-                'response_text': reply_markup_element['response_text'],
-                'buttons': buttons
-            }
+        try:
+            final_inline_markup_keyboard = {}
+            for inline_markup_element in data['inline_markup']:
+                buttons = []
 
-        final_inline_markup_keyboard = {}
-        for inline_markup_element in data['inline_markup']:
-            buttons = []
+                for button_element in inline_markup_element['buttons']:
+                    buttons.append(
+                        {
+                            'text': button_element['text'],
+                            'url': button_element['url'],
+                            'callback': button_element['callback'],
+                            'switch_inline': button_element['switch_inline'],
+                            'switch_inline_current': button_element[
+                                'switch_inline_current'
+                            ]
+                        }
+                    )
 
-            for button_element in inline_markup_element['buttons']:
-                buttons.append(
-                    {
-                        'text': button_element['text'],
-                        'url': button_element['url'],
-                        'callback': button_element['callback'],
-                        'switch_inline': button_element['switch_inline'],
-                        'switch_inline_current': button_element[
-                            'switch_inline_current'
-                        ]
-                    }
+                final_inline_markup_keyboard[
+                    inline_markup_element['react_text']
+                ] = {
+                    'row_width': inline_markup_element['row_width'],
+                    'response_text': inline_markup_element['response_text'],
+                    'buttons': buttons
+                }
+            program.inline_markup_response(
+                inline_markup_dictionary=final_inline_markup_keyboard
+            )
+        except KeyError as k_error:
+            k_error = str(k_error)
+
+            message = ''
+            if k_error == "'buttons'":
+                message += (' You have not added buttons '
+                            'to the inline keyboard.')
+
+                messages.error(
+                    request,
+                    f'You have a problem: {k_error}.' + message
                 )
+                return redirect('create_bot_second_step_inline_buttons_url')
 
-            final_inline_markup_keyboard[
-                inline_markup_element['react_text']
-            ] = {
-                'row_width': inline_markup_element['row_width'],
-                'response_text': inline_markup_element['response_text'],
-                'buttons': buttons
-            }
-
-        program.text_response(text_dictionary=final_text_dictionary)
-        program.reply_markup_response(
-            reply_markup_dictionary=final_reply_markup_keyboard
-        )
-        program.inline_markup_response(
-            inline_markup_dictionary=final_inline_markup_keyboard
-        )
         program.polling_bot()
 
         some_path = open_test_bot(request=request)
@@ -274,15 +315,25 @@ class GenerateFile(LoginRequiredMixin, View):
 
         print(file_script_path, file_config_path)
 
-        django_script_file = File(file_script_path)
-        django_config_file = File(file_config_path)
+        # django_script_file = File(file_script_path)
+        # django_config_file = File(file_config_path)
 
-        bot_object = Bot(owner=current_user,
-                         access_token=access_token, title=data['name'],
-                         username=data['username'])
-        bot_object.file_script.save('')
-        bot_object.save()
-        return redirect('create_bot_third_step_url')
+        is_existed_bot = list(Bot.objects.filter(access_token=access_token))
+        if is_existed_bot == []:
+            bot_object = Bot(owner=current_user,
+                             access_token=access_token, title=data['name'],
+                             username=data['username'])
+            # bot_object.file_script.save('')
+            bot_object.save()
+
+        path = open_test_bot(request)
+        with open(path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        context = {
+            'title': 'Third Step - BotConstructor',
+            'content': content
+        }
+        return render(request, 'ThirdStep.html', context)
 
 
 class CreateBotStepThree(LoginRequiredMixin, View):
@@ -332,8 +383,18 @@ class RunBot(LoginRequiredMixin, View):
     redirect_field_name = 'create_bot_third_step_url'
 
     def get(self, request):
-        AutoDeploy(file_title=f'{request.user.username}_test_bot.py')
-        return redirect('show_bots_url')
+        if f'count_deploys_{request.user.username}' in data.keys():
+            if data[f'count_deploys_{request.user.username}'] <= 0:
+                AutoDeploy(file_title=f'{request.user.username}_test_bot.py')
+                data[f'count_deploys_{request.user.username}'] = 1
+                return redirect('show_bots_url')
+            else:
+                messages.error(request, 'You have already deployed your bot')
+                return redirect('create_bot_third_step_url')
+        else:
+            AutoDeploy(file_title=f'{request.user.username}_test_bot.py')
+            data[f'count_deploys_{request.user.username}'] = 1
+            return redirect('show_bots_url')
 
 
 class Download:

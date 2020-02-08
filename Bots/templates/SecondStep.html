@@ -44,9 +44,9 @@
         </div>
     </div>
     <div class="d-flex flex-row btn-group mt-2">
-        <a href="{% url 'create_bot_second_step_text_url' %}" class="col-md-3 btn btn-outline-secondary {% if recognition_mark == 'text' %}active{% endif %}" id="text">Text</a>
-        <a href="{% url 'create_bot_second_step_reply_markup_url' %}" class="col-md-3 btn btn-outline-secondary {% if recognition_mark == 'reply_markup' or recognition_mark == 'reply_buttons' %}active{% endif %}" id="reply">Reply Buttons</a>
-        <a href="{% url 'create_bot_second_step_inline_markup_url' %}" class="col-md-3 btn btn-outline-secondary {% if recognition_mark == 'inline_markup' or recognition_mark == 'inline_buttons' %}active{% endif %}" id="inline">Inline Buttons</a>
+        <a href="{% url 'create_bot_second_step_text_url' %}" class="col-md-3 btn btn-outline-secondary {% if request.path == '/createBot/secondStep/text/' %}active{% endif %}" id="text">Text</a>
+        <a href="{% url 'create_bot_second_step_reply_markup_url' %}" class="col-md-3 btn btn-outline-secondary {% if request.path == '/createBot/secondStep/replyMarkup/' or request.path == '/createBot/secondStep/replyMarkup/replyButtons/' %}active{% endif %}" id="reply">Reply Buttons</a>
+        <a href="{% url 'create_bot_second_step_inline_markup_url' %}" class="col-md-3 btn btn-outline-secondary {% if request.path == '/createBot/secondStep/inlineMarkup/' or request.path == '/createBot/secondStep/inlineMarkup/inlineButtons/' %}active{% endif %}" id="inline">Inline Buttons</a>
         <a href="{% url 'templates' %}" class="col-md-3 btn btn-outline-secondary {% if request.path == '/createBot/secondStep/templates/' %}active{% endif %}">Templates</a>
     </div>
 
@@ -137,14 +137,24 @@
 
                             <div class="form-row row">
                                 <div class="col-md-8">
-                                    <input class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="react_text_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.react_text }}">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">React</div>
+                                        </div>
+                                        <input class="form-control" name="react_text_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.react_text }}">
+                                    </div>
                                 </div>
 
                                 <div class="col-md-4">
-                                    <input class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="row_width_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.row_width }}">
+                                    <input class="form-control" name="row_width_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.row_width }}">
                                 </div>
                             </div>
-                            <input class="form-control mt-2" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="response_text_markup_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.response_text }}">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text mt-2">Response</div>
+                                </div>
+                                <input class="form-control mt-2" name="response_text_markup_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.response_text }}">
+                            </div>
                     
                             <div class="form-row mt-2 mb-2">
                                 <div class="ml-1">
@@ -194,7 +204,12 @@
                             <form action="{% url 'create_bot_second_step_reply_buttons_update_url' %}" method="POST" class="mb-3">
                                 {% csrf_token %}
 
-                                <input class="form-control" aria-label="Sizing example input" name="response_text_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ button_element.response_text }}">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">Text</div>
+                                    </div>
+                                    <input class="form-control" name="response_text_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ button_element.response_text }}">
+                                </div>
                                 <div class="form-row mt-1 mb-1 ml-0">
                                     <div class="custom-control custom-radio custom-control-inline">
                                         <input type="radio" name="radio_buttons_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}" value="request_contact" class="custom-control-input" {% if button_element.request_contact %}checked="checked"{% endif %} id="req_con_{{ forloop.counter0 }}">
@@ -300,10 +315,21 @@
                         <form action="{% url 'create_bot_second_step_inline_markup_update_url' %}" method="POST">
                             {% csrf_token %}
 
-                            <input class="form-control" type="text" name="response_text_inline_{{ inline_markup_element.0 }}" value="{{ inline_markup_element.1.response_text }}">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">Response</div>
+                                </div>
+                                <input class="form-control" type="text" name="response_text_inline_{{ inline_markup_element.0 }}" value="{{ inline_markup_element.1.response_text }}">
+                            </div>
+
                             <div class="form-row">
                                 <div class="col-md-10">
-                                    <input class="form-control mt-2" type="text" name="react_text_inline_{{ inline_markup_element.0 }}" value="{{ inline_markup_element.1.react_text }}">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text mt-2">React</div>
+                                        </div>
+                                        <input class="form-control mt-2" type="text" name="react_text_inline_{{ inline_markup_element.0 }}" value="{{ inline_markup_element.1.react_text }}">
+                                    </div>
                                 </div>
                                 <div class="col-md-2">
                                     <input class="form-control mt-2" type="number" min="1" max="5" name="row_width_inline_{{ inline_markup_element.0 }}" value="{{ inline_markup_element.1.row_width }}">
@@ -333,22 +359,47 @@
                             <form action="{% url 'create_bot_second_step_inline_buttons_update_url' %}" method="POST" class="mb-3">
                                 {% csrf_token %}
 
-                                <input class="form-control" type="text" name="text_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.text }}">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">Text</div>
+                                    </div>
+                                    <input class="form-control" type="text" name="text_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.text }}">
+                                </div>
 
                                 {% if inline_button.url != False and inline_button.url != '' %}
-                                    <input class="form-control mt-2" type="text" name="url_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.url }}">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text mt-2">Url</div>
+                                        </div>
+                                        <input class="form-control mt-2" type="text" name="url_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.url }}">
+                                    </div>
                                 {% endif %}
                                 
                                 {% if inline_button.switch_inline != False and inline_button.switch_inline != '' %}
-                                    <input class="form-control mt-2" type="text" name="switch_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.switch_inline }}">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text mt-2">Switch Inline</div>
+                                        </div>
+                                        <input class="form-control mt-2" type="text" name="switch_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.switch_inline }}">
+                                    </div>
                                 {% endif %}
 
                                 {% if inline_button.switch_inline_current != False and inline_button.switch_inline_current != '' %}
-                                    <input class="form-control mt-2" type="text" name="switch_inline_current_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.switch_inline_current }}">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text mt-2">Switch Inline Current</div>
+                                        </div>
+                                        <input class="form-control mt-2" type="text" name="switch_inline_current_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.switch_inline_current }}" id="switch_inline_current_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}">
+                                    </div>
                                 {% endif %}
                             
                                 {% if inline_button.callback != False and inline_button.callback != '' %}
-                                    <input class="form-control mt-2" type="text" name="callback_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.callback }}">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text mt-2">Switch Inline</div>
+                                        </div>
+                                        <input class="form-control mt-2" type="text" name="callback_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}" value="{{ inline_button.callback }}" id="callback_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}">
+                                    </div>
                                 {% endif %}    
 
                                 <div class="form-row mt-2">
