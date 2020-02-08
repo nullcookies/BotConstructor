@@ -16,16 +16,31 @@
     <hr>
     <h4>Congratulations. You create your bot</h4>
     <div class="form-row mt-3">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <a href="{% url 'download_config_url' %}" class="btn btn-outline-primary btn-sm btn-block">📜 Download config</a>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <a href="{% url 'download_script_url' %}" class="btn btn-outline-dark btn-sm btn-block">📃 Download script</a>
         </div>
+        <div class="col-md-4">
+            <a href="{% url 'auto_deploy_url' %}" class="btn btn-outline-success btn-sm btn-block">Deploy</a>
+        </div>
     </div>
-    <h6 class="mt-2">Below, you can edit the generated code</h6>
-    <p class="text-warning height-between">All changes will be applied at your own risk</p>
 
+    <div class="alert alert-success mt-2">
+        <h6>Below, you can edit the generated code</h6>
+        <hr class="mb-2">
+        <p class="mb-0">All changes will be applied at your own risk</p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-warning">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    
     <div id="editor" class="code-editor">{{ content }}</div>
     <form action="{% url 'create_bot_third_step_url' %}" method="POST">
         {% csrf_token %}
@@ -34,17 +49,4 @@
         <button type="submit" onclick="buttonClick()" class="btn btn-outline-success btn-sm btn-block mt-5">Edit</button>
     </form>
 </div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.3.3/ace.js" type="text/javascript" charset="utf-8"></script>
-<script>
-    var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/github");
-    editor.session.setMode("ace/mode/python");
-    editor.setFontSize(15);
-
-    function buttonClick() {
-        var code = editor.getValue();
-        document.getElementById('code_hello_world').value = code;
-    }
-</script>
 {% endblock main_section %}

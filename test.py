@@ -1,38 +1,28 @@
 # string = 'Hello '
 # print(f'sdsd{string.strip()}ada')
 # import telebot
+
+# import telebot
 # from telebot.types import *
 
-
-# some = {
-#     'react': {
-#         'resize_keyboard': True,
-#         'one_time_keyboard': True,
-#         'selective': False,
-#         'response_text': 'Hello',
-#         'buttons': [
-#             {
-#                 'response': 'some_text',
-#                 'request_contact': True,
-#                 'request_location': False
-#             }
-#         ]
-#     }
-# }
+# bot = telebot.TeleBot(token='944380578:AAEFvaqShiw164lLumAu2wI6w2ZnzSAJ7lM')
 
 
-# @bot.message_handler(func=lambda message: message.text in some.keys())
-# def main(message):
-#     keybord = ReplyKeyboardMarkup(
-#         resize_keyboard=some[message.text]['resize_keyboard'], one_time_keyboard=some[message.text]['one_time_keyboard'], selective=some[message.text]['selective'], row_width=1)
-
-#     for item in some[message.text]['buttons']:
-#         button = KeyboardButton(
-#             text=f"{item['response']}", request_contact=item['request_contact'], request_location=item['request_location'])
-#         keybord.add(button)
-
-#     bot.send_message(chat_id=message.chat.id,
-#                      text=f"{some[message.text]['response_text']}", reply_markup=keybord)
+# @bot.inline_handler(func=lambda query: True)
+# def query_text(query: InlineQuery) -> None:
+#     try:
+#         r = InlineQueryResultArticle(
+#             id='1',
+#             title='Something',
+#             input_message_content=InputTextMessageContent(
+#                 'hello'
+#             ),
+#             url='https://google.com',
+#             description='Somewhere'
+#         )
+#         bot.answer_inline_query(query.id, [r])
+#     except Exception as error:
+#         print(error)
 
 
 # bot.polling()
@@ -46,7 +36,8 @@
 # print(path)
 
 
-# test = 'C:\\Users\\user\\Documents\\BotConstructor\\BotConstructor\\media\\ScriptsBots\\AlexanderIvanov'
+# test = 'C:\\Users\\user\\Documents\\BotConstructor\\BotConstructor
+# \\media\\ScriptsBots\\AlexanderIvanov'
 # os.makedirs(test)
 
 
@@ -54,5 +45,14 @@
 # s = s[:s.rfind('_')]
 # print(s)
 
-s = 'asdsdasd\nsdfsdf'
-print(s)
+# s = 'asdsdasd\nsdfsdf'
+# print(s)
+# item = {
+#     "text": "sdfsdf",
+#     "url": "",
+#     "callback": "sdfsdf",
+#     "switch_inline": "",
+#     "switch_inline_current": ""
+# }
+# generator_value = [value for value in item.keys() if item[value] != ""]
+# print(generator_value)
