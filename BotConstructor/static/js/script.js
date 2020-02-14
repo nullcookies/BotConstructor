@@ -64,3 +64,24 @@ function onCheck() {
         document.getElementById('inline').className += ' disabled';
     }
 }
+
+
+// function getElementByXpath(path) {
+//     return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+// }
+
+function textReactOrCommand() {
+    var react = document.getElementById('id_react_text');
+    var command = document.getElementById('id_command');
+
+    if (react.value.trim() != "") {
+        command.readOnly = true;
+    }
+    else if (command.value.trim() != "") {
+        react.readOnly = true;
+    }
+    else if (command.value.trim() == "" || react.value.trim() == "") {
+        react.readOnly = false;
+        command.readOnly = false;
+    }
+}

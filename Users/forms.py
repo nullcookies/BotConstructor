@@ -46,13 +46,15 @@ class UserRegistrationForm(forms.ModelForm):
             })
         }
 
-    def clean_password_some(self):
-        new_password_some = self.cleaned_data['password_some']
-        new_password_confirm = self.cleaned_data['password_confirm']
+    def clean(self):
+        cleaned_data = super(UserRegistrationForm, self).clean()
+        password = cleaned_data.get("password_some")
+        password_confirm = cleaned_data.get("password_confirm")
 
-        if new_password_some != new_password_confirm:
-            raise forms.ValidationError('Passwords do not match')
-        return new_password_some
+        if password != password_confirm:
+            raise forms.ValidationError("Passwords does not match")
+
+        return cleaned_data
 
 
 class UserAuthenticationForm(forms.Form):

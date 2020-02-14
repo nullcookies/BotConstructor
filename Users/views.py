@@ -6,10 +6,19 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib import messages
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template.loader import render_to_string
+from django.contrib.auth.models import User
+from django.core.mail import EmailMessage
+
 import requests
 
 from .models import Profile
 from .forms import *
+from .tokens import account_activation_token
+from django.http import HttpResponse
 
 
 def base_view(request):
@@ -87,22 +96,31 @@ class UserRegistration(View):
                 image = register_form.cleaned_data['image']
                 about = register_form.cleaned_data['about']
 
-                if password != password_confirm:
-                    messages.error(request, 'Passwords do not match')
-                else:
-                    some_user = User.objects.create_user(
-                        username=username, email=email, password=password,
-                        first_name=first_name, last_name=last_name)
-                    some_user.save()
+                some_user = User.objects.create_user(
+                    username=username, email=email, password=password,
+                    first_name=first_name, last_name=last_name)
+                some_user.is_active = False
+                some_user.save()
 
-                    some_user_profile = Profile.objects.create(
-                        user=some_user, image=image, about=about)
-                    some_user_profile.save()
+                some_user_profile = Profile.objects.create(
+                    user=some_user, image=image, about=about)
+                some_user_profile.save()
 
-                    new_user = authenticate(
-                        username=username, password=password)
-                    login(request, new_user)
-                    return redirect('profile_url')
+                current_site = get_current_site(request)
+                mail_subject = 'Activate your account'
+                message = render_to_string('ActiveEmail.html', {
+                    'user': some_user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(some_user.pk)),
+                    'token': account_activation_token.make_token(some_user),
+                })
+                to_email = register_form.cleaned_data.get('email')
+                email = EmailMessage(
+                    mail_subject, message, to=[to_email]
+                )
+                email.send()
+
+                return redirect('base_view_url')
             else:
                 messages.error(request, 'Sorry, you are the robot')
 
@@ -113,42 +131,115 @@ class UserRegistration(View):
         return render(request, 'Users/SignUp.html', self.context)
 
 
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        login(request, user)
+        return redirect('profile_url')
+    else:
+        return HttpResponse('Activation link is invalid!')
+
+
 class UserAuthentication(View):
     context = {}
 
     def get(self, request):
         auth_form = UserAuthenticationForm()
 
+        if 'tries_captcha' not in request.session.keys():
+            request.session['tries_captcha'] = 0
+
+        if 'tries_captcha' in request.session.keys() \
+                and request.session['tries_captcha'] > 1:
+            is_captcha = True
+        else:
+            is_captcha = False
+
         self.context.update({
             'title': 'Authentication - BotConstructor',
-            'auth_form': auth_form
+            'auth_form': auth_form,
+            'is_captcha': is_captcha
         })
         return render(request, 'Users/SignIn.html', self.context)
 
     def post(self, request):
         auth_form = UserAuthenticationForm(request.POST)
 
+        if 'tries_captcha' not in request.session.keys():
+            request.session['tries_captcha'] = 0
+
+        if 'tries_captcha' in request.session.keys() and \
+                request.session['tries_captcha'] > 1:
+            is_captcha = True
+        else:
+            is_captcha = False
+
         if auth_form.is_valid():
             password = auth_form.cleaned_data['password']
             username = auth_form.cleaned_data['username']
 
-            try:
-                current_user = User.objects.get(username=username)
-                if current_user.check_password(password):
-                    new_user = authenticate(
-                        username=username, password=password)
-                    login(request, new_user)
-                    return redirect('profile_url')
+            if 'tries_captcha' in request.session.keys() and \
+                    request.session['tries_captcha'] > 1:
+                recaptcha_response = request.POST.get(
+                    'g-recaptcha-response')
+                validate_url = ('https://www.google.com/recaptcha/'
+                                'api/siteverify')
+                properties = {
+                    'secret': settings.GOOGLE_SECRET_KEY,
+                    'response': recaptcha_response
+                }
+                response = requests.get(validate_url, params=properties)
+
+                if response.json()['success']:
+                    try:
+                        current_user = User.objects.get(username=username)
+                        if current_user.check_password(password):
+                            new_user = authenticate(
+                                username=username, password=password)
+                            login(request, new_user)
+                            return redirect('profile_url')
+                        else:
+                            request.session['tries_captcha'] += 1
+                            messages.error(request, 'Password is incorrect')
+
+                    except ObjectDoesNotExist:
+                        messages.error(
+                            request,
+                            'Such user does not exits or '
+                            'you enter incorrect username'
+                        )
                 else:
-                    messages.error(request, 'Password is incorrect')
-            except ObjectDoesNotExist:
-                messages.error(
-                    request,
-                    'Such user does not exits or you enter incorrect username')
+                    messages.error(request, 'Sorry, you are the robot')
+            else:
+                try:
+                    current_user = User.objects.get(username=username)
+                    if current_user.check_password(password):
+                        new_user = authenticate(
+                            username=username, password=password)
+                        login(request, new_user)
+                        return redirect('profile_url')
+                    else:
+                        request.session['tries_captcha'] += 1
+                        messages.error(request, 'Password is incorrect')
+
+                except ObjectDoesNotExist:
+                    messages.error(
+                        request,
+                        'Such user does not exits or '
+                        'you enter incorrect username'
+                    )
 
         self.context.update({
             'title': 'Authentication - BotConstructor',
-            'auth_form': auth_form
+            'auth_form': auth_form,
+            'is_captcha': is_captcha
         })
         return render(request, 'Users/SignIn.html', self.context)
 
@@ -204,36 +295,6 @@ class UpdateProfile(LoginRequiredMixin, View):
             'update_form': update_form
         })
         return render(request, 'Users/UpdateProfile.html', self.context)
-
-
-# class UpdateImage(LoginRequiredMixin, View):
-#     login_url = '/signIn/'
-#     redirect_field_name = 'base_view_url'
-
-#     def get(self, request):
-#         current_profile = Profile.objects.get(user=request.user)
-#         update_image_form = UpdateImageForm(instance=current_profile)
-
-#         context = {
-#             'title': 'Update Image - BotConstructor',
-#             'update_image_form': update_image_form
-#         }
-#         return render(request, 'Users/UpdateImage.html', context)
-
-#     def post(self, request):
-#         current_profile = Profile.objects.get(user=request.user)
-#         update_image_form = UpdateImageForm(
-#             request.POST, request.FILES, instance=current_profile)
-
-#         if update_image_form.is_valid():
-#             update_image_form.save()
-#             return redirect('profile_url')
-
-#         context = {
-#             'title': 'Update Image - BotConstructor',
-#             'update_image_form': update_image_form
-#         }
-#         return render(request, 'Users/UpdateImage.html', context)
 
 
 class UserDelete(View):

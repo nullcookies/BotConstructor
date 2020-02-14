@@ -55,6 +55,14 @@ class TextForm(forms.Form):
     }))
     react_text = forms.CharField(widget=forms.TextInput(
         attrs={'class': 'form-control', 'placeholder': 'React Text'}))
+    # command = forms.CharField(
+    #     widget=forms.TextInput(
+    #         attrs={
+    #             'class': 'form-control',
+    #             'placeholder': 'Command'
+    #         }
+    #     )
+    # )
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")

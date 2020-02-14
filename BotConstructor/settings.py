@@ -25,7 +25,9 @@ SECRET_KEY = '9x5*helb@0lk6k+pv5xedzcd@x&tdh04my!bk_$k!#&r#33ren'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'bot-constructor.azurewebsites.net', '127.0.0.1'
+]
 
 
 # Application definition
@@ -133,12 +135,19 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'BotConstructor', 'static')
 ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'BotConstructor/media')
-
-LOGOUT_REDIRECT_URL = 'base_view_url'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'BotConstructor', 'media')
 
 GOOGLE_SECRET_KEY = '6Lf21b8UAAAAAD79VRNA7A1Hmot9u8GpGPqkJgNd'
 
 LOGIN_URL = '/signIn/'
+LOGOUT_REDIRECT_URL = 'base_view_url'
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'bot.constructor.service@gmail.com'
+EMAIL_HOST_PASSWORD = 'bot-constructor21312'
+EMAIL_PORT = 587
