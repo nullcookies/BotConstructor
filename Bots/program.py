@@ -1,5 +1,6 @@
 from django.conf import settings
 from abc import ABC, abstractmethod, abstractproperty
+from telebot.types import *
 import textwrap
 import os
 
@@ -29,17 +30,30 @@ class TextBuilder(Builder):
         with open(path, 'w', encoding='utf-8') as file:
             file.write(textwrap.dedent(init_object))
 
-    def text_response(self, text_dictionary) -> None:
-        object_text = """
-        text_dictionary_messages = %s
-        @bot.message_handler(func=lambda message: message.text \
-in text_dictionary_messages.keys())
-        def response_message(message):
-            print(text_dictionary_messages[message.text])
-            bot.send_message(chat_id=message.chat.id,
-                             text=f'{text_dictionary_messages[message.text]}')
+    def text_response(self, text_dictionary: dict) -> None:
+        if list(text_dictionary.values())[0][1]:
+            object_text = """
+            text_dictionary_messages = %s
+            @bot.message_handler(func=lambda message: message.text \
+    in text_dictionary_messages.keys())
+            def response_message(message):
+                print(text_dictionary_messages[message.text])
+                bot.send_message(chat_id=message.chat.id,
+                                text=f'{text_dictionary_messages[message.text][0]}',
+                                reply_markup=ReplyKeyboardRemove())
 
-        """ % text_dictionary
+            """ % text_dictionary
+        else:
+            object_text = """
+            text_dictionary_messages = %s
+            @bot.message_handler(func=lambda message: message.text \
+    in text_dictionary_messages.keys())
+            def response_message(message):
+                print(text_dictionary_messages[message.text])
+                bot.send_message(chat_id=message.chat.id,
+                                text=f'{text_dictionary_messages[message.text][0]}')
+
+            """ % text_dictionary
 
         final_path = os.path.join(PATH, f'{self.user_username}')
         path = os.path.join(final_path, f'{self.user_username}_test_bot.py')

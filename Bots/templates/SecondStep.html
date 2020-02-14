@@ -88,9 +88,17 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="col-md-12">
                             <textarea class="form-control mt-2" aria-label="Sizing example input" style="height: 100%;"
                                       aria-describedby="inputGroup-sizing-sm" name="response_text_{{ text_item.0 }}">{{ text_item.1.response_text }}</textarea>
+                        </div>
+
+                        <div class="col-md-12 mt-2">
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input type="checkbox" name="remove_reply_markup_{{ text_item.0 }}" class="custom-control-input" {% if text_item.1.remove_reply_markup %}checked{% endif %} id="remove_reply_markup_{{ text_item.0 }}">
+                                <label for="remove_reply_markup_{{ text_item.0 }}" class="custom-control-label">Remove Reply Markup</label>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -117,20 +125,22 @@
                 <div class="col-md-10">
                     {{ text_form.react_text }}
                 </div>
-                <!-- <div class="col-md-5">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                          <span class="input-group-text" id="basic-addon1">/</span>
-                        </div>
-                        
-                    </div>
-                </div> -->
+
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-outline-primary btn-block">Create Text</button>
                 </div>
             </div>
             <div class="mt-2">
                 {{ text_form.response_text }}
+            </div>
+
+            <div class="form-row ml-0 mt-1">
+                {% for pk, choice in text_form.remove_reply_markup.field.widget.choices %}
+                    <div class="custom-control custom-checkbox custom-control-inline">
+                        <input id="id_{{ text_form.remove_reply_markup.name }}_{{ forloop.counter0 }}" name="{{ text_form.remove_reply_markup.name }}" type="{{ text_form.remove_reply_markup.field.widget.input_type }}" value="{{ pk }}" class="custom-control-input" {% ifequal text_form.remove_reply_markup.data pk.0 %}checked="checked"{% endifequal %}>
+                        <label for="id_{{ text_form.remove_reply_markup.name }}_{{ forloop.counter0 }}" class="custom-control-label">{{ choice }}</label>
+                    </div>
+                {% endfor %}
             </div>
         </form>
     {% elif request.path == '/createBot/secondStep/replyMarkup/' or request.path == '/createBot/secondStep/replyMarkup/replyButtons/' %}

@@ -11,6 +11,7 @@ from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.core.mail import EmailMessage
 
 import requests
@@ -18,7 +19,6 @@ import requests
 from .models import Profile
 from .forms import *
 from .tokens import account_activation_token
-from django.http import HttpResponse
 
 
 def base_view(request):

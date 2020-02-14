@@ -30,6 +30,11 @@ class CreateTextField(LoginRequiredMixin, View):
             response_text = text_form.cleaned_data['response_text']
             react_text = text_form.cleaned_data['react_text'].strip()
 
+            if 'remove_reply_markup' in text_form.cleaned_data.keys():
+                remove_reply_markup = True
+            else:
+                remove_reply_markup = False
+
             path = open_configuration(request)
             with open(path, 'r+', encoding='utf-8') as file_name:
                 object_config = json.load(file_name)
@@ -37,12 +42,14 @@ class CreateTextField(LoginRequiredMixin, View):
                 try:
                     object_config['text'].append({
                         'response_text': response_text,
-                        'react_text': react_text
+                        'react_text': react_text,
+                        'remove_reply_markup': remove_reply_markup
                     })
                 except KeyError:
                     object_config['text'] = [{
                         'response_text': response_text,
-                        'react_text': react_text
+                        'react_text': react_text,
+                        'remove_reply_markup': remove_reply_markup
                     }]
                 file_name.seek(0)
                 json.dump(object_config, file_name,
@@ -80,10 +87,18 @@ class UpdateTextField(LoginRequiredMixin, View):
 
         for item in range(len(text_object)):
             if item == final_data[0][0]:
-                if check_text_on_unique(request, final_data[0][1],
-                                        final_data[1][1], final_data[0][0]):
-                    text_object[item]['react_text'] = final_data[0][1].strip()
-                    text_object[item]['response_text'] = final_data[1][1]
+                text_object[item]['react_text'] = final_data[0][1].strip()
+                text_object[item]['response_text'] = final_data[1][1]
+
+                try:
+                    if final_data[2][1] == 'on':
+                        text_object[item][
+                            'remove_reply_markup'
+                        ] = True
+                except IndexError:
+                    text_object[item][
+                        'remove_reply_markup'
+                    ] = False
 
         object_config['text'] = text_object
         with open(path, 'w', encoding='utf-8') as file:

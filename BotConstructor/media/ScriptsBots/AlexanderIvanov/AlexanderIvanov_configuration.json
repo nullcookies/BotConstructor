@@ -1,49 +1,12 @@
 {
-    "access_token": "ваываы",
-    "name": "ываыва",
-    "username": "ваываы",
+    "access_token": "944380578:AAEFvaqShiw164lLumAu2wI6w2ZnzSAJ7lM",
+    "name": "Some",
+    "username": "asdqwe",
     "text": [
         {
-            "response_text": "sdfsdf",
-            "react_text": "sdfsdf"
-        }
-    ],
-    "reply_markup": [
-        {
-            "resize_keyboard": true,
-            "one_time_keyboard": true,
-            "selective": false,
-            "react_text": "sdfsdf",
-            "row_width": 1,
-            "response_text": "sdfsdfsd",
-            "buttons": [
-                {
-                    "response_text": "sdfsdf",
-                    "request_contact": true,
-                    "request_location": false
-                },
-                {
-                    "response_text": "sdfsdfs",
-                    "request_contact": false,
-                    "request_location": true
-                }
-            ]
-        }
-    ],
-    "inline_markup": [
-        {
-            "row_width": 1,
-            "react_text": "some",
-            "response_text": "Sad",
-            "buttons": [
-                {
-                    "text": "asdsdf",
-                    "url": "asdsdfsdf",
-                    "callback": "asddfdf",
-                    "switch_inline": "asdsdfsdf",
-                    "switch_inline_current": "asd"
-                }
-            ]
+            "response_text": "sdfsdfsdfsdfdfdf",
+            "react_text": "dfsfsdf",
+            "remove_reply_markup": false
         }
     ]
 }

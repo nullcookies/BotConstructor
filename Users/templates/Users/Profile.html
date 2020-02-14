@@ -34,10 +34,9 @@
                 <img src="{% static 'pictures/default.png' %}" class="img-fluid profile profile-img-class">
             {% endif %}
 
-            <form action="{% url 'profile_url' %}" method="POST" enctype="multipart/form-data">
+            <form action="{% url 'profile_url' %}" method="POST" enctype="multipart/form-data" class="mt-2">
                 {% csrf_token %}
 
-                {{ update_image_form.image.label }}
                 {{ update_image_form.image }}
                 <button type="submit" class="btn btn-outline-success mt-2">📷 Update image</button>
             </form>
@@ -57,13 +56,9 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-row float-right">
-                        <!-- <div class="col-md-6"> -->
-                            <a href="{% url 'user_delete_url' %}" class="btn btn-outline-danger float-right mr-2">🧹 󠁛󠁛󠁛Delete user</a>
-                        <!-- </div>
+                        <a href="{% url 'user_delete_url' %}" class="btn btn-outline-danger float-right mr-2">🧹 󠁛󠁛󠁛Delete user</a>
 
-                        <div class="col-md-6"> -->
-                            <a href="{% url 'update_profile_url' %}" class="btn btn-outline-primary float-right mr-1">🖊️ Edit profile</a>
-                        <!-- </div> -->
+                        <a href="{% url 'update_profile_url' %}" class="btn btn-outline-primary float-right mr-1">🖊️ Edit profile</a>
                     </div>
                 </div>
             </div>

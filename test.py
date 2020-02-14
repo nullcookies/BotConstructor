@@ -6,7 +6,7 @@
 # from telebot.types import *
 
 # bot = telebot.TeleBot(token='944380578:AAEFvaqShiw164lLumAu2wI6w2ZnzSAJ7lM')
-
+# ReplyKeyboardRemove
 
 # @bot.inline_handler(func=lambda query: True)
 # def query_text(query: InlineQuery) -> None:
@@ -56,3 +56,6 @@
 # }
 # generator_value = [value for value in item.keys() if item[value] != ""]
 # print(generator_value)
+
+d = {'sdsa': ['sds', 'sds']}
+print(list(d.values()))

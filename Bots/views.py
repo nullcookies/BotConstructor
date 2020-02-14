@@ -166,8 +166,12 @@ class GenerateFile(LoginRequiredMixin, View):
         try:
             final_text_dictionary = {}
             for text_element in data['text']:
-                final_text_dictionary[text_element['react_text']
-                                      ] = text_element['response_text']
+                final_text_dictionary[
+                    text_element['react_text']
+                ] = [
+                    text_element['response_text'],
+                    text_element['remove_reply_markup']
+                ]
             program.text_response(text_dictionary=final_text_dictionary)
         except KeyError as k_error:
             print(k_error)

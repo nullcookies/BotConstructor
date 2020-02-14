@@ -63,6 +63,15 @@ class TextForm(forms.Form):
     #         }
     #     )
     # )
+    remove_reply_markup = forms.MultipleChoiceField(
+        required=False, choices=(
+            ('remove_reply', 'Remove Reply Markup'),
+        ), widget=forms.CheckboxSelectMultiple(
+            attrs={
+                'class': 'custom-control-input'
+            }
+        )
+    )
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
