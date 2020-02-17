@@ -5,10 +5,11 @@ from django.conf import settings
 from django.contrib import messages
 
 
-def open_configuration(request) -> str:
+def open_configuration(request, token: str) -> str:
+    token = token.replace(':', '_')
     path = os.path.join(settings.BASE_DIR, 'BotConstructor',
                         'media', 'ScriptsBots', f'{request.user.username}',
-                        f'{request.user.username}_configuration.json')
+                        f'{request.user.username}_{token}_configuration.json')
     if not os.path.exists(path):
         local_path = os.path.join(
             settings.BASE_DIR, 'BotConstructor', 'media', 'ScriptsBots',
@@ -16,27 +17,29 @@ def open_configuration(request) -> str:
         if not os.path.exists(local_path):
             os.makedirs(local_path)
         path = os.path.join(
-            local_path, f'{request.user.username}_configuration.json')
+            local_path, f'{request.user.username}_{token}_configuration.json')
     return path
 
 
-def open_test_bot(request) -> str:
+def open_test_bot(request, token: str) -> str:
+    token = token.replace(':', '_')
     path = os.path.join(settings.BASE_DIR, 'BotConstructor',
                         'media', 'ScriptsBots', f'{request.user.username}',
-                        f'{request.user.username}_test_bot.py')
+                        f'{request.user.username}_{token}_test_bot.py')
     if not os.path.exists(path):
         local_path = os.path.join(
             settings.BASE_DIR, 'BotConstructor', 'media', 'ScriptsBots',
             f'{request.user.username}')
         if not os.path.exists(local_path):
             os.makedirs(local_path)
-        path = os.path.join(local_path, f'{request.user.username}_test_bot.py')
+        path = os.path.join(
+            local_path, f'{request.user.username}_{token}_test_bot.py')
     return path
 
 
 def check_text_on_unique(request, text_element_1: str, text_element_2: str,
-                         index: int) -> bool:
-    path = open_configuration(request)
+                         index: int, token: str) -> bool:
+    path = open_configuration(request, token)
     with open(path, 'r', encoding='utf-8') as file:
         object_text = json.load(file)['text']
 
@@ -52,9 +55,9 @@ def check_text_on_unique(request, text_element_1: str, text_element_2: str,
     return True
 
 
-def enumerate_elements(request, get_object: str) -> list:
+def enumerate_elements(request, get_object: str, token: str) -> list:
     try:
-        path = open_configuration(request)
+        path = open_configuration(request, token)
         with open(path, 'r', encoding='utf-8') as file:
             elements = list(
                 enumerate(json.load(file)[get_object]))

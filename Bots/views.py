@@ -28,6 +28,15 @@ from .classes.steps import *
 data = {}
 
 
+# class EditConfigBot(LoginRequiredMixin, View):
+#     login_url = '/signIn/'
+#     redirect_field_name = 'show_bots_url'
+
+#     def get(self, request, token):
+#         path = open_configuration(request=request)
+#         print(path)
+
+
 class ShowBots(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'show_bots_url'
@@ -105,16 +114,17 @@ class ShowTemplates(LoginRequiredMixin, View):
     redirect_field_name = 'templates'
     context = {}
 
-    def get(self, request):
+    def get(self, request, token: str):
         template_form = ChooseTamplates()
 
         self.context.update({
             'title': 'Second Step - BotConstructor',
-            'template_form': template_form
+            'template_form': template_form,
+            'token': token
         })
         return render(request, 'SecondStep.html', self.context)
 
-    def post(self, request):
+    def post(self, request, token: str):
         template_form = ChooseTamplates(request.POST)
 
         if template_form.is_valid():
@@ -126,7 +136,7 @@ class ShowTemplates(LoginRequiredMixin, View):
             with open(path_template, 'r', encoding='utf-8') as file:
                 content = file.read()
 
-            path_config = open_configuration(request=request)
+            path_config = open_configuration(request=request, token=token)
             with open(path_config, 'r', encoding='utf-8') as file:
                 access_token = json.load(file)['access_token']
 
@@ -139,14 +149,18 @@ class ShowTemplates(LoginRequiredMixin, View):
             content = new_content + content
 
             fixed_code = autopep8.fix_code(content)
-            path = open_test_bot(request=request)
+            path = open_test_bot(request=request, token=token)
             with open(path, 'w', encoding='utf-8') as file:
                 file.write(fixed_code)
-            return redirect('create_bot_third_step_url')
+            return redirect(
+                'create_bot_third_step_url',
+                token=token
+            )
 
         self.context({
             'title': 'Second Step - BotConstructor',
-            'template_form': template_form
+            'template_form': template_form,
+            'token': token
         })
         return render(request, 'SecondStep.html', self.context)
 
@@ -155,8 +169,8 @@ class GenerateFile(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_next_step_url'
 
-    def get(self, request):
-        path = open_configuration(request)
+    def get(self, request, token: str):
+        path = open_configuration(request, token)
         with open(path, 'r', encoding='utf-8') as file:
             data = json.load(file)
 
@@ -172,7 +186,8 @@ class GenerateFile(LoginRequiredMixin, View):
                     text_element['response_text'],
                     text_element['remove_reply_markup']
                 ]
-            program.text_response(text_dictionary=final_text_dictionary)
+            program.text_response(
+                token=token, text_dictionary=final_text_dictionary)
         except KeyError as k_error:
             print(k_error)
 
@@ -207,7 +222,8 @@ class GenerateFile(LoginRequiredMixin, View):
                     'buttons': buttons
                 }
             program.reply_markup_response(
-                reply_markup_dictionary=final_reply_markup_keyboard
+                reply_markup_dictionary=final_reply_markup_keyboard,
+                token=token
             )
         except KeyError as k_error:
             k_error = str(k_error)
@@ -220,7 +236,10 @@ class GenerateFile(LoginRequiredMixin, View):
                     request,
                     f'You have a problem: {k_error}.' + message
                 )
-                return redirect('create_bot_second_step_reply_buttons_url')
+                return redirect(
+                    'create_bot_second_step_reply_buttons_url',
+                    token=token
+                )
 
         try:
             final_inline_markup_keyboard = {}
@@ -248,7 +267,8 @@ class GenerateFile(LoginRequiredMixin, View):
                     'buttons': buttons
                 }
             program.inline_markup_response(
-                inline_markup_dictionary=final_inline_markup_keyboard
+                inline_markup_dictionary=final_inline_markup_keyboard,
+                token=token
             )
         except KeyError as k_error:
             k_error = str(k_error)
@@ -262,41 +282,50 @@ class GenerateFile(LoginRequiredMixin, View):
                     request,
                     f'You have a problem: {k_error}.' + message
                 )
-                return redirect('create_bot_second_step_inline_buttons_url')
+                return redirect(
+                    'create_bot_second_step_inline_buttons_url',
+                    token=token
+                )
 
-        program.polling_bot()
+        program.polling_bot(token=token)
 
-        some_path = open_test_bot(request=request)
+        some_path = open_test_bot(request=request, token=token)
         with open(some_path, 'r+', encoding='utf-8') as file:
             content_code = file.read()
             fixed_code = autopep8.fix_code(content_code)
             file.seek(0)
             file.write(fixed_code)
 
-        file_script_path = open_test_bot(request=request)
-        file_config_path = open_configuration(request=request)
+        file_script_path = open_test_bot(request=request, token=token)
+        file_config_path = open_configuration(request=request, token=token)
         current_user = Profile.objects.get(user=request.user)
         access_token = data['access_token']
-
         print(file_script_path, file_config_path)
-
-        # django_script_file = File(file_script_path)
-        # django_config_file = File(file_config_path)
 
         is_existed_bot = list(Bot.objects.filter(access_token=access_token))
         if is_existed_bot == []:
             bot_object = Bot(owner=current_user,
                              access_token=access_token, title=data['name'],
                              username=data['username'])
-            # bot_object.file_script.save('')
+            bot_object.file_script.save(
+                f"{request.user.username}_{token.replace(':', '_')}"
+                "_test_bot.py",
+                File(open(file_script_path))
+            )
+            bot_object.file_config.save(
+                f"{request.user.username}_{token.replace(':', '_')}"
+                "_configuration.py",
+                File(open(file_config_path))
+            )
             bot_object.save()
 
-        path = open_test_bot(request)
+        path = open_test_bot(request, token)
         with open(path, 'r', encoding='utf-8') as file:
             content = file.read()
         context = {
             'title': 'Third Step - BotConstructor',
-            'content': content
+            'content': content,
+            'token': token
         }
         return render(request, 'ThirdStep.html', context)
 
@@ -305,26 +334,31 @@ class RunBot(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_third_step_url'
 
-    def get(self, request):
-        if f'count_deploys_{request.user.username}' in request.session.keys():
-            if request.session[f'count_deploys_{request.user.username}'] <= 0:
-                AutoDeploy(file_title=f'{request.user.username}_test_bot.py')
-                request.session[f'count_deploys_{request.user.username}'] = 1
+    def get(self, request, token: str):
+        if 'count_deploys' in request.session.keys():
+            if request.session['count_deploys'] <= 0:
+                AutoDeploy(
+                    file_title=f'{request.user.username}_{token}_test_bot.py')
+                request.session['count_deploys'] = 1
                 return redirect('show_bots_url')
             else:
                 messages.error(request, 'You have already deployed your bot')
-                return redirect('create_bot_third_step_url')
+                return redirect(
+                    'create_bot_third_step_url',
+                    token=token
+                )
         else:
-            AutoDeploy(file_title=f'{request.user.username}_test_bot.py')
-            request.session[f'count_deploys_{request.user.username}'] = 1
+            AutoDeploy(
+                file_title=f'{request.user.username}_{token}_test_bot.py')
+            request.session['count_deploys'] = 1
             return redirect('show_bots_url')
 
 
 class Download:
     @staticmethod
     @login_required
-    def config(request):
-        file_path = open_configuration(request)
+    def config(request, token: str):
+        file_path = open_configuration(request, token)
         if os.path.exists(file_path):
             with open(file_path, 'rb') as file:
                 response = HttpResponse(
@@ -337,8 +371,8 @@ class Download:
 
     @staticmethod
     @login_required
-    def script(request):
-        file_path = open_test_bot(request)
+    def script(request, token: str):
+        file_path = open_test_bot(request, token)
         if os.path.exists(file_path):
             with open(file_path, 'rb') as file:
                 response = HttpResponse(

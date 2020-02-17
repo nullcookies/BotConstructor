@@ -17,13 +17,13 @@
     <h4>Congratulations. You create your bot</h4>
     <div class="form-row mt-3">
         <div class="col-md-4">
-            <a href="{% url 'download_config_url' %}" class="btn btn-outline-primary btn-sm btn-block">📜 Download config</a>
+            <a href="{% url 'download_config_url' token=token %}" class="btn btn-outline-primary btn-sm btn-block">📜 Download config</a>
         </div>
         <div class="col-md-4">
-            <a href="{% url 'download_script_url' %}" class="btn btn-outline-dark btn-sm btn-block">📃 Download script</a>
+            <a href="{% url 'download_script_url' token=token %}" class="btn btn-outline-dark btn-sm btn-block">📃 Download script</a>
         </div>
         <div class="col-md-4">
-            <a href="{% url 'auto_deploy_url' %}" class="btn btn-outline-success btn-sm btn-block">Deploy</a>
+            <a href="{% url 'auto_deploy_url' token=token %}" class="btn btn-outline-success btn-sm btn-block">Deploy</a>
         </div>
     </div>
 
@@ -42,7 +42,7 @@
     {% endif %}
     
     <div id="editor" class="code-editor">{{ content }}</div>
-    <form action="{% url 'create_bot_third_step_url' %}" method="POST">
+    <form action="{% url 'create_bot_third_step_url' token=token %}" method="POST">
         {% csrf_token %}
 
         <input type="hidden" name="code_editor" id="code_hello_world" value="">

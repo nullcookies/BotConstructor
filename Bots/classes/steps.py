@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
@@ -37,10 +37,13 @@ class CreateBotStepOne(LoginRequiredMixin, View):
                 'username': username
             })
 
-            path = open_configuration(request)
+            path = open_configuration(request, access_token)
             with open(path, 'w', encoding='utf-8') as file:
                 json.dump(data, file, indent=4, ensure_ascii=False)
-            return redirect('create_bot_second_step_text_url')
+            return redirect(
+                'create_bot_second_step_text_url',
+                token=access_token
+            )
 
         context = {
             'title': 'First Step - BotConstructor',
@@ -53,22 +56,24 @@ class CreateBotStepThree(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_third_step_url'
 
-    def get(self, request):
-        path = open_test_bot(request)
+    def get(self, request, token: str):
+        print(token)
+        path = open_test_bot(request, token)
         with open(path, 'r', encoding='utf-8') as file:
             content = file.read()
 
         context = {
             'title': 'Third Step - BotConstructor',
-            'content': content
+            'content': content,
+            'token': token
         }
         return render(request, 'ThirdStep.html', context)
 
-    def post(self, request):
+    def post(self, request, token: str):
         data = dict(request.POST)
         code = data['code_editor'][0].replace('\r', '')
 
-        path = open_test_bot(request)
+        path = open_test_bot(request, token)
         fixed_code = autopep8.fix_code(code)
         try:
             is_right_sliced = autopep8.check_syntax(code[:-30])
@@ -76,7 +81,10 @@ class CreateBotStepThree(LoginRequiredMixin, View):
 
             with open(path, 'w', encoding='utf-8') as file:
                 file.write(fixed_code)
-            return redirect('create_bot_third_step_url')
+            return redirect(
+                'create_bot_third_step_url',
+                token=token
+            )
         except (NameError, ValueError, TypeError, AttributeError) as error:
             messages.error(
                 request,
@@ -86,6 +94,7 @@ class CreateBotStepThree(LoginRequiredMixin, View):
 
         context = {
             'title': 'Third Step - BotConstructor',
-            'content': fixed_code
+            'content': fixed_code,
+            'token': token
         }
         return render(request, 'ThirdStep.html', context)

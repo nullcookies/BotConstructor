@@ -75,15 +75,19 @@ class TextForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
+        self.token = kwargs.pop("token")
         super(TextForm, self).__init__(*args, **kwargs)
 
     def clean_react_text(self):
         new_react_text = self.cleaned_data['react_text']
+        token = self.token.replace(':', '_')
 
-        path = os.path.join(settings.BASE_DIR, 'BotConstructor',
-                            'media', 'ScriptsBots',
-                            f'{self.request.user.username}',
-                            f'{self.request.user.username}_configuration.json')
+        path = os.path.join(
+            settings.BASE_DIR, 'BotConstructor',
+            'media', 'ScriptsBots',
+            f'{self.request.user.username}',
+            f'{self.request.user.username}_{token}_configuration.json'
+        )
         try:
             with open(path, 'r', encoding='utf-8') as file:
                 object_text = json.load(file)['text']
@@ -118,15 +122,19 @@ class ReplyMarkup(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
+        self.token = kwargs.pop("token")
         super(ReplyMarkup, self).__init__(*args, **kwargs)
 
     def clean_react_text(self):
         new_react_text = self.cleaned_data['react_text']
+        token = self.token.replace(':', '_')
 
-        path = os.path.join(settings.BASE_DIR, 'BotConstructor',
-                            'media', 'ScriptsBots',
-                            f'{self.request.user.username}',
-                            f'{self.request.user.username}_configuration.json')
+        path = os.path.join(
+            settings.BASE_DIR, 'BotConstructor',
+            'media', 'ScriptsBots',
+            f'{self.request.user.username}',
+            f'{self.request.user.username}_{token}_configuration.json'
+        )
         try:
             with open(path, 'r', encoding='utf-8') as file:
                 object_text = json.load(file)['reply_markup']
@@ -141,10 +149,11 @@ class ReplyMarkup(forms.Form):
 
 
 class ReplyButton(forms.Form):
-    response_text = forms.CharField(required=False, widget=forms.TextInput(
+    response_text = forms.CharField(widget=forms.TextInput(
         attrs={'class': 'form-control', 'placeholder': 'Response Text'}))
     radio_buttons = forms.CharField(
-        widget=forms.RadioSelect(choices=REPLY_BUTTONS_CHOICES)
+        widget=forms.RadioSelect(choices=REPLY_BUTTONS_CHOICES),
+        required=False
     )
 
 

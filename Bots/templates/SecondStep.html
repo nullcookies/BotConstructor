@@ -33,7 +33,7 @@
         <div class="text-on-img-2">
             <h4 class="text-light mt-2">Configure your bot here</h4>
             <ul class="text-light">
-                {% if request.path == '/createBot/secondStep/templates/' %}
+                {% if request.path == templates_url %}
                     <li>Select one of the proposed options here to continue editing it</li>
                     <li>After the election you will be missing the rest of the editing settings.</li>
                 {% else %}
@@ -44,15 +44,21 @@
         </div>
     </div>
     <div class="d-flex flex-row btn-group mt-2">
-        <a href="{% url 'create_bot_second_step_text_url' %}" class="col-md-3 btn btn-outline-secondary {% if request.path == '/createBot/secondStep/text/' %}active{% endif %}" id="text">Text</a>
-        <a href="{% url 'create_bot_second_step_reply_markup_url' %}" class="col-md-3 btn btn-outline-secondary {% if request.path == '/createBot/secondStep/replyMarkup/' or request.path == '/createBot/secondStep/replyMarkup/replyButtons/' %}active{% endif %}" id="reply">Reply Buttons</a>
-        <a href="{% url 'create_bot_second_step_inline_markup_url' %}" class="col-md-3 btn btn-outline-secondary {% if request.path == '/createBot/secondStep/inlineMarkup/' or request.path == '/createBot/secondStep/inlineMarkup/inlineButtons/' %}active{% endif %}" id="inline">Inline Buttons</a>
-        <a href="{% url 'templates' %}" class="col-md-3 btn btn-outline-secondary {% if request.path == '/createBot/secondStep/templates/' %}active{% endif %}">Templates</a>
+        {% url 'create_bot_second_step_text_url' token=token as text_url %}
+        {% url 'create_bot_second_step_reply_markup_url' token=token as reply_markup_url %}
+        {% url 'create_bot_second_step_reply_buttons_url' token=token as reply_buttons_url %}
+        {% url 'create_bot_second_step_inline_markup_url' token=token as inline_markup_url %}
+        {% url 'create_bot_second_step_inline_buttons_url' token=token as inline_buttons_url %}
+        {% url 'templates' token=token as templates_url %}
+        <a href="{% url 'create_bot_second_step_text_url' token=token %}" class="col-md-3 btn btn-outline-secondary {% if request.path == text_url %}active{% endif %}" id="text">Text</a>
+        <a href="{% url 'create_bot_second_step_reply_markup_url' token=token %}" class="col-md-3 btn btn-outline-secondary {% if request.path == reply_markup_url or request.path == reply_buttons_url %}active{% endif %}" id="reply">Reply Buttons</a>
+        <a href="{% url 'create_bot_second_step_inline_markup_url' token=token %}" class="col-md-3 btn btn-outline-secondary {% if request.path == inline_markup_url or request.path == inline_buttons_url %}active{% endif %}" id="inline">Inline Buttons</a>
+        <a href="{% url 'templates' token=token %}" class="col-md-3 btn btn-outline-secondary {% if request.path == templates_url %}active{% endif %}">Templates</a>
     </div>
 
     
-    {% if request.path == '/createBot/secondStep/templates/' %}
-        <form action="{% url 'templates' %}" method="POST" class="mt-2" onchange="onCheck()">
+    {% if request.path == templates_url %}
+        <form action="{% url 'templates' token=token %}" method="POST" class="mt-2" onchange="onCheck()">
             {% csrf_token %}
 
             {% for pk, choice in template_form.templates.field.widget.choices %}
@@ -66,10 +72,10 @@
         </form>
     {% endif %}
 
-    {% if request.path == '/createBot/secondStep/text/' %}
+    {% if request.path == text_url %}
         {% if text_elements %}
             {% for text_item in text_elements %}
-                <form action="{% url 'create_bot_second_step_text_update_url' %}" method="POST" class="mt-3">
+                <form action="{% url 'create_bot_second_step_text_update_url' token=token %}" method="POST" class="mt-3">
                     {% csrf_token %}
 
                     <div class="form-row mb-3">
@@ -84,7 +90,7 @@
                                     <button type="submit" class="btn btn-outline-success btn-block">Update</button>
                                 </div>
                                 <div class="col-md-6">
-                                    <a href="{% url 'create_bot_second_step_text_delete_url' button_id=text_item.0 %}" class="btn btn-outline-danger btn-block">Delete</a>
+                                    <a href="{% url 'create_bot_second_step_text_delete_url' token=token button_id=text_item.0 %}" class="btn btn-outline-danger btn-block">Delete</a>
                                 </div>
                             </div>
                         </div>
@@ -112,13 +118,13 @@
         {% endif %}
     {% endif %}
 
-    {% if request.path == '/createBot/secondStep/text/' %}
+    {% if request.path == text_url %}
         <div class="form-row">
             <h5 class="ml-1 text-dark">Create response text</h5>
             <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
         </div>
 
-        <form action="{% url 'create_bot_second_step_text_url' %}" method="POST">
+        <form action="{% url 'create_bot_second_step_text_url' token=token %}" method="POST">
             {% csrf_token %}
 
             <div class="form-row mt-0">
@@ -143,12 +149,12 @@
                 {% endfor %}
             </div>
         </form>
-    {% elif request.path == '/createBot/secondStep/replyMarkup/' or request.path == '/createBot/secondStep/replyMarkup/replyButtons/' %}
+    {% elif request.path == reply_markup_url or request.path == reply_buttons_url %}
         {% if reply_markup_elements %}
             {% for reply_markup_element in reply_markup_elements %}
                 <div class="form-row mt-3">
                     <div class="col-md-5">
-                        <form action="{% url 'create_bot_second_step_reply_markup_update_url' %}" method="POST" class="mb-3">
+                        <form action="{% url 'create_bot_second_step_reply_markup_update_url' token=token %}" method="POST" class="mb-3">
                             {% csrf_token %}
 
                             <div class="form-row row">
@@ -201,14 +207,14 @@
                                 </div>
 
                                 <div class="col-md-4">
-                                    <a href="{% url 'create_bot_second_step_reply_markup_delete_url' markup_id=reply_markup_element.0 %}" class="btn btn-outline-danger btn-sm btn-block">Delete keyboard</a>
+                                    <a href="{% url 'create_bot_second_step_reply_markup_delete_url' token=token markup_id=reply_markup_element.0 %}" class="btn btn-outline-danger btn-sm btn-block">Delete keyboard</a>
                                 </div>
 
                                 <div class="col-md-4">
-                                    {% if request.path == '/createBot/secondStep/replyMarkup/replyButtons/' %}
-                                        <a href="{% url 'create_bot_second_step_reply_markup_url' %}" class="btn btn-outline-success btn-sm btn-block">New Keyboard</a>
-                                    {% elif request.path == '/createBot/secondStep/replyMarkup/' %}
-                                        <a href="{% url 'create_bot_second_step_reply_buttons_url' %}" class="btn btn-outline-dark btn-sm btn-block">Add button</a>
+                                    {% if request.path == reply_buttons_url %}
+                                        <a href="{% url 'create_bot_second_step_reply_markup_url' token=token %}" class="btn btn-outline-success btn-sm btn-block">New Keyboard</a>
+                                    {% elif request.path == reply_markup_url %}
+                                        <a href="{% url 'create_bot_second_step_reply_buttons_url' token=token %}" class="btn btn-outline-dark btn-sm btn-block">Add button</a>
                                     {% endif %}
                                 </div>
                             </div>                                
@@ -217,7 +223,7 @@
 
                     <div class="col-md-7">
                         {% for button_element in reply_markup_element.1.buttons %}
-                            <form action="{% url 'create_bot_second_step_reply_buttons_update_url' %}" method="POST" class="mb-3">
+                            <form action="{% url 'create_bot_second_step_reply_buttons_update_url' token=token %}" method="POST" class="mb-3">
                                 {% csrf_token %}
 
                                 <div class="input-group">
@@ -243,7 +249,7 @@
                                         <button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update button</button>
                                     </div>
                                     <div class="col-md-6">
-                                        <a href="{% url 'create_bot_second_step_reply_button_delete_url' markup_id=reply_markup_element.0 button_id=forloop.counter0 %}" class="btn btn-outline-danger btn-sm btn-block">Delete button</a>
+                                        <a href="{% url 'create_bot_second_step_reply_button_delete_url' token=token markup_id=reply_markup_element.0 button_id=forloop.counter0 %}" class="btn btn-outline-danger btn-sm btn-block">Delete button</a>
                                     </div>
                                 </div>
                             </form>
@@ -263,8 +269,8 @@
             <h6 class="mt-1 ml-2 text-secondary">Keyboard settings</h6>    
         </div>
 
-        {% if request.path == '/createBot/secondStep/replyMarkup/replyButtons/' %}
-            <form action="{% url 'create_bot_second_step_reply_buttons_url' %}" method="POST">
+        {% if request.path == reply_buttons_url %}
+            <form action="{% url 'create_bot_second_step_reply_buttons_url' token=token %}" method="POST">
                 {% csrf_token %}
 
                 <div class="form-row">
@@ -285,8 +291,8 @@
                     {% endfor %}
                 </div>
             </form>
-        {% elif request.path == '/createBot/secondStep/replyMarkup/' %}
-            <form action="{% url 'create_bot_second_step_reply_markup_url' %}" method="POST">
+        {% elif request.path == reply_markup_url %}
+            <form action="{% url 'create_bot_second_step_reply_markup_url' token=token %}" method="POST">
                 {% csrf_token %}
 
                 <div class="form-row">
@@ -323,12 +329,12 @@
                 </div>
             </form>
         {% endif %}
-    {% elif request.path == '/createBot/secondStep/inlineMarkup/' or request.path == '/createBot/secondStep/inlineMarkup/inlineButtons/' %}
+    {% elif request.path == inline_markup_url or request.path == inline_buttons_url %}
         {% if inline_markup_elements %}
             {% for inline_markup_element in inline_markup_elements %}
                 <div class="form-row mt-3">
                     <div class="col-md-5">
-                        <form action="{% url 'create_bot_second_step_inline_markup_update_url' %}" method="POST">
+                        <form action="{% url 'create_bot_second_step_inline_markup_update_url' token=token %}" method="POST">
                             {% csrf_token %}
 
                             <div class="input-group">
@@ -357,13 +363,13 @@
                                     <button type="submit" class="btn btn-outline-warning btn-sm mt-2 btn-block">Update markup</button>
                                 </div>
                                 <div class="col-md-4">
-                                    <a href="{% url 'create_bot_second_step_inline_markup_delete_url' markup_id=inline_markup_element.0 %}" class="btn btn-outline-danger btn-sm mt-2 btn-block">Delete markup</a>
+                                    <a href="{% url 'create_bot_second_step_inline_markup_delete_url' token=token markup_id=inline_markup_element.0 %}" class="btn btn-outline-danger btn-sm mt-2 btn-block">Delete markup</a>
                                 </div>
                                 <div class="col-md-4">
-                                    {% if request.path == '/createBot/secondStep/inlineMarkup/inlineButtons/' %}
-                                        <a href="{% url 'create_bot_second_step_inline_markup_url' %}" class="btn btn-outline-success btn-sm mt-2 btn-block">Add keyboard</a>
+                                    {% if request.path == inline_buttons_url %}
+                                        <a href="{% url 'create_bot_second_step_inline_markup_url' token=token %}" class="btn btn-outline-success btn-sm mt-2 btn-block">Add keyboard</a>
                                     {% else %}
-                                        <a href="{% url 'create_bot_second_step_inline_buttons_url' %}" class="btn btn-outline-dark btn-sm mt-2 btn-block">Add button</a>
+                                        <a href="{% url 'create_bot_second_step_inline_buttons_url' token=token %}" class="btn btn-outline-dark btn-sm mt-2 btn-block">Add button</a>
                                     {% endif %}
                                 </div>
                             </div>
@@ -372,7 +378,7 @@
 
                     <div class="col-md-7">                    
                         {% for inline_button in inline_markup_element.1.buttons %}
-                            <form action="{% url 'create_bot_second_step_inline_buttons_update_url' %}" method="POST" class="mb-3">
+                            <form action="{% url 'create_bot_second_step_inline_buttons_update_url' token=token %}" method="POST" class="mb-3">
                                 {% csrf_token %}
 
                                 <div class="input-group">
@@ -423,7 +429,7 @@
                                         <button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update button</button>
                                     </div>
                                     <div class="col-md-6">
-                                        <a href="{% url 'create_bot_second_step_inline_buttons_delete_url' markup_id=inline_markup_element.0 button_id=forloop.counter0 %}" class="btn btn-outline-danger btn-sm btn-block">Delete button</a>
+                                        <a href="{% url 'create_bot_second_step_inline_buttons_delete_url' token=token markup_id=inline_markup_element.0 button_id=forloop.counter0 %}" class="btn btn-outline-danger btn-sm btn-block">Delete button</a>
                                     </div>
                                 </div>
                             </form>
@@ -445,8 +451,8 @@
         </div>
 
         
-        {% if request.path == '/createBot/secondStep/inlineMarkup/' %}
-            <form action="{% url 'create_bot_second_step_inline_markup_url' %}" method="POST">
+        {% if request.path == inline_markup_url %}
+            <form action="{% url 'create_bot_second_step_inline_markup_url' token=token %}" method="POST">
                 {% csrf_token %}
 
                 <div class="form-row">
@@ -464,8 +470,8 @@
                     </div>
                 </div>
             </form>
-        {% elif request.path == '/createBot/secondStep/inlineMarkup/inlineButtons/' %}
-            <form action="{% url 'create_bot_second_step_inline_buttons_url' %}" method="POST" onchange="getInlineValues(this)">
+        {% elif request.path == inline_buttons_url %}
+            <form action="{% url 'create_bot_second_step_inline_buttons_url' token=token %}" method="POST" onchange="getInlineValues(this)">
                 {% csrf_token %}
 
                 <div class="form-row">
@@ -500,7 +506,7 @@
             </div>
             
             <div class="col-md-3">
-                <form action="{% url 'create_bot_second_step_next_step_url' %}" class="mb-2">
+                <form action="{% url 'create_bot_second_step_next_step_url' token=token %}" class="mb-2">
                     {% csrf_token %}
                     
                     <button type="submit" class="btn btn-secondary btn-block btn-sm">Next</button>

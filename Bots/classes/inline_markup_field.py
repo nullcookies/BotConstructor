@@ -11,19 +11,22 @@ class CreateInlineMarkupField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_inline_markup_url'
 
-    def get(self, request):
+    def get(self, request, token: str):
         inline_markup_elements = enumerate_elements(request,
+                                                    token=token,
                                                     get_object='inline_markup')
         inline_markup_form = InlineMarkup()
         self.context.update({
             'title': 'Second Step - BotConstructor',
             'inline_markup_form': inline_markup_form,
-            'inline_markup_elements': inline_markup_elements
+            'inline_markup_elements': inline_markup_elements,
+            'token': token
         })
         return render(request, 'SecondStep.html', self.context)
 
-    def post(self, request):
+    def post(self, request, token: str):
         inline_markup_elements = enumerate_elements(request,
+                                                    token=token,
                                                     get_object='inline_markup')
         inline_markup_form = InlineMarkup(request.POST)
 
@@ -32,7 +35,7 @@ class CreateInlineMarkupField(LoginRequiredMixin, View):
             response_text = inline_markup_form.cleaned_data['response_text']
             react_text = inline_markup_form.cleaned_data['react_text']
 
-            path = open_configuration(request)
+            path = open_configuration(request, token)
             with open(path, 'r+', encoding='utf-8') as file:
                 object_config = json.load(file)
 
@@ -51,12 +54,16 @@ class CreateInlineMarkupField(LoginRequiredMixin, View):
                 file.seek(0)
                 json.dump(object_config, file,
                           indent=4, ensure_ascii=False)
-                return redirect('create_bot_second_step_inline_buttons_url')
+                return redirect(
+                    'create_bot_second_step_inline_buttons_url',
+                    token=token
+                )
 
         self.context.update({
             'title': 'Second Step - BotConstructor',
             'inline_markup_form': inline_markup_form,
-            'inline_markup_elements': inline_markup_elements
+            'inline_markup_elements': inline_markup_elements,
+            'token': token
         })
         return render(request, 'SecondStep.html', self.context)
 
@@ -65,11 +72,11 @@ class UpdateInlineMarkupField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_inline_markup_url'
 
-    def post(self, request):
+    def post(self, request, token: str):
         data = dict(request.POST)
         print(data)
 
-        path = open_configuration(request)
+        path = open_configuration(request, token)
         with open(path, 'r', encoding='utf-8') as file:
             object_config = json.load(file)
 
@@ -84,8 +91,6 @@ class UpdateInlineMarkupField(LoginRequiredMixin, View):
 
         for item in range(len(inline_markup_object)):
             if item == index:
-                # if check_text_on_unique(request, final_data[0][1],
-                #                         final_data[1][1], final_data[0][0]):
                 inline_markup_object[item][
                     'react_text'
                 ] = final_data[1][1].strip()
@@ -97,15 +102,18 @@ class UpdateInlineMarkupField(LoginRequiredMixin, View):
         object_config['inline_markup'] = inline_markup_object
         with open(path, 'w', encoding='utf-8') as file:
             json.dump(object_config, file, indent=4, ensure_ascii=False)
-        return redirect('create_bot_second_step_inline_markup_url')
+        return redirect(
+            'create_bot_second_step_inline_markup_url',
+            token=token
+        )
 
 
 class DeleteInlineMarkupField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_inline_markup_url'
 
-    def get(self, request, markup_id):
-        path = open_configuration(request)
+    def get(self, request, token: str, markup_id: int):
+        path = open_configuration(request, token)
         with open(path, 'r', encoding='utf-8') as file:
             object_config = json.load(file)
 
@@ -115,4 +123,7 @@ class DeleteInlineMarkupField(LoginRequiredMixin, View):
         object_config['inline_markup'] = reply_markup_object
         with open(path, 'w', encoding='utf-8') as file:
             json.dump(object_config, file, indent=4, ensure_ascii=False)
-        return redirect('create_bot_second_step_inline_markup_url')
+        return redirect(
+            'create_bot_second_step_inline_markup_url',
+            token=token
+        )

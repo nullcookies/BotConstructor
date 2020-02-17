@@ -15,20 +15,23 @@ class CreateReplyButtonsField(LoginRequiredMixin, View):
         'request_location'
     ]
 
-    def get(self, request):
+    def get(self, request, token: str):
         reply_markup_elements = enumerate_elements(request,
+                                                   token=token,
                                                    get_object='reply_markup')
         reply_button_form = ReplyButton()
 
         self.context.update({
             'title': 'Second Step - BotConstructor',
             'reply_button_form': reply_button_form,
-            'reply_markup_elements': reply_markup_elements
+            'reply_markup_elements': reply_markup_elements,
+            'token': token
         })
         return render(request, 'SecondStep.html', self.context)
 
-    def post(self, request):
+    def post(self, request, token: str):
         reply_markup_elements = enumerate_elements(request,
+                                                   token=token,
                                                    get_object='reply_markup')
         reply_button_form = ReplyButton(request.POST)
 
@@ -47,7 +50,7 @@ class CreateReplyButtonsField(LoginRequiredMixin, View):
                 else:
                     check_radio[item] = False
 
-            path = open_configuration(request)
+            path = open_configuration(request, token)
             with open(path, 'r+', encoding='utf-8') as file_name:
                 object_config = json.load(file_name)
 
@@ -66,13 +69,21 @@ class CreateReplyButtonsField(LoginRequiredMixin, View):
                 file_name.seek(0)
                 json.dump(object_config, file_name,
                           indent=4, ensure_ascii=False)
-            return redirect('create_bot_second_step_reply_buttons_url')
+            return redirect(
+                'create_bot_second_step_reply_buttons_url',
+                token=token
+            )
 
-        reply_markup_elements = enumerate_elements(request, 'reply_markup')
+        reply_markup_elements = enumerate_elements(
+            request,
+            token=token,
+            get_object='reply_markup'
+        )
         self.context.update({
             'title': 'Second Step - BotConstructor',
             'reply_button_form': reply_button_form,
-            'reply_markup_elements': reply_markup_elements
+            'reply_markup_elements': reply_markup_elements,
+            'token': token
         })
         return render(request, 'SecondStep.html', self.context)
 
@@ -86,14 +97,14 @@ class UpdateReplyButtonsField(LoginRequiredMixin, View):
         'request_location'
     ]
 
-    def post(self, request):
+    def post(self, request, token: str):
         data = dict(request.POST)
         print(data)
         obligatory_fields = [
             'response_text'
         ]
 
-        path = open_configuration(request)
+        path = open_configuration(request, token)
         with open(path, 'r', encoding='utf-8') as file:
             object_config = json.load(file)
 
@@ -126,15 +137,18 @@ class UpdateReplyButtonsField(LoginRequiredMixin, View):
         object_config['reply_markup'] = reply_markup_object
         with open(path, 'w', encoding='utf-8') as file:
             json.dump(object_config, file, indent=4, ensure_ascii=False)
-        return redirect('create_bot_second_step_reply_buttons_url')
+        return redirect(
+            'create_bot_second_step_reply_buttons_url',
+            token=token
+        )
 
 
 class DeleteReplyButtonField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_reply_markup_url'
 
-    def get(self, request, markup_id: int, button_id: int):
-        path = open_configuration(request)
+    def get(self, request, token: str, markup_id: int, button_id: int):
+        path = open_configuration(request, token)
         with open(path, 'r', encoding='utf-8') as file:
             object_config = json.load(file)
 
@@ -148,4 +162,7 @@ class DeleteReplyButtonField(LoginRequiredMixin, View):
         ][markup_id]['buttons'] = reply_button_object
         with open(path, 'w', encoding='utf-8') as file:
             json.dump(object_config, file, indent=4, ensure_ascii=False)
-        return redirect('create_bot_second_step_reply_markup_url')
+        return redirect(
+            'create_bot_second_step_reply_markup_url',
+            token=token
+        )

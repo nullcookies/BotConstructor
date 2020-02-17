@@ -31,8 +31,8 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
                         <a href="{% url 'delete_bot_url' bot_id=bot.id %}" class="btn btn-sm btn-outline-danger">🧹 󠁛󠁛󠁛Delete</a>
-                        <a href="{% url 'create_bot_third_step_url' %}" class="btn btn-sm btn-outline-primary">⬇️ Download</a>
-                        <a href="{% url 'create_bot_second_step_text_url' %}" class="btn btn-sm btn-outline-warning">Edit</a>
+                        <a href="{% url 'create_bot_third_step_url' token=bot.access_token %}" class="btn btn-sm btn-outline-primary">⬇️ Download</a>
+                        <a href="{% url 'create_bot_second_step_text_url' token=bot.access_token %}" class="btn btn-sm btn-outline-warning">Edit</a>
                     </div>
                     <small class="text-muted">{{ bot.owner.user.first_name }} {{ bot.owner.user.last_name }}</small>
                 </div>

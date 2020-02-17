@@ -57,5 +57,17 @@
 # generator_value = [value for value in item.keys() if item[value] != ""]
 # print(generator_value)
 
-d = {'sdsa': ['sds', 'sds']}
-print(list(d.values()))
+d = {
+    'asdasd': ['sdsdf', True],
+    'sd': ['asd', False]
+}
+s = {}
+
+for key, value in d.items():
+    if d[key][1] is True:
+        s[key] = value
+
+for i in s.keys():
+    if i in d.keys():
+        del d[i]
+print(d, s)

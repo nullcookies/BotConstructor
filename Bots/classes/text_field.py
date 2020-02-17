@@ -11,31 +11,37 @@ class CreateTextField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_text_url'
 
-    def get(self, request):
-        text_elements = enumerate_elements(request, get_object='text')
-        text_form = TextForm(request=request)
+    def get(self, request, token: str):
+        text_elements = enumerate_elements(request,
+                                           token=token, get_object='text')
+        text_form = TextForm(request=request, token=token)
 
         self.context.update({
             'title': 'Second Step - BotConstructor',
             'text_elements': text_elements,
-            'text_form': text_form
+            'text_form': text_form,
+            'token': token
         })
         return render(request, 'SecondStep.html', self.context)
 
-    def post(self, request):
-        text_elements = enumerate_elements(request, get_object='text')
-        text_form = TextForm(request.POST, request=request)
+    def post(self, request, token: str):
+        text_elements = enumerate_elements(request,
+                                           token=token, get_object='text')
+        text_form = TextForm(request.POST, request=request, token=token)
 
         if text_form.is_valid():
             response_text = text_form.cleaned_data['response_text']
             react_text = text_form.cleaned_data['react_text'].strip()
 
             if 'remove_reply_markup' in text_form.cleaned_data.keys():
-                remove_reply_markup = True
+                if text_form.cleaned_data['remove_reply_markup'] == []:
+                    remove_reply_markup = False
+                else:
+                    remove_reply_markup = True
             else:
                 remove_reply_markup = False
 
-            path = open_configuration(request)
+            path = open_configuration(request, token)
             with open(path, 'r+', encoding='utf-8') as file_name:
                 object_config = json.load(file_name)
 
@@ -54,12 +60,16 @@ class CreateTextField(LoginRequiredMixin, View):
                 file_name.seek(0)
                 json.dump(object_config, file_name,
                           indent=4, ensure_ascii=False)
-            return redirect('create_bot_second_step_text_url')
+            return redirect(
+                'create_bot_second_step_text_url',
+                token=token
+            )
 
         self.context.update({
             'title': 'Second Step - BotConstructor',
             'text_elements': text_elements,
-            'text_form': text_form
+            'text_form': text_form,
+            'token': token
         })
         return render(request, 'SecondStep.html', self.context)
 
@@ -68,10 +78,10 @@ class UpdateTextField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_text_url'
 
-    def post(self, request):
+    def post(self, request, token: str):
         data = dict(request.POST)
 
-        path = open_configuration(request)
+        path = open_configuration(request, token)
         with open(path, 'r', encoding='utf-8') as file:
             object_config = json.load(file)
 
@@ -103,15 +113,18 @@ class UpdateTextField(LoginRequiredMixin, View):
         object_config['text'] = text_object
         with open(path, 'w', encoding='utf-8') as file:
             json.dump(object_config, file, indent=4, ensure_ascii=False)
-        return redirect('create_bot_second_step_text_url')
+        return redirect(
+            'create_bot_second_step_text_url',
+            token=token
+        )
 
 
 class DeleteTextField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_text_url'
 
-    def get(self, request, button_id: int):
-        path = open_configuration(request)
+    def get(self, request, button_id: int, token: str):
+        path = open_configuration(request, token)
         with open(path, 'r', encoding='utf-8') as file:
             object_config = json.load(file)
 
@@ -121,4 +134,7 @@ class DeleteTextField(LoginRequiredMixin, View):
         object_config['text'] = text_object
         with open(path, 'w', encoding='utf-8') as file:
             json.dump(object_config, file, indent=4, ensure_ascii=False)
-        return redirect('create_bot_second_step_text_url')
+        return redirect(
+            'create_bot_second_step_text_url',
+            token=token
+        )

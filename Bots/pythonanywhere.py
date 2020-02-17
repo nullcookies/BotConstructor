@@ -13,8 +13,8 @@ class AutoDeploy:
     def __init__(self, file_title: str):
         self.path = os.path.join(BASE_DIR, 'BotConstructor', 'media',
                                  'ScriptsBots', f"{file_title.split('_')[0]}",
-                                 file_title)
-        self.file_title = file_title
+                                 file_title.replace(':', '_'))
+        self.file_title = file_title.replace(':', '_')
 
         # ! User credencials
         self.TOKEN = '54be38d4e853d62835b2c970d6b6fc23a653b901'
@@ -26,7 +26,7 @@ class AutoDeploy:
 
         # ? Open and write content of a file
         self.DATA = open(self.path, 'r', encoding='utf-8').read()
-        self.PATH = f'/home/{self.USERNAME}/{file_title}'
+        self.PATH = f"/home/{self.USERNAME}/{file_title.replace(':', '_')}"
         self.FILES = {
             'content': self.DATA
         }
@@ -98,7 +98,9 @@ class AutoDeploy:
             f'{self.BASE_URL}/api/v0/user/{self.USERNAME}'
             f'/consoles/{self.CONSOLE_ID}/send_input/',
             headers=self.HEADERS, json={
-                'input': f'workon venv\npython3 {self.file_title}\n'}
+                'input': "workon venv\npython3 "
+                         f"{self.file_title.replace(':', '_')}\n"
+            }
         )
 
         # ! Check in success
