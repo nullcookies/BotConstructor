@@ -293,7 +293,9 @@ class GenerateFile(LoginRequiredMixin, View):
         with open(some_path, 'r+', encoding='utf-8') as file:
             content_code = file.read()
             fixed_code = autopep8.fix_code(content_code)
+            print(fixed_code)
             file.seek(0)
+            file.truncate()
             file.write(fixed_code)
 
         file_script_path = open_test_bot(request=request, token=token)
