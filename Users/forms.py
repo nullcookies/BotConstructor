@@ -6,7 +6,6 @@ from .models import *
 
 
 class UserRegistrationForm(forms.ModelForm):
-    image = forms.FileField(required=False)
     password_some = forms.CharField(label='Password',
                                     widget=forms.PasswordInput(attrs={
                                         'class': 'form-control',
@@ -24,10 +23,9 @@ class UserRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('image', 'username', 'email', 'first_name', 'last_name',
+        fields = ('username', 'email', 'first_name', 'last_name',
                   'password_some', 'password_confirm')
         widgets = {
-            'image': forms.FileInput(attrs={'class': 'form-control'}),
             'username': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Username'

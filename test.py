@@ -57,17 +57,56 @@
 # generator_value = [value for value in item.keys() if item[value] != ""]
 # print(generator_value)
 
-d = {
-    'asdasd': ['sdsdf', True],
-    'sd': ['asd', False]
+# d = {
+#     'asdasd': ['sdsdf', True],
+#     'sd': ['asd', False]
+# }
+# s = {}
+
+# for key, value in d.items():
+#     if d[key][1] is True:
+#         s[key] = value
+
+# for i in s.keys():
+#     if i in d.keys():
+#         del d[i]
+# print(d, s)
+
+
+import requests
+
+url = 'https://www.pythonanywhere.com/login/'
+
+
+session = requests.Session()
+session.headers.update({
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                  'Chrome/80.0.3987.116 Safari/537.36'
+})
+
+
+response = session.get(url)
+
+session.headers.update({
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'Connection': 'keep-alive',
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Host': 'www.pythonanywhere.com',
+    'Referer': 'https://www.pythonanywhere.com/login/',
+    'Sec-Fetch-User': '?1',
+    'Upgrade-Insecure-Requests': '1',
+})
+
+some = session.cookies.get_dict()
+data = {
+    'csrfmiddlewaretoken': some['csrftoken'],
+    'auth-username': 'AlexanderIvanov20',
+    'auth-password': 'QBmhyq.c_Khi62%',
+    'login_view-current_step': 'auth'
 }
-s = {}
+resp = session.post(url, data=data)
+print(resp.status_code)
 
-for key, value in d.items():
-    if d[key][1] is True:
-        s[key] = value
-
-for i in s.keys():
-    if i in d.keys():
-        del d[i]
-print(d, s)
+session.get(
+    'https://www.pythonanywhere.com/user/AlexanderIvanov20/consoles/14862405/')

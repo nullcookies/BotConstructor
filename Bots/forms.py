@@ -53,16 +53,15 @@ class TextForm(forms.Form):
         'placeholder': 'Response Text',
         'style': 'height: 80px'
     }))
-    react_text = forms.CharField(widget=forms.TextInput(
-        attrs={'class': 'form-control', 'placeholder': 'React Text'}))
-    # command = forms.CharField(
-    #     widget=forms.TextInput(
-    #         attrs={
-    #             'class': 'form-control',
-    #             'placeholder': 'Command'
-    #         }
-    #     )
-    # )
+    react_text = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'React Text'
+            }
+        ),
+        required=False
+    )
     remove_reply_markup = forms.MultipleChoiceField(
         required=False, choices=(
             ('remove_reply', 'Remove Reply Markup'),

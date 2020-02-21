@@ -93,7 +93,6 @@ class UserRegistration(View):
                 password_confirm = register_form.cleaned_data[
                     'password_confirm'
                 ]
-                image = register_form.cleaned_data['image']
                 about = register_form.cleaned_data['about']
 
                 some_user = User.objects.create_user(
@@ -103,7 +102,7 @@ class UserRegistration(View):
                 some_user.save()
 
                 some_user_profile = Profile.objects.create(
-                    user=some_user, image=image, about=about)
+                    user=some_user, about=about)
                 some_user_profile.save()
 
                 current_site = get_current_site(request)
@@ -119,6 +118,11 @@ class UserRegistration(View):
                     mail_subject, message, to=[to_email]
                 )
                 email.send()
+
+                messages.error(
+                    request,
+                    'Now, a message will come to your mail'
+                )
 
                 return redirect('base_view_url')
             else:
@@ -203,7 +207,15 @@ class UserAuthentication(View):
                         if current_user.check_password(password):
                             new_user = authenticate(
                                 username=username, password=password)
-                            login(request, new_user)
+
+                            try:
+                                login(request, new_user)
+                            except AttributeError:
+                                messages.error(
+                                    request,
+                                    'Firstly, you must confirm your email'
+                                )
+
                             return redirect('profile_url')
                         else:
                             request.session['tries_captcha'] += 1
@@ -223,7 +235,14 @@ class UserAuthentication(View):
                     if current_user.check_password(password):
                         new_user = authenticate(
                             username=username, password=password)
-                        login(request, new_user)
+                        try:
+                            login(request, new_user)
+                        except AttributeError:
+                            messages.error(
+                                request,
+                                'Firstly, you must confirm your email'
+                            )
+
                         return redirect('profile_url')
                     else:
                         request.session['tries_captcha'] += 1

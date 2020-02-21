@@ -26,7 +26,20 @@
     {% for bot in all_bots %}
         <div class="card mb-4 box-shadow mt-2">
             <div class="card-body">
-                <h5>{{ bot.title }} {{ bot.username }}</h5>
+                <div class="row">
+                    <div class="col-6">
+                        <h5>{{ bot.title }} {{ bot.username }}</h5>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="float-right">
+                            <a href="{% url 'stop_bot_url' token=bot.access_token %}">Stop hosting</a>
+                            |
+                            <a href="{% url 'start_bot_url' token=bot.access_token %}" class="mr-2">Start hosting</a>
+                        </div>
+                    </div>
+                </div>
+
                 <p class="text-secondary">{{ bot.access_token }}</p>
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">

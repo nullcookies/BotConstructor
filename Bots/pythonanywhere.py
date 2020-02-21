@@ -1,9 +1,11 @@
 import requests
 import os
+import json
 
 from pprint import pprint
 from time import sleep
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,12 +40,6 @@ class AutoDeploy:
             'working_directory': f'/home/{self.USERNAME}/'
         }
 
-        # Call the functions
-        self.upload_file()
-        self.CONSOLE_ID = self.create_console()
-        self.open_console()
-        self.send_input()
-
     def upload_file(self):
         # ! Do request for upload file
         response = requests.post(
@@ -64,9 +60,15 @@ class AutoDeploy:
         return console_id
 
     def open_console(self):
+        options = Options()
+        options.headless = True
+
         # ? Open driver
         driver = webdriver.Chrome(
-            executable_path=os.path.join(BASE_DIR, 'chromedriver.exe')
+            executable_path=os.path.join(
+                BASE_DIR, 'chromedriver.exe'
+            ),
+            chrome_options=options
         )
         driver.get(
             f'{self.BASE_URL}/user/{self.USERNAME}/consoles/#'
@@ -92,11 +94,11 @@ class AutoDeploy:
         sleep(5)
         driver.close()
 
-    def send_input(self):
+    def send_input(self, console_id: int):
         # ! Send command to console
         send_console_response = requests.post(
             f'{self.BASE_URL}/api/v0/user/{self.USERNAME}'
-            f'/consoles/{self.CONSOLE_ID}/send_input/',
+            f'/consoles/{console_id}/send_input/',
             headers=self.HEADERS, json={
                 'input': "workon venv\npython3 "
                          f"{self.file_title.replace(':', '_')}\n"
@@ -109,5 +111,26 @@ class AutoDeploy:
         else:
             print(send_console_response.status_code)
 
+    def stop_bot(self, console_id: int):
+        response = requests.delete(
+            f'{self.BASE_URL}/api/v0/user/{self.USERNAME}/'
+            f'consoles/{console_id}/',
+            headers=self.HEADERS
+        )
+        print(response.status_code)
 
-# parser = AutoDeploy(file_title='AlexanderIvanov_test_bot.py')
+    def run_bot(self, path):
+        console_id = self.create_console()
+
+        with open(path, 'r+', encoding='utf-8') as file:
+            object_config = json.load(file)
+            object_config['console_id'] = console_id
+            file.seek(0)
+            json.dump(object_config, file,
+                      indent=4, ensure_ascii=False)
+
+        self.open_console()
+        self.send_input(console_id)
+
+
+# parser = AutoDeploy().stop_bot(14869773)

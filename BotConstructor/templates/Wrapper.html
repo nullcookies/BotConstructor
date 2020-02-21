@@ -14,6 +14,13 @@
 
 <section class="mt-4">
     <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-warning mt-2">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
         <div class="row">
             <div class="col-md-7">
                 <img src="https://www.tokkoro.com/picsup/2620137-mountains-4k-pc-hd-wallpaper-free-download.jpg"

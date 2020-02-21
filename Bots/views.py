@@ -28,15 +28,6 @@ from .classes.steps import *
 data = {}
 
 
-# class EditConfigBot(LoginRequiredMixin, View):
-#     login_url = '/signIn/'
-#     redirect_field_name = 'show_bots_url'
-
-#     def get(self, request, token):
-#         path = open_configuration(request=request)
-#         print(path)
-
-
 class ShowBots(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'show_bots_url'
@@ -59,41 +50,6 @@ class ShowBots(LoginRequiredMixin, View):
             messages.error(request, 'Such user does not exist')
 
         return render(request, 'AllBots.html', context)
-
-
-class UpdateBot(View):
-    def get(self, request, bot_id: int):
-        current_bot = Bot.objects.get(id=bot_id)
-        update_bot_form = CreateBotForm(instance=current_bot)
-
-        context = {
-            'title': 'Update Bot - BotConstructor',
-            'update_bot_form': update_bot_form
-        }
-        return render(request, 'UpdateBot.html', context)
-
-    def post(self, request, bot_id: int):
-        current_bot = Bot.objects.get(id=bot_id)
-        update_bot_form = CreateBotForm(
-            request.POST, request.FILES, instance=current_bot)
-        current_user = Profile.objects.get(user=request.user)
-
-        if update_bot_form.is_valid():
-            access_token = update_bot_form.cleaned_data['access_token']
-            file = update_bot_form.cleaned_data['file_script']
-
-            current_bot.access_token = access_token
-            current_bot.file_script = file
-            current_bot.owner = current_user
-            current_bot.save()
-
-            return redirect('show_bots_url')
-
-        context = {
-            'title': 'Update Bot - BotConstructor',
-            'update_bot_form': update_bot_form
-        }
-        return render(request, 'UpdateBot.html', context)
 
 
 class DeleteBot(View):
@@ -302,7 +258,6 @@ class GenerateFile(LoginRequiredMixin, View):
         file_config_path = open_configuration(request=request, token=token)
         current_user = Profile.objects.get(user=request.user)
         access_token = data['access_token']
-        print(file_script_path, file_config_path)
 
         is_existed_bot = list(Bot.objects.filter(access_token=access_token))
         if is_existed_bot == []:
@@ -339,8 +294,21 @@ class RunBot(LoginRequiredMixin, View):
     def get(self, request, token: str):
         if 'count_deploys' in request.session.keys():
             if request.session['count_deploys'] <= 0:
-                AutoDeploy(
+                deploy = AutoDeploy(
                     file_title=f'{request.user.username}_{token}_test_bot.py')
+                deploy.upload_file()
+                console_id = deploy.create_console()
+                deploy.open_console()
+                deploy.send_input(console_id=console_id)
+
+                path = open_configuration(request=request, token=token)
+                with open(path, 'r+', encoding='utf-8') as file:
+                    object_config = json.load(file)
+                    object_config['console_id'] = deploy.CONSOLE_ID
+                    file.seek(0)
+                    json.dump(object_config, file,
+                              indent=4, ensure_ascii=False)
+
                 request.session['count_deploys'] = 1
                 return redirect('show_bots_url')
             else:
@@ -350,10 +318,67 @@ class RunBot(LoginRequiredMixin, View):
                     token=token
                 )
         else:
-            AutoDeploy(
+            deploy = AutoDeploy(
                 file_title=f'{request.user.username}_{token}_test_bot.py')
+            deploy.upload_file()
+            console_id = deploy.create_console()
+            deploy.open_console()
+            deploy.send_input(console_id=console_id)
+
+            path = open_configuration(request=request, token=token)
+            with open(path, 'r+', encoding='utf-8') as file:
+                object_config = json.load(file)
+                object_config['console_id'] = deploy.CONSOLE_ID
+                file.seek(0)
+                json.dump(object_config, file,
+                          indent=4, ensure_ascii=False)
+
             request.session['count_deploys'] = 1
             return redirect('show_bots_url')
+
+
+class StopBot(LoginRequiredMixin, View):
+    login_url = '/signIn/'
+    redirect_field_name = 'stop_bot_url'
+    context = {}
+
+    def get(self, request, token):
+        path = open_configuration(request, token=token)
+        with open(path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+
+        console_id = data['console_id']
+        deploy = AutoDeploy(
+            file_title=f'{request.user.username}_{token}_test_bot.py'
+        )
+        deploy.stop_bot(console_id=console_id)
+
+        messages.error(
+            request,
+            f'Bot, with token: {token} has been stopped'
+        )
+
+        return redirect('show_bots_url')
+
+
+class StartBot(LoginRequiredMixin, View):
+    login_url = '/signIn/'
+    redirect_field_name = 'stop_bot_url'
+    context = {}
+
+    def get(self, request, token):
+        path = open_configuration(request, token=token)
+
+        deploy = AutoDeploy(
+            file_title=f'{request.user.username}_{token}_test_bot.py'
+        )
+        deploy.run_bot(path)
+
+        messages.error(
+            request,
+            f'Bot, with token: {token} is running now'
+        )
+        return redirect('show_bots_url')
 
 
 class Download:

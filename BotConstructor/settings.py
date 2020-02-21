@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'BotConstructor.urls'
@@ -87,6 +88,12 @@ DATABASES = {
         'PASSWORD': 'domestosroot50',
         'HOST': 'localhost',
         'PORT': '5432'
+        # 'ENGINE': 'django.db.backends.postgresql',
+        # 'NAME': 'BotConstructor_DB',
+        # 'USER': 'alexAdmin@bot-constructor',
+        # 'PASSWORD': 'liceuM@lex@aminP@$$',
+        # 'HOST': 'bot-constructor.postgres.database.azure.com',
+        # 'PORT': '5432'
     }
 }
 

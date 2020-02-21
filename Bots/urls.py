@@ -83,11 +83,11 @@ urlpatterns = [
     ),
     path(
         'createBot/secondStep/<str:token>/inlineMarkup/updateInlineButtons',
-        UpdateInlineMarkupField.as_view(),
+        UpdateInlineButtonsField.as_view(),
         name='create_bot_second_step_inline_buttons_update_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/replyMarkup/updateInlineMarkup/',
+        'createBot/secondStep/<str:token>/inlineMarkup/updateInlineMarkup',
         UpdateInlineMarkupField.as_view(),
         name='create_bot_second_step_inline_markup_update_url'
     ),
@@ -113,11 +113,6 @@ urlpatterns = [
         name='download_script_url'
     ),
     path(
-        'updateBot/<int:bot_id>/',
-        UpdateBot.as_view(),
-        name='update_bot_url'
-    ),
-    path(
         'deleteBot/<int:bot_id>/',
         DeleteBot.as_view(),
         name='delete_bot_url'
@@ -132,9 +127,14 @@ urlpatterns = [
         ShowTemplates.as_view(),
         name='templates'
     ),
-    # path(
-    #     'editBot/<str:token>/',
-    #     EditConfigBot.as_view(),
-    #     name='edit_bot_url'
-    # )
+    path(
+        'stopBot/<str:token>/',
+        StopBot.as_view(),
+        name='stop_bot_url'
+    ),
+    path(
+        'startBot/<str:token>',
+        StartBot.as_view(),
+        name='start_bot_url'
+    )
 ]

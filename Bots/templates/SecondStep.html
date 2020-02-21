@@ -80,9 +80,18 @@
 
                     <div class="form-row mb-3">
                         <div class="col-md-9">
-                            <input class="form-control" aria-label="Sizing example input"
+                            {% if text_item.1.react_text|first == '/' %}
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">/</div>
+                                </div>
+                                <input class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" name="react_text_{{ text_item.0 }}" value="{{ text_item.1.react_text }}" id="react_text_text">
+                            </div>
+                            {% else %}
+                                <input class="form-control" aria-label="Sizing example input"
                                 aria-describedby="inputGroup-sizing-sm" name="react_text_{{ text_item.0 }}"
-                                value="{{ text_item.1.react_text }}">
+                                value="{{ text_item.1.react_text }}" id="react_text_text">
+                            {% endif %}
                         </div>
                         <div class="col-md-3">
                             <div class="form-row">
@@ -160,10 +169,17 @@
                             <div class="form-row row">
                                 <div class="col-md-8">
                                     <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text">React</div>
-                                        </div>
-                                        <input class="form-control" name="react_text_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.react_text }}">
+                                        {% if reply_markup_element.1.react_text|first == '/' %}
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">/</div>
+                                            </div>
+                                            <input class="form-control" name="react_text_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.react_text }}">
+                                        {% else %}
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">React</div>
+                                            </div>
+                                            <input class="form-control" name="react_text_{{ reply_markup_element.0 }}" value="{{ reply_markup_element.1.react_text }}">
+                                        {% endif %}
                                     </div>
                                 </div>
 
@@ -347,10 +363,17 @@
                             <div class="form-row">
                                 <div class="col-md-10">
                                     <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text mt-2">React</div>
-                                        </div>
-                                        <input class="form-control mt-2" type="text" name="react_text_inline_{{ inline_markup_element.0 }}" value="{{ inline_markup_element.1.react_text }}">
+                                        {% if inline_markup_element.1.react_text|first == '/' %}
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text mt-2">/</div>
+                                            </div>
+                                            <input class="form-control mt-2" type="text" name="react_text_inline_{{ inline_markup_element.0 }}" value="{{ inline_markup_element.1.react_text }}">
+                                        {% else %}
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text mt-2">React</div>
+                                            </div>
+                                            <input class="form-control mt-2" type="text" name="react_text_inline_{{ inline_markup_element.0 }}" value="{{ inline_markup_element.1.react_text }}">
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="col-md-2">

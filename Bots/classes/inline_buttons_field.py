@@ -79,7 +79,7 @@ class CreateInlineButtonsField(LoginRequiredMixin, View):
         return render(request, 'SecondStep.html', self.context)
 
 
-class UpdateInlineMarkupField(LoginRequiredMixin, View):
+class UpdateInlineButtonsField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_inline_buttons_url'
 
