@@ -10,28 +10,28 @@
     </div>
 
     {% for field in update_image_form %}
-        {% if field.errors %}
-            <div class="alert alert-warning">
-                {{ field.errors }}
-            </div>
-        {% endif %}
+    {% if field.errors %}
+    <div class="alert alert-warning">
+        {{ field.errors }}
+    </div>
+    {% endif %}
     {% endfor %}
 
     {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-warning">
-                {{ message }}
-            </div>
-        {% endfor %}
+    {% for message in messages %}
+    <div class="alert alert-warning">
+        {{ message }}
+    </div>
+    {% endfor %}
     {% endif %}
 
 
     <div class="row mt-2">
         <div class="col-md-3">
             {% if current_user.image %}
-                <img src="{{ current_user.image.url }}" class="img-fluid w-100 border-class">
+            <img src="{{ current_user.image.url }}" class="img-fluid w-100 border-class">
             {% else %}
-                <img src="{% static 'pictures/default.png' %}" class="img-fluid profile profile-img-class">
+            <img src="{% static 'pictures/default.png' %}" class="img-fluid profile profile-img-class">
             {% endif %}
 
             <form action="{% url 'profile_url' %}" method="POST" enctype="multipart/form-data" class="mt-2">
@@ -56,9 +56,11 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-row float-right">
-                        <a href="{% url 'user_delete_url' %}" class="btn btn-outline-danger float-right mr-2">🧹 󠁛󠁛󠁛Delete user</a>
+                        <a href="{% url 'user_delete_url' %}" class="btn btn-outline-danger float-right mr-2">🧹
+                            󠁛󠁛󠁛Delete user</a>
 
-                        <a href="{% url 'update_profile_url' %}" class="btn btn-outline-primary float-right mr-1">🖊️ Edit profile</a>
+                        <a href="{% url 'update_profile_url' %}" class="btn btn-outline-primary float-right mr-1">🖊️
+                            Edit profile</a>
                     </div>
                 </div>
             </div>

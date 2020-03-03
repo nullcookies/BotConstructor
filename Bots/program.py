@@ -147,6 +147,28 @@ in inline_markup_dictionary.keys())
         with open(path, 'a', encoding='utf-8') as file:
             file.write(textwrap.dedent(object_text))
 
+    def callback_response(self, callback_dictionary, token):
+        token = token.replace(':', '_')
+
+        object_text = ''
+        for key, value in callback_dictionary.items():
+            object_text += """
+            @bot.callback_query_handler(
+                func=lambda call: call.data == '%s' % '{0}'
+            )
+            def get_callback(call):
+                try:
+                    bot.send_message(chat_id=call.from_user.id,
+                                     text="%s" % '{1}')
+
+            """.format(key, value['response_text'])
+
+        final_path = os.path.join(PATH, f'{self.user_username}')
+        path = os.path.join(
+            final_path, f'{self.user_username}_{token}_test_bot.py')
+        with open(path, 'a', encoding='utf-8') as file:
+            file.write(textwrap.dedent(object_text))
+
     def polling_bot(self, token: str):
         token = token.replace(':', '_')
 

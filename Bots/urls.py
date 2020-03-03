@@ -24,7 +24,7 @@ urlpatterns = [
         name='create_bot_second_step_text_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/text/delete/<int:button_id>/',
+        'createBot/secondStep/<str:token>/text/delete/',
         DeleteTextField.as_view(),
         name='create_bot_second_step_text_delete_url'
     ),
@@ -56,8 +56,7 @@ urlpatterns = [
         name='create_bot_second_step_inline_buttons_delete_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/replyMarkup/deleteReplyMarkup/'
-        '<int:markup_id>/',
+        'createBot/secondStep/<str:token>/replyMarkup/deleteReplyMarkup/',
         DeleteReplyMarkupField.as_view(),
         name='create_bot_second_step_reply_markup_delete_url'
     ),
@@ -136,5 +135,20 @@ urlpatterns = [
         'startBot/<str:token>',
         StartBot.as_view(),
         name='start_bot_url'
+    ),
+    path(
+        'createBot/secondStep/<str:token>/callbackAnswer/',
+        CreateCallbackField.as_view(),
+        name='create_callback_url'
+    ),
+    path(
+        'createBot/secondStep/<str:token>/callbackAnswer/update/',
+        UpdateCallbackField.as_view(),
+        name='update_callback_url'
+    ),
+    path(
+        'createBot/secondStep/<str:token>/callbackAnswer/delete/',
+        DeleteCallbackField.as_view(),
+        name='delete_callback_url'
     )
 ]

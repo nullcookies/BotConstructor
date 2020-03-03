@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from ..functions import *
 from ..forms import TextForm
+from django.http import HttpResponse, JsonResponse
 
 
 class CreateTextField(LoginRequiredMixin, View):
@@ -29,15 +30,14 @@ class CreateTextField(LoginRequiredMixin, View):
                                            token=token, get_object='text')
         text_form = TextForm(request.POST, request=request, token=token)
 
-        if text_form.is_valid():
-            response_text = text_form.cleaned_data['response_text']
-            react_text = text_form.cleaned_data['react_text'].strip()
+        if request.POST.get('action') == 'post':
+            react_text = request.POST.get('react_text')
+            response_text = request.POST.get('response_text')
+            remove_reply = request.POST.get('remove_reply')
+            csrf = request.POST.get('csrfmiddlewaretoken')
 
-            if 'remove_reply_markup' in text_form.cleaned_data.keys():
-                if text_form.cleaned_data['remove_reply_markup'] == []:
-                    remove_reply_markup = False
-                else:
-                    remove_reply_markup = True
+            if remove_reply == 'true':
+                remove_reply_markup = True
             else:
                 remove_reply_markup = False
 
@@ -60,10 +60,16 @@ class CreateTextField(LoginRequiredMixin, View):
                 file_name.seek(0)
                 json.dump(object_config, file_name,
                           indent=4, ensure_ascii=False)
-            return redirect(
-                'create_bot_second_step_text_url',
-                token=token
-            )
+                len_text = len(object_config['text']) - 1
+
+            return JsonResponse({
+                'response_text': response_text,
+                'react_text': react_text,
+                'remove_reply_markup': remove_reply_markup,
+                'len_text': len_text,
+                'csrf': csrf,
+                'token': token
+            })
 
         self.context.update({
             'title': 'Second Step - BotConstructor',
@@ -77,64 +83,73 @@ class CreateTextField(LoginRequiredMixin, View):
 class UpdateTextField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_text_url'
+    context = {}
 
     def post(self, request, token: str):
         data = dict(request.POST)
+        if request.POST.get('action') == 'update_text':
+            react_text = dict(request.POST)['react_text[]']
+            response_text = dict(request.POST)['response_text[]']
+            remove_reply_markup = dict(request.POST)['remove_reply_markup[]']
 
-        path = open_configuration(request, token)
-        with open(path, 'r', encoding='utf-8') as file:
-            object_config = json.load(file)
+            index = int(react_text[0][-1])
+            print(react_text, response_text, remove_reply_markup, index)
 
-        text_object = object_config['text']
-        final_data = []
-        for button in data.items():
-            try:
-                index = int(button[0].split('_')[-1])
-                text = button[1][0]
-                final_data.append([index, text])
-            except ValueError:
-                pass
+            path = open_configuration(request, token)
+            with open(path, 'r', encoding='utf-8') as file:
+                object_config = json.load(file)
 
-        for item in range(len(text_object)):
-            if item == final_data[0][0]:
-                text_object[item]['react_text'] = final_data[0][1].strip()
-                text_object[item]['response_text'] = final_data[1][1]
+            text_object = object_config['text']
+            text_object[index]['react_text'] = react_text[1]
+            text_object[index]['response_text'] = response_text[1]
 
-                try:
-                    if final_data[2][1] == 'on':
-                        text_object[item][
-                            'remove_reply_markup'
-                        ] = True
-                except IndexError:
-                    text_object[item][
-                        'remove_reply_markup'
-                    ] = False
+            if remove_reply_markup[1] == 'true':
+                text_object[index][
+                    'remove_reply_markup'
+                ] = True
+            else:
+                text_object[index][
+                    'remove_reply_markup'
+                ] = False
 
-        object_config['text'] = text_object
-        with open(path, 'w', encoding='utf-8') as file:
-            json.dump(object_config, file, indent=4, ensure_ascii=False)
-        return redirect(
-            'create_bot_second_step_text_url',
-            token=token
-        )
+            object_config['text'] = text_object
+            with open(path, 'w', encoding='utf-8') as file:
+                json.dump(object_config, file, indent=4, ensure_ascii=False)
+            return JsonResponse(text_object[index])
+
+        self.context.update({
+            'title': 'Second Step - BotConstructor',
+            'token': token
+        })
+        return render(request, 'SecondStep.html', self.context)
 
 
 class DeleteTextField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_text_url'
 
-    def get(self, request, button_id: int, token: str):
-        path = open_configuration(request, token)
-        with open(path, 'r', encoding='utf-8') as file:
-            object_config = json.load(file)
+    def get(self, request, token: str):
+        if request.GET.get('action') == 'delete_text':
+            button_id = int(request.GET.get('button_id').split('_')[-1])
+            print(button_id)
 
-        text_object = object_config['text']
-        text_object.remove(text_object[button_id])
+            path = open_configuration(request, token)
+            with open(path, 'r', encoding='utf-8') as file:
+                object_config = json.load(file)
 
-        object_config['text'] = text_object
-        with open(path, 'w', encoding='utf-8') as file:
-            json.dump(object_config, file, indent=4, ensure_ascii=False)
-        return redirect(
-            'create_bot_second_step_text_url',
-            token=token
-        )
+            text_object = object_config['text']
+            text_object.remove(text_object[button_id])
+
+            object_config['text'] = text_object
+            with open(path, 'w', encoding='utf-8') as file:
+                json.dump(object_config, file, indent=4, ensure_ascii=False)
+
+            return JsonResponse({
+                'button_id': button_id
+            })
+
+        self.context.update({
+            'title': 'Second Step - BotConstructor',
+            'token': token
+        })
+        return render(request, 'SecondStep.html', self.context)

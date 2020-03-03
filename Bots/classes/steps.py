@@ -7,6 +7,10 @@ from ..functions import *
 from ..forms import GetAccessToken
 
 import autopep8
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class CreateBotStepOne(LoginRequiredMixin, View):

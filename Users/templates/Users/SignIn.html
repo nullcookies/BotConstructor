@@ -7,23 +7,23 @@
 
     <form method="POST">
         {% csrf_token %}
-        
+
         {% for field in auth_form %}
-            {% if field.errors %}
-                <div class="alert alert-warning">
-                    {{ field.errors }}
-                </div>
-            {% endif %}
+        {% if field.errors %}
+        <div class="alert alert-warning">
+            {{ field.errors }}
+        </div>
+        {% endif %}
         {% endfor %}
 
         {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-warning">
-                    {{ message }}
-                </div>
-            {% endfor %}
+        {% for message in messages %}
+        <div class="alert alert-warning">
+            {{ message }}
+        </div>
+        {% endfor %}
         {% endif %}
-        
+
         <div class="form-row">
             <div class="form-group col-md-6 mt-2 mb-2">
                 {{ auth_form.username.label }}
@@ -36,10 +36,10 @@
         </div>
 
         {% if is_captcha %}
-            <div class="mb-2">
-                <script src='https://www.google.com/recaptcha/api.js'></script>
-                <div class="g-recaptcha" data-sitekey="6Lf21b8UAAAAAEBwgOQVQGnM3lOntyJqS9IFdxQJ"></div>            
-            </div>
+        <div class="mb-2">
+            <script src='https://www.google.com/recaptcha/api.js'></script>
+            <div class="g-recaptcha" data-sitekey="6Lf21b8UAAAAAEBwgOQVQGnM3lOntyJqS9IFdxQJ"></div>
+        </div>
         {% endif %}
 
         <button type="submit" class="btn btn-outline-warning">SignIn</button>

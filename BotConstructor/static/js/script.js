@@ -46,10 +46,6 @@ function getInlineValues(form) {
     }
 }
 
-var editor = ace.edit("editor");
-editor.setTheme("ace/theme/github");
-editor.session.setMode("ace/mode/python");
-editor.setFontSize(15);
 
 function buttonClick() {
     var code = editor.getValue();
@@ -58,11 +54,10 @@ function buttonClick() {
 
 
 function onCheck() {
-    if (document.getElementById('id_templates_0').checked) {
-        document.getElementById('text').className += ' disabled';
-        document.getElementById('reply').className += ' disabled';
-        document.getElementById('inline').className += ' disabled';
-    }
+    document.getElementById('text').className += ' disabled';
+    document.getElementById('reply').className += ' disabled';
+    document.getElementById('inline').className += ' disabled';
+    document.getElementById('id_menu_callback').className += ' disabled';
 }
 
 
@@ -72,3 +67,4 @@ function changeSome() {
         react.outerHTML = '<div class="input-group"><div class="input-group-prepend"><div class="input-group-text">/</div></div>]' + react + '</div>';
     }
 }
+

@@ -23,6 +23,7 @@ from .classes.inline_markup_field import *
 from .classes.inline_buttons_field import *
 from .functions import *
 from .classes.steps import *
+from .classes.callback import *
 
 
 data = {}
@@ -98,6 +99,7 @@ class ShowTemplates(LoginRequiredMixin, View):
 
             new_content = """
             import telebot
+            from telebot.types import *
 
 
             bot = telebot.TeleBot(token='{0}')
@@ -243,13 +245,35 @@ class GenerateFile(LoginRequiredMixin, View):
                     token=token
                 )
 
+        try:
+            final_callback_query = {}
+            for callback_element in data['callbacks']:
+                for value_1, value_2, value_3 in zip(data['text'],
+                                                     data['inline_markup'],
+                                                     data['reply_markup']):
+                    if callback_element['react_text'] == value_1['react_text']:
+                        final_callback_query[
+                            callback_element['callback']] = value_1
+                    # elif callback_element[
+                    #         'react_text'] == value_2['react_text']:
+                    #     final_callback_query[
+                    #         callback_element['callback']] = value_2
+                    # elif callback_element[
+                    #         'react_text'] == value_3['react_text']:
+                    #     final_callback_query[
+                    #         callback_element['callback']] = value_3
+            print(final_callback_query, 'hi')
+
+            program.callback_response(final_callback_query, token)
+        except KeyError as k_error:
+            print(k_error)
+
         program.polling_bot(token=token)
 
         some_path = open_test_bot(request=request, token=token)
         with open(some_path, 'r+', encoding='utf-8') as file:
             content_code = file.read()
             fixed_code = autopep8.fix_code(content_code)
-            print(fixed_code)
             file.seek(0)
             file.truncate()
             file.write(fixed_code)
@@ -259,7 +283,11 @@ class GenerateFile(LoginRequiredMixin, View):
         current_user = Profile.objects.get(user=request.user)
         access_token = data['access_token']
 
-        is_existed_bot = list(Bot.objects.filter(access_token=access_token))
+        current_user_profile = Profile.objects.get(user=request.user)
+        is_existed_bot = list(Bot.objects.filter(
+            access_token=access_token,
+            owner=current_user_profile
+        ))
         if is_existed_bot == []:
             bot_object = Bot(owner=current_user,
                              access_token=access_token, title=data['name'],
@@ -304,7 +332,7 @@ class RunBot(LoginRequiredMixin, View):
                 path = open_configuration(request=request, token=token)
                 with open(path, 'r+', encoding='utf-8') as file:
                     object_config = json.load(file)
-                    object_config['console_id'] = deploy.CONSOLE_ID
+                    object_config['console_id'] = console_id
                     file.seek(0)
                     json.dump(object_config, file,
                               indent=4, ensure_ascii=False)
@@ -328,7 +356,7 @@ class RunBot(LoginRequiredMixin, View):
             path = open_configuration(request=request, token=token)
             with open(path, 'r+', encoding='utf-8') as file:
                 object_config = json.load(file)
-                object_config['console_id'] = deploy.CONSOLE_ID
+                object_config['console_id'] = console_id
                 file.seek(0)
                 json.dump(object_config, file,
                           indent=4, ensure_ascii=False)

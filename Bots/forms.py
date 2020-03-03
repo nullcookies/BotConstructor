@@ -7,6 +7,7 @@ import json
 import os
 
 from .models import Bot
+from .functions import *
 
 
 CHECKBOX_CHOICES = (
@@ -16,6 +17,7 @@ CHECKBOX_CHOICES = (
 )
 CHOICES = (
     ('linkedin_mailer', 'Linked In Mailer'),
+    ('news', 'News Bot')
 )
 REPLY_BUTTONS_CHOICES = (
     ('request_contact', 'Request Contact'),
@@ -214,3 +216,70 @@ class InlineButton(forms.Form):
 
 class ChooseTamplates(forms.Form):
     templates = forms.CharField(widget=forms.RadioSelect(choices=CHOICES))
+
+
+class CallbackForm(forms.Form):
+    callback_text = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Callback'
+            }
+        )
+    )
+    react_text = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'React Text'
+            }
+        )
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        self.token = kwargs.pop("token")
+        super(CallbackForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        new_callback_text = self.cleaned_data['callback_text']
+        new_react_text = self.cleaned_data['react_text']
+        print(new_callback_text, new_react_text)
+
+        path = open_configuration(self.request, self.token)
+        with open(path, 'r', encoding='utf-8') as file:
+            object_config = json.load(file)
+
+        inline_object = object_config['inline_markup']
+
+        point_callback = False
+        for value in inline_object:
+            for item in value['buttons']:
+                if new_callback_text == item['callback']:
+                    point_callback = True
+
+        point_react_text = False
+        for value_1, value_2, value_3 in zip(object_config['text'],
+                                             object_config['reply_markup'],
+                                             inline_object):
+            if new_react_text == value_1['react_text'] or \
+                new_react_text == value_2['react_text'] or \
+                    new_react_text == value_3['react_text']:
+                point_react_text = True
+
+        if point_callback:
+            print('Ok')
+        else:
+            self.add_error(
+                'react_text',
+                f"Your config don't have this callback: {new_callback_text}"
+            )
+
+        # if point_react_text:
+        #     print('Ok')
+        # else:
+        #     self.add_error(
+        #         'react_text',
+        #         f"Your config don't have this react text: {new_react_text}"
+        #     )
+        return self.cleaned_data

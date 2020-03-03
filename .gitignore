@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 .vscode/
 ScriptsBots/
+DBScriptsBots/
+user_images/
 
 # C extensions
 *.so
