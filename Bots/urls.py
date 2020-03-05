@@ -44,8 +44,7 @@ urlpatterns = [
         name='create_bot_second_step_reply_buttons_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/replyMarkup/deleteReplyButton/'
-        '<int:markup_id>/<int:button_id>/',
+        'createBot/secondStep/<str:token>/replyMarkup/deleteReplyButton/',
         DeleteReplyButtonField.as_view(),
         name='create_bot_second_step_reply_button_delete_url'
     ),

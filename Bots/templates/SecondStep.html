@@ -308,7 +308,7 @@
                                 class="btn btn-outline-success btn-sm btn-block">New Keyboard</a>
                             {% elif request.path == reply_markup_url %}
                             <a href="{% url 'create_bot_second_step_reply_buttons_url' token=token %}"
-                                class="btn btn-outline-dark btn-sm btn-block">Add button</a>
+                                class="btn btn-outline-dark btn-sm btn-block" id="id_add_button_reply">Add button</a>
                             {% endif %}
                         </div>
                     </div>
@@ -317,8 +317,7 @@
 
             <div class="col-md-7">
                 {% for button_element in reply_markup_element.1.buttons %}
-                <form action="{% url 'create_bot_second_step_reply_buttons_update_url' token=token %}" method="POST"
-                    class="mb-3">
+                <form onsubmit="sendAjaxUpdateReplyButton(this); return false;" method="POST" class="mb-3">
                     {% csrf_token %}
 
                     <div class="input-group">
@@ -334,8 +333,9 @@
                             <input type="radio" name="radio_buttons_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}"
                                 value="request_contact" class="custom-control-input"
                                 {% if button_element.request_contact %}checked="checked" {% endif %}
-                                id="req_con_{{ forloop.counter0 }}">
-                            <label for="req_con_{{ forloop.counter0 }}" class="custom-control-label">Request
+                                id="req_con_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}">
+                            <label for="req_con_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}"
+                                class="custom-control-label">Request
                                 contact</label>
                         </div>
 
@@ -343,8 +343,9 @@
                             <input type="radio" name="radio_buttons_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}"
                                 value="request_location" class="custom-control-input"
                                 {% if button_element.request_location %}checked="checked" {% endif %}
-                                id="req_loc_{{ forloop.counter0 }}">
-                            <label for="req_loc_{{ forloop.counter0 }}" class="custom-control-label">Request
+                                id="req_loc_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}">
+                            <label for="req_loc_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}"
+                                class="custom-control-label">Request
                                 location</label>
                         </div>
                     </div>
@@ -355,8 +356,9 @@
                                 button</button>
                         </div>
                         <div class="col-md-6">
-                            <a href="{% url 'create_bot_second_step_reply_button_delete_url' token=token markup_id=reply_markup_element.0 button_id=forloop.counter0 %}"
-                                class="btn btn-outline-danger btn-sm btn-block">Delete button</a>
+                            <button type="button" class="btn btn-outline-danger btn-sm btn-block"
+                                id="id_delete_reply_button_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}"
+                                onclick="sendAjaxDeleteReplyButton(this);">Delete button</button>
                         </div>
                     </div>
                 </form>
@@ -379,7 +381,7 @@
     </div>
 
     {% if request.path == reply_buttons_url %}
-    <form action="{% url 'create_bot_second_step_reply_buttons_url' token=token %}" method="POST">
+    <form id="id_reply_buttons_form" method="POST">
         {% csrf_token %}
 
         <div class="form-row">
@@ -407,47 +409,49 @@
     </form>
 
     {% elif request.path == reply_markup_url %}
-    <form method="POST" id="id_reply_markup_create_form">
-        {% csrf_token %}
+    <div id="id_reply_form">
+        <form method="POST" id="id_reply_markup_create_form">
+            {% csrf_token %}
 
-        <div class="form-row">
-            <div class="col-md-10">
-                {{ reply_markup_form.react_text }}
-            </div>
-            <div class="col-md-2">
-                {{ reply_markup_form.row_width }}
-            </div>
-        </div>
-
-        <div class="mb-2">
             <div class="form-row">
                 <div class="col-md-10">
-                    {{ reply_markup_form.response_text_markup }}
+                    {{ reply_markup_form.react_text }}
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-outline-primary btn-block">Create Keyboard</button>
+                    {{ reply_markup_form.row_width }}
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-md-5">
-                <div class="form-row ml-0" id="id_reply_checkboxes">
-                    {% for pk, choice in reply_markup_form.checkboxes.field.widget.choices %}
-                    <div class="custom-control custom-checkbox custom-control-inline">
-                        <input id="id_{{ reply_markup_form.checkboxes.name }}_{{ forloop.counter0 }}"
-                            name="{{ reply_markup_form.checkboxes.name }}"
-                            type="{{ reply_markup_form.checkboxes.field.widget.input_type }}" value="{{ pk }}"
-                            class="custom-control-input"
-                            {% ifequal reply_markup_form.checkboxes.data pk.0 %}checked="checked" {% endifequal %}>
-                        <label for="id_{{ reply_markup_form.checkboxes.name }}_{{ forloop.counter0 }}"
-                            class="custom-control-label">{{ choice }}</label>
+            <div class="mb-2">
+                <div class="form-row">
+                    <div class="col-md-10">
+                        {{ reply_markup_form.response_text_markup }}
                     </div>
-                    {% endfor %}
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary btn-block">Create Keyboard</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </form>
+
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="form-row ml-0" id="id_reply_checkboxes">
+                        {% for pk, choice in reply_markup_form.checkboxes.field.widget.choices %}
+                        <div class="custom-control custom-checkbox custom-control-inline">
+                            <input id="id_{{ reply_markup_form.checkboxes.name }}_{{ forloop.counter0 }}"
+                                name="{{ reply_markup_form.checkboxes.name }}"
+                                type="{{ reply_markup_form.checkboxes.field.widget.input_type }}" value="{{ pk }}"
+                                class="custom-control-input"
+                                {% ifequal reply_markup_form.checkboxes.data pk.0 %}checked="checked" {% endifequal %}>
+                            <label for="id_{{ reply_markup_form.checkboxes.name }}_{{ forloop.counter0 }}"
+                                class="custom-control-label">{{ choice }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
     {% endif %}
     {% elif request.path == inline_markup_url or request.path == inline_buttons_url %}
     {% if inline_markup_elements %}
@@ -624,7 +628,7 @@
     </form>
     {% elif request.path == inline_buttons_url %}
     <form action="{% url 'create_bot_second_step_inline_buttons_url' token=token %}" method="POST"
-        onchange="getInlineValues(this)">
+        onchange="getInlineValues(this);">
         {% csrf_token %}
 
         <div class="form-row">
@@ -882,7 +886,7 @@
         });
     }
 </script>
-{% elif request.path == reply_markup_url %}
+{% elif request.path == reply_markup_url or request.path == reply_buttons_url %}
 <script>
     $(document).on('submit', '#id_reply_markup_create_form', function (e) {
         e.preventDefault();
@@ -982,16 +986,18 @@
                     '<button type="button" id="reply_markup_' + json.len_text + '" onclick="sendAjaxDeleteReply(this); " class="btn btn-outline-danger btn-sm btn-block">Delete keyboard</button>' +
                     '</div>' +
                     '<div class="col-md-4">' +
-                    '<a href="/createBot/secondStep/944380578:AAEFvaqShiw164lLumAu2wI6w2ZnzSAJ7lM/replyMarkup/replyButtons/" class="btn btn-outline-dark btn-sm btn-block">Add button</a>' +
+                    '<a href="/createBot/secondStep/' + json.token + '/replyMarkup/replyButtons/" class="btn btn-outline-dark btn-sm btn-block" id="id_add_button_reply">Add button</a>' +
                     '</div>' +
                     '</div>' +
                     '</form>' +
                     '</div>' +
+                    '<div class="col-md-7"></div>' +
                     '</div>';
 
-                document.getElementById("id_reply_markup_create_form").reset();
+                document.getElementById('id_reply_markup_create_form').reset();
                 $('#id_no_element').remove();
                 $('#id_reply_elements').append(object);
+                $('#id_add_button_reply').click();
             },
             error: function (xhr, errmsg, err) {
                 console.log(xhr.status + ": " + xhr.responseText);
@@ -1069,6 +1075,140 @@
                     $('#id_reply_elements').append(
                         '<div class="alert alert-success mt-3" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
                     );
+                }
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+    }
+
+    $(document).on('submit', '#id_reply_buttons_form', function (e) {
+        e.preventDefault();
+
+        if ($('#id_radio_buttons_0').is(':checked') == true) {
+            request_contact = 'checked';
+        }
+        else {
+            request_contact = '';
+        }
+
+        if ($('#id_radio_buttons_1').is(':checked') == true) {
+            request_location = 'checked';
+        }
+        else {
+            request_location = '';
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '',
+            data: {
+                response_text: $('#id_response_text').val(),
+                request_contact: $('#id_radio_buttons_0').is(':checked'),
+                request_location: $('#id_radio_buttons_1').is(':checked'),
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                action: 'create_reply_button'
+            },
+            success: function (json) {
+                console.log(json);
+                var object = '<form onsubmit="sendAjaxUpdateReplyButton(this); return false;" method="POST" class="mb-3">' +
+                    '<input type="hidden" name="csrfmiddlewaretoken" value="' + json.csrf + '">' +
+                    '<div class="input-group">' +
+                    '<div class="input-group-prepend">' +
+                    '<div class="input-group-text">Text</div>' +
+                    '</div>' +
+                    '<input class="form-control" name="response_text_' + json.len_text + '_' + json.len_button + '" value="' + json.response_text + '">' +
+                    '</div>' +
+                    '<div class="form-row mt-1 mb-1 ml-0">' +
+                    '<div class="custom-control custom-radio custom-control-inline">' +
+                    '<input type="radio" name="radio_buttons_' + json.len_text + '_' + json.len_button + '" value="request_contact" ' + request_contact + ' class="custom-control-input" id="req_con_' + json.len_button + '">' +
+                    '<label for="req_con_' + json.len_button + '" class="custom-control-label">Request contact</label>' +
+                    '</div>' +
+                    '<div class="custom-control custom-radio custom-control-inline">' +
+                    '<input type="radio" name="radio_buttons_' + json.len_text + '_' + json.len_button + '" value="request_location" ' + request_location + ' class="custom-control-input" id="req_loc_' + json.len_button + '">' +
+                    '<label for="req_loc_' + json.len_button + '" class="custom-control-label">Request location</label>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="form-row">' +
+                    '<div class="col-md-6">' +
+                    '<button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update button</button>' +
+                    '</div>' +
+                    '<div class="col-md-6">' +
+                    '<button type="button" class="btn btn-outline-danger btn-sm btn-block" id="id_delete_reply_button_' + json.len_text + '_' + json.len_button + '" onclick="sendAjaxDeleteReplyButton(this);">Delete button</button>' +
+                    '</div>' +
+                    '</div>' +
+                    '</form>';
+
+                document.getElementById('id_reply_buttons_form').reset();
+                $('#' + json.len_text + '_reply_element').find('div.col-md-7').append(object);
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+    });
+
+    function sendAjaxUpdateReplyButton(form) {
+        console.log(form);
+
+        var response_text = $(form)[0][1].value;
+        var req_con = $(form)[0][2].checked;
+        var req_loc = $(form)[0][3].checked;
+        var markup_id = $(form)[0][1].name.split('_')[2];
+        var button_id = $(form)[0][1].name.split('_')[3];
+        console.log(markup_id, button_id);
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "create_bot_second_step_reply_buttons_update_url" token=token %}',
+            data: {
+                response_text: response_text,
+                req_con: req_con,
+                req_loc: req_loc,
+                markup_id: markup_id,
+                button_id: button_id,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                action: 'delete_reply_button'
+            },
+            success: function (json) {
+
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+    }
+
+    function sendAjaxDeleteReplyButton(button) {
+        console.log(button);
+
+        var markup_id = button.id.split('_')[4];
+        var button_id = button.id.split('_')[5];
+
+        $.ajax({
+            type: 'GET',
+            url: '{% url "create_bot_second_step_reply_button_delete_url" token=token %}',
+            data: {
+                markup_id: markup_id,
+                button_id: button_id,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                action: 'delete_reply_button'
+            },
+            success: function (json) {
+                var elements = $($('#id_reply_elements').children()[json.markup_id]).find('div.col-md-7').find('form');
+                $(elements[json.button_id]).remove();
+                var elements = $($('#id_reply_elements').children()[json.markup_id]).find('div.col-md-7').find('form');
+                console.log(elements);
+
+                for (var item = 0; item < elements.length; item++) {
+                    $(elements[item]).find('input')[1].name = `response_text_${markup_id}_${item}`;
+                    $(elements[item]).find('input')[2].name = `radio_buttons_${markup_id}_${item}`;
+                    $(elements[item]).find('input')[2].id = `req_con_${markup_id}_${item}`;
+                    $(elements[item]).find('input')[3].name = `radio_buttons_${markup_id}_${item}`;
+                    $(elements[item]).find('input')[3].id = `req_loc_${markup_id}_${item}`;
+                    $(elements[item]).find('label')[0].outerHTML = `<label for="req_con_${markup_id}_${item}" class="custom-control-label">Request contact</label>`;
+                    $(elements[item]).find('label')[1].outerHTML = `<label for="req_loc_${markup_id}_${item}" class="custom-control-label">Request location</label>`;
                 }
             },
             error: function (xhr, errmsg, err) {

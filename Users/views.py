@@ -112,6 +112,7 @@ class UserRegistration(View):
                     'domain': current_site.domain,
                     'uid': urlsafe_base64_encode(force_bytes(some_user.pk)),
                     'token': account_activation_token.make_token(some_user),
+                    'request': request
                 })
                 to_email = register_form.cleaned_data.get('email')
                 email = EmailMessage(

@@ -1,22 +1,16 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse, JsonResponse
 
 from ..functions import *
 from ..forms import ReplyMarkup
-from django.http import HttpResponse, JsonResponse
 
 
 class CreateReplyMarkupField(LoginRequiredMixin, View):
     context = {}
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_reply_markup_url'
-
-    required_fields = [
-        'resize_keyboard',
-        'one_time_keyboard',
-        'selective'
-    ]
 
     def get(self, request, token: str):
         reply_markup_elements = enumerate_elements(request,
@@ -118,23 +112,9 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
 class UpdateReplyMarkupField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_reply_markup_url'
-
-    checkboxes = [
-        'resize_keyboard',
-        'one_time_keyboard',
-        'selective'
-    ]
+    context = {}
 
     def post(self, request, token: str):
-        obligatory_fields = [
-            'resize_keyboard',
-            'one_time_keyboard',
-            'selective',
-            'react_text',
-            'row_width',
-            'response_text_markup'
-        ]
-        print(request.POST)
         if request.POST.get('action') == 'update_reply_markup':
             path = open_configuration(request, token)
             with open(path, 'r', encoding='utf-8') as file:
