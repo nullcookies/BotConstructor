@@ -49,8 +49,7 @@ urlpatterns = [
         name='create_bot_second_step_reply_button_delete_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/replyMarkup/deleteInlineButton/'
-        '<int:markup_id>/<int:button_id>/',
+        'createBot/secondStep/<str:token>/replyMarkup/deleteInlineButton/',
         DeleteInlineButtonField.as_view(),
         name='create_bot_second_step_inline_buttons_delete_url'
     ),
@@ -90,8 +89,7 @@ urlpatterns = [
         name='create_bot_second_step_inline_markup_update_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/inlineMarkup/deleteInlineMarkup/'
-        '<int:markup_id>',
+        'createBot/secondStep/<str:token>/inlineMarkup/deleteInlineMarkup/',
         DeleteInlineMarkupField.as_view(),
         name='create_bot_second_step_inline_markup_delete_url'
     ),

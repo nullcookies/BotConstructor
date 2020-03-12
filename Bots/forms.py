@@ -142,7 +142,8 @@ class ReplyMarkup(forms.Form):
 
             for item in object_text:
                 if item['react_text'] == new_react_text:
-                    raise forms.ValidationError(
+                    self.add_error(
+                        'react_text',
                         f'Object "{new_react_text}" has already been created')
         except KeyError as key:
             print(key)

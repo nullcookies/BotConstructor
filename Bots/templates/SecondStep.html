@@ -454,152 +454,158 @@
     </div>
     {% endif %}
     {% elif request.path == inline_markup_url or request.path == inline_buttons_url %}
-    {% if inline_markup_elements %}
-    {% for inline_markup_element in inline_markup_elements %}
-    <div class="form-row mt-3">
-        <div class="col-md-5">
-            <form action="{% url 'create_bot_second_step_inline_markup_update_url' token=token %}" method="POST">
-                {% csrf_token %}
+    <div id="id_inline_elements">
+        {% if inline_markup_elements %}
+        {% for inline_markup_element in inline_markup_elements %}
+        <div class="form-row mt-3" id="{{ inline_markup_element.0 }}_inline_element">
+            <div class="col-md-5">
+                <form onsubmit="sendAjaxInlineMarkupUpdate(this); return false;" method="POST">
+                    {% csrf_token %}
 
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text">Response</div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">Response</div>
+                        </div>
+                        <input class="form-control" type="text"
+                            name="response_text_inline_{{ inline_markup_element.0 }}"
+                            value="{{ inline_markup_element.1.response_text }}">
                     </div>
-                    <input class="form-control" type="text" name="response_text_inline_{{ inline_markup_element.0 }}"
-                        value="{{ inline_markup_element.1.response_text }}">
-                </div>
 
-                <div class="form-row">
-                    <div class="col-md-10">
-                        <div class="input-group">
-                            {% if inline_markup_element.1.react_text|first == '/' %}
-                            <div class="input-group-prepend">
-                                <div class="input-group-text mt-2">/</div>
+                    <div class="form-row">
+                        <div class="col-md-10">
+                            <div class="input-group">
+                                {% if inline_markup_element.1.react_text|first == '/' %}
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text mt-2">/</div>
+                                </div>
+                                <input class="form-control mt-2" type="text"
+                                    name="react_text_inline_{{ inline_markup_element.0 }}"
+                                    value="{{ inline_markup_element.1.react_text }}">
+                                {% else %}
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text mt-2">React</div>
+                                </div>
+                                <input class="form-control mt-2" type="text"
+                                    name="react_text_inline_{{ inline_markup_element.0 }}"
+                                    value="{{ inline_markup_element.1.react_text }}">
+                                {% endif %}
                             </div>
-                            <input class="form-control mt-2" type="text"
-                                name="react_text_inline_{{ inline_markup_element.0 }}"
-                                value="{{ inline_markup_element.1.react_text }}">
+                        </div>
+                        <div class="col-md-2">
+                            <input class="form-control mt-2" type="number" min="1" max="5"
+                                name="row_width_inline_{{ inline_markup_element.0 }}"
+                                value="{{ inline_markup_element.1.row_width }}">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-outline-warning btn-sm mt-2 btn-block">Update
+                                markup</button>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-outline-danger btn-sm mt-2 btn-block"
+                                onclick="sendAjaxInlineMarkupDelete(this);"
+                                id="id_delete_inline_{{ inline_markup_element.0 }}">Delete markup</button>
+                        </div>
+                        <div class="col-md-4">
+                            {% if request.path == inline_buttons_url %}
+                            <a href="{% url 'create_bot_second_step_inline_markup_url' token=token %}"
+                                class="btn btn-outline-success btn-sm mt-2 btn-block">Add keyboard</a>
                             {% else %}
-                            <div class="input-group-prepend">
-                                <div class="input-group-text mt-2">React</div>
-                            </div>
-                            <input class="form-control mt-2" type="text"
-                                name="react_text_inline_{{ inline_markup_element.0 }}"
-                                value="{{ inline_markup_element.1.react_text }}">
+                            <a href="{% url 'create_bot_second_step_inline_buttons_url' token=token %}"
+                                class="btn btn-outline-dark btn-sm mt-2 btn-block">Add button</a>
                             {% endif %}
                         </div>
                     </div>
-                    <div class="col-md-2">
-                        <input class="form-control mt-2" type="number" min="1" max="5"
-                            name="row_width_inline_{{ inline_markup_element.0 }}"
-                            value="{{ inline_markup_element.1.row_width }}">
-                    </div>
-                </div>
+                </form>
+            </div>
 
-                <div class="form-row">
-                    <div class="col-md-4">
-                        <button type="submit" class="btn btn-outline-warning btn-sm mt-2 btn-block">Update
-                            markup</button>
+            <div class="col-md-7">
+                {% for inline_button in inline_markup_element.1.buttons %}
+                <form onsubmit="sendAjaxInlineButtonUpdate(this); return false;" method="POST" class="mb-3">
+                    {% csrf_token %}
+
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">Text</div>
+                        </div>
+                        <input class="form-control" type="text"
+                            name="text_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}"
+                            value="{{ inline_button.text }}">
                     </div>
-                    <div class="col-md-4">
-                        <a href="{% url 'create_bot_second_step_inline_markup_delete_url' token=token markup_id=inline_markup_element.0 %}"
-                            class="btn btn-outline-danger btn-sm mt-2 btn-block">Delete markup</a>
+
+                    {% if inline_button.url != False and inline_button.url != '' %}
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text mt-2">Url</div>
+                        </div>
+                        <input class="form-control mt-2" type="text"
+                            name="url_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}"
+                            value="{{ inline_button.url }}">
                     </div>
-                    <div class="col-md-4">
-                        {% if request.path == inline_buttons_url %}
-                        <a href="{% url 'create_bot_second_step_inline_markup_url' token=token %}"
-                            class="btn btn-outline-success btn-sm mt-2 btn-block">Add keyboard</a>
-                        {% else %}
-                        <a href="{% url 'create_bot_second_step_inline_buttons_url' token=token %}"
-                            class="btn btn-outline-dark btn-sm mt-2 btn-block">Add button</a>
-                        {% endif %}
+                    {% endif %}
+
+                    {% if inline_button.switch_inline != False and inline_button.switch_inline != '' %}
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text mt-2">Switch Inline</div>
+                        </div>
+                        <input class="form-control mt-2" type="text"
+                            name="switch_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}"
+                            value="{{ inline_button.switch_inline }}">
                     </div>
-                </div>
-            </form>
+                    {% endif %}
+
+                    {% if inline_button.switch_inline_current != False and inline_button.switch_inline_current != '' %}
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text mt-2">Switch Inline Current</div>
+                        </div>
+                        <input class="form-control mt-2" type="text"
+                            name="switch_inline_current_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}"
+                            value="{{ inline_button.switch_inline_current }}"
+                            id="switch_inline_current_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}">
+                    </div>
+                    {% endif %}
+
+                    {% if inline_button.callback != False and inline_button.callback != '' %}
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text mt-2">Callback</div>
+                        </div>
+                        <input class="form-control mt-2" type="text"
+                            name="callback_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}"
+                            value="{{ inline_button.callback }}"
+                            id="callback_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}">
+                    </div>
+                    {% endif %}
+
+                    <div class="form-row mt-2">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update
+                                button</button>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-outline-danger btn-sm btn-block"
+                                id="id_delete_inline_button_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}"
+                                onclick="sendAjaxInlineButtonDelete(this);">Delete
+                                button</button>
+                        </div>
+                    </div>
+                </form>
+                {% endfor %}
+            </div>
         </div>
-
-        <div class="col-md-7">
-            {% for inline_button in inline_markup_element.1.buttons %}
-            <form action="{% url 'create_bot_second_step_inline_buttons_update_url' token=token %}" method="POST"
-                class="mb-3">
-                {% csrf_token %}
-
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text">Text</div>
-                    </div>
-                    <input class="form-control" type="text"
-                        name="text_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}"
-                        value="{{ inline_button.text }}">
-                </div>
-
-                {% if inline_button.url != False and inline_button.url != '' %}
-                <div class="input-group mb-2">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text mt-2">Url</div>
-                    </div>
-                    <input class="form-control mt-2" type="text"
-                        name="url_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}"
-                        value="{{ inline_button.url }}">
-                </div>
-                {% endif %}
-
-                {% if inline_button.switch_inline != False and inline_button.switch_inline != '' %}
-                <div class="input-group mb-2">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text mt-2">Switch Inline</div>
-                    </div>
-                    <input class="form-control mt-2" type="text"
-                        name="switch_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}"
-                        value="{{ inline_button.switch_inline }}">
-                </div>
-                {% endif %}
-
-                {% if inline_button.switch_inline_current != False and inline_button.switch_inline_current != '' %}
-                <div class="input-group mb-2">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text mt-2">Switch Inline Current</div>
-                    </div>
-                    <input class="form-control mt-2" type="text"
-                        name="switch_inline_current_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}"
-                        value="{{ inline_button.switch_inline_current }}"
-                        id="switch_inline_current_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}">
-                </div>
-                {% endif %}
-
-                {% if inline_button.callback != False and inline_button.callback != '' %}
-                <div class="input-group mb-2">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text mt-2">Callback</div>
-                    </div>
-                    <input class="form-control mt-2" type="text"
-                        name="callback_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}"
-                        value="{{ inline_button.callback }}"
-                        id="callback_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}">
-                </div>
-                {% endif %}
-
-                <div class="form-row mt-2">
-                    <div class="col-md-6">
-                        <button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update button</button>
-                    </div>
-                    <div class="col-md-6">
-                        <a href="{% url 'create_bot_second_step_inline_buttons_delete_url' token=token markup_id=inline_markup_element.0 button_id=forloop.counter0 %}"
-                            class="btn btn-outline-danger btn-sm btn-block">Delete button</a>
-                    </div>
-                </div>
-            </form>
-            {% endfor %}
+        {% endfor %}
+        {% else %}
+        <div class="alert alert-success mt-3" role="alert" id="id_no_elements">
+            <h5 class="alert-heading mb-0 mt-0">No such elements added</h5>
+            <hr>
+            <p class="mt-0 mb-0">If you want to add new text response check the form below</p>
         </div>
+        {% endif %}
     </div>
-    {% endfor %}
-    {% else %}
-    <div class="alert alert-success mt-3" role="alert">
-        <h5 class="alert-heading mb-0 mt-0">No such elements added</h5>
-        <hr>
-        <p class="mt-0 mb-0">If you want to add new text response check the form below</p>
-    </div>
-    {% endif %}
 
     <div class="form-row mt-3">
         <h5 class="ml-1 text-dark">Create inline markup</h5>
@@ -608,7 +614,7 @@
 
 
     {% if request.path == inline_markup_url %}
-    <form action="{% url 'create_bot_second_step_inline_markup_url' token=token %}" method="POST">
+    <form id="id_inline_markup_create" method="POST">
         {% csrf_token %}
 
         <div class="form-row">
@@ -627,8 +633,7 @@
         </div>
     </form>
     {% elif request.path == inline_buttons_url %}
-    <form action="{% url 'create_bot_second_step_inline_buttons_url' token=token %}" method="POST"
-        onchange="getInlineValues(this);">
+    <form method="POST" onchange="getInlineValues(this);" id="id_inline_button_create">
         {% csrf_token %}
 
         <div class="form-row">
@@ -655,7 +660,6 @@
     {% endif %}
     {% elif request.path == callback_url %}
     <div id="id_callback_fields">
-
         {% if callback_elements %}
         {% for callback_element in callback_elements %}
         <form onsubmit="sendAjaxUpdateCallback(this); return false;" method="POST">
@@ -716,10 +720,21 @@
     <form method="POST" id="id_create_callback">
         {% csrf_token %}
 
-        {{ callback_form.callback_text }}
+        <select class="form-control" id="id_callback_text">
+            <option>----------------</option>
+            {% for callback in fields_callback %}
+            <option>{{ callback.1 }}</option>
+            {% endfor %}
+        </select>
+
         <div class="form-row mt-2">
             <div class="col-md-10">
-                {{ callback_form.react_text }}
+                <select class="form-control" id="id_react_text">
+                    <option>----------------</option>
+                    {% for react in fields_react %}
+                    <option>{{ react.1 }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-outline-primary btn-block">Create callback</button>
@@ -764,62 +779,80 @@
 <script>
     $(document).on('submit', '#text-form', function (e) {
         e.preventDefault();
+
+        if ($('#id_remove_reply_markup_0').is(':checked')) {
+            var some = 'true';
+        }
+        else {
+            var some = 'false';
+        }
+
         $.ajax({
             type: 'POST',
             url: '{% url "create_bot_second_step_text_url" token=token %}',
             data: {
                 react_text: $('#id_react_text').val(),
                 response_text: $('#id_response_text').val(),
-                remove_reply: $('#id_remove_reply_markup_0').is(':checked'),
+                remove_reply_markup: some,
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                 action: 'post'
             },
             success: function (json) {
-                var object = '';
-                object += `<form method="POST" class="mt-3" onsubmit="sendAjaxUpdate(this); return false;">` +
-                    '<input type="hidden" name="csrfmiddlewaretoken" value="' + json.csrf + '">' +
-                    '<div class="form-row mb-3">' +
-                    '<div class="col-md-9">' +
-                    '<input class="form-control" name="react_text_' + json.len_text + '" value="' + json.react_text + '">' +
-                    '</div>' +
-                    '<div class="col-md-3">' +
-                    '<div class="form-row">' +
-                    '<div class="col-md-6">' +
-                    '<button type="submit" class="btn btn-outline-success btn-block">Update</button>' +
-                    '</div>' +
-                    '<div class="col-md-6">' +
-                    '<button type="button" id="id_delete_text_' + json.len_text + '" class="btn btn-outline-danger btn-block" onclick="sendAjaxDelete(this);">Delete</button>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="col-md-12">' +
-                    `<textarea class="form-control mt-2" style="height: 100%;" name="response_text_` + json.len_text + `" id="response_text_text">` + json.response_text + `</textarea>` +
-                    '</div>' +
-                    '<div class="col-md-12 mt-2">' +
-                    '<div class="custom-control custom-checkbox custom-control-inline">';
+                console.log('sdfsdfsdf');
+                if (json.text_error == null) {
+                    var object = '';
+                    object += `<form method="POST" class="mt-3" onsubmit="sendAjaxUpdate(this); return false;">` +
+                        '<input type="hidden" name="csrfmiddlewaretoken" value="' + json.csrf + '">' +
+                        '<div class="form-row mb-3">' +
+                        '<div class="col-md-9">' +
+                        '<input class="form-control" name="react_text_' + json.len_text + '" value="' + json.react_text + '">' +
+                        '</div>' +
+                        '<div class="col-md-3">' +
+                        '<div class="form-row">' +
+                        '<div class="col-md-6">' +
+                        '<button type="submit" class="btn btn-outline-success btn-block">Update</button>' +
+                        '</div>' +
+                        '<div class="col-md-6">' +
+                        '<button type="button" id="id_delete_text_' + json.len_text + '" class="btn btn-outline-danger btn-block" onclick="sendAjaxDelete(this);">Delete</button>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="col-md-12">' +
+                        `<textarea class="form-control mt-2" style="height: 100%;" name="response_text_` + json.len_text + `" id="response_text_text">` + json.response_text + `</textarea>` +
+                        '</div>' +
+                        '<div class="col-md-12 mt-2">' +
+                        '<div class="custom-control custom-checkbox custom-control-inline">';
 
-                if (json.remove_reply_markup) {
-                    object += '<input type="checkbox" name="remove_reply_markup_' + json.len_text + '" class="custom-control-input" id="remove_reply_markup_' + json.len_text + '" checked>' +
-                        '<label for="remove_reply_markup_' + json.len_text + '" class="custom-control-label">Remove Reply Markup</label>' +
-                        '</div>' +
-                        '</div>' +
-                        '</div>' +
-                        '</form>';
+                    if (json.remove_reply_markup) {
+                        object += '<input type="checkbox" name="remove_reply_markup_' + json.len_text + '" class="custom-control-input" id="remove_reply_markup_' + json.len_text + '" checked>' +
+                            '<label for="remove_reply_markup_' + json.len_text + '" class="custom-control-label">Remove Reply Markup</label>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>' +
+                            '</form>';
+                    }
+                    else {
+                        object += '<input type="checkbox" name="remove_reply_markup_' + json.len_text + '" class="custom-control-input" id="remove_reply_markup_' + json.len_text + '">' +
+                            '<label for="remove_reply_markup_' + json.len_text + '" class="custom-control-label">Remove Reply Markup</label>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>' +
+                            '</form>';
+                    }
+
+                    document.getElementById("text-form").reset();
+                    $("#id_no_element").remove();
+                    $(".text_fields").append(
+                        object
+                    );
                 }
                 else {
-                    object += '<input type="checkbox" name="remove_reply_markup_' + json.len_text + '" class="custom-control-input" id="remove_reply_markup_' + json.len_text + '">' +
-                        '<label for="remove_reply_markup_' + json.len_text + '" class="custom-control-label">Remove Reply Markup</label>' +
-                        '</div>' +
-                        '</div>' +
-                        '</div>' +
-                        '</form>';
+                    var error = '<div class="alert alert-warning mt-2">' +
+                        json.text_error.react_text[0] +
+                        '</div>';
+                    document.getElementById("text-form").reset();
+                    $('#errors').append(error);
                 }
-
-                document.getElementById("text-form").reset();
-                $("#id_no_element").remove();
-                $(".text_fields").append(
-                    object
-                );
             },
             error: function (xhr, errmsg, err) {
                 console.log(xhr.status + ": " + xhr.responseText);
@@ -910,94 +943,103 @@
                 action: 'create_reply_markup'
             },
             success: function (json) {
-                var resize = json.resize_keyboard;
-                var one_time = json.one_time_keyboard;
-                var selective = json.selective;
+                if (json.reply_markup_error == null) {
+                    var resize = json.resize_keyboard;
+                    var one_time = json.one_time_keyboard;
+                    var selective = json.selective;
 
-                if (resize == true) {
-                    resize = 'checked';
+                    if (resize == true) {
+                        resize = 'checked';
+                    }
+                    else {
+                        resize = '';
+                    }
+
+                    if (one_time == true) {
+                        one_time = 'checked';
+                    }
+                    else {
+                        one_time = '';
+                    }
+
+                    if (selective == true) {
+                        selective = 'checked';
+                    }
+                    else {
+                        selective = '';
+                    }
+
+                    var object = '<div class="form-row mt-3" id="' + json.len_text + '_reply_element">' +
+                        '<div class="col-md-5">' +
+                        '<form onsubmit="sendAjaxUpdateReply(this); return false;" method="POST" class="mb-3">' +
+                        '<input type="hidden" name="csrfmiddlewaretoken" value="' + json.csrf + '">' +
+                        '<div class="form-row row">' +
+                        '<div class="col-md-8">' +
+                        '<div class="input-group">' +
+                        '<div class="input-group-prepend">' +
+                        '<div class="input-group-text">React</div>' +
+                        '</div>' +
+                        '<input class="form-control" name="react_text_' + json.len_text + '" value="' + json.react_text + '">' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="col-md-4">' +
+                        '<input class="form-control" name="row_width_' + json.len_text + '" value="' + json.row_width + '">' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="input-group">' +
+                        '<div class="input-group-prepend">' +
+                        '<div class="input-group-text mt-2">Response</div>' +
+                        '</div>' +
+                        '<input class="form-control mt-2" name="response_text_markup_' + json.len_text + '" value="asdasd">' +
+                        '</div>' +
+                        '<div class="form-row mt-2 mb-2">' +
+                        '<div class="ml-1">' +
+                        '<div class="custom-control custom-checkbox custom-control-inline">' +
+                        '<input type="checkbox" name="resize_keyboard_' + json.len_text + '" class="custom-control-input" ' + resize + ' id="res_key_' + json.len_text + '">' +
+                        '<label for="res_key_' + json.len_text + '" class="custom-control-label">Resize keyboard</label>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="ml-1">' +
+                        '<div class="custom-control custom-checkbox custom-control-inline">' +
+                        '<input type="checkbox" name="one_time_keyboard_' + json.len_text + '" class="custom-control-input" ' + one_time + ' id="o_t_k_' + json.len_text + '">' +
+                        '<label for="o_t_k_' + json.len_text + '" class="custom-control-label">One time keyboard</label>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="ml-1">' +
+                        '<div class="custom-control custom-checkbox custom-control-inline">' +
+                        '<input type="checkbox" name="selective_' + json.len_text + '" class="custom-control-input" ' + selective + ' id="s_' + json.len_text + '">' +
+                        '<label for="s_' + json.len_text + '" class="custom-control-label">Selective</label>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="form-row">' +
+                        '<div class="col-md-4">' +
+                        '<button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update keyboard</button>' +
+                        '</div>' +
+                        '<div class="col-md-4">' +
+                        '<button type="button" id="reply_markup_' + json.len_text + '" onclick="sendAjaxDeleteReply(this); " class="btn btn-outline-danger btn-sm btn-block">Delete keyboard</button>' +
+                        '</div>' +
+                        '<div class="col-md-4">' +
+                        '<a href="/createBot/secondStep/' + json.token + '/replyMarkup/replyButtons/" class="btn btn-outline-dark btn-sm btn-block" id="id_add_button_reply">Add button</a>' +
+                        '</div>' +
+                        '</div>' +
+                        '</form>' +
+                        '</div>' +
+                        '<div class="col-md-7"></div>' +
+                        '</div>';
+
+                    document.getElementById('id_reply_markup_create_form').reset();
+                    $('#id_no_element').remove();
+                    $('#id_reply_elements').append(object);
+                    $('#id_add_button_reply').click();
                 }
                 else {
-                    resize = '';
+                    var error = '<div class="alert alert-warning mt-2">' +
+                        json.reply_markup_error.react_text[0] +
+                        '</div>';
+                    document.getElementById("id_reply_markup_create_form").reset();
+                    $('#errors').append(error);
                 }
-
-                if (one_time == true) {
-                    one_time = 'checked';
-                }
-                else {
-                    one_time = '';
-                }
-
-                if (selective == true) {
-                    selective = 'checked';
-                }
-                else {
-                    selective = '';
-                }
-
-                var object = '<div class="form-row mt-3" id="' + json.len_text + '_reply_element">' +
-                    '<div class="col-md-5">' +
-                    '<form onsubmit="sendAjaxUpdateReply(this); return false;" method="POST" class="mb-3">' +
-                    '<input type="hidden" name="csrfmiddlewaretoken" value="' + json.csrf + '">' +
-                    '<div class="form-row row">' +
-                    '<div class="col-md-8">' +
-                    '<div class="input-group">' +
-                    '<div class="input-group-prepend">' +
-                    '<div class="input-group-text">React</div>' +
-                    '</div>' +
-                    '<input class="form-control" name="react_text_' + json.len_text + '" value="' + json.react_text + '">' +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="col-md-4">' +
-                    '<input class="form-control" name="row_width_' + json.len_text + '" value="' + json.row_width + '">' +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="input-group">' +
-                    '<div class="input-group-prepend">' +
-                    '<div class="input-group-text mt-2">Response</div>' +
-                    '</div>' +
-                    '<input class="form-control mt-2" name="response_text_markup_' + json.len_text + '" value="asdasd">' +
-                    '</div>' +
-                    '<div class="form-row mt-2 mb-2">' +
-                    '<div class="ml-1">' +
-                    '<div class="custom-control custom-checkbox custom-control-inline">' +
-                    '<input type="checkbox" name="resize_keyboard_' + json.len_text + '" class="custom-control-input" ' + resize + ' id="res_key_' + json.len_text + '">' +
-                    '<label for="res_key_' + json.len_text + '" class="custom-control-label">Resize keyboard</label>' +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="ml-1">' +
-                    '<div class="custom-control custom-checkbox custom-control-inline">' +
-                    '<input type="checkbox" name="one_time_keyboard_' + json.len_text + '" class="custom-control-input" ' + one_time + ' id="o_t_k_' + json.len_text + '">' +
-                    '<label for="o_t_k_' + json.len_text + '" class="custom-control-label">One time keyboard</label>' +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="ml-1">' +
-                    '<div class="custom-control custom-checkbox custom-control-inline">' +
-                    '<input type="checkbox" name="selective_' + json.len_text + '" class="custom-control-input" ' + selective + ' id="s_' + json.len_text + '">' +
-                    '<label for="s_' + json.len_text + '" class="custom-control-label">Selective</label>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="form-row">' +
-                    '<div class="col-md-4">' +
-                    '<button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update keyboard</button>' +
-                    '</div>' +
-                    '<div class="col-md-4">' +
-                    '<button type="button" id="reply_markup_' + json.len_text + '" onclick="sendAjaxDeleteReply(this); " class="btn btn-outline-danger btn-sm btn-block">Delete keyboard</button>' +
-                    '</div>' +
-                    '<div class="col-md-4">' +
-                    '<a href="/createBot/secondStep/' + json.token + '/replyMarkup/replyButtons/" class="btn btn-outline-dark btn-sm btn-block" id="id_add_button_reply">Add button</a>' +
-                    '</div>' +
-                    '</div>' +
-                    '</form>' +
-                    '</div>' +
-                    '<div class="col-md-7"></div>' +
-                    '</div>';
-
-                document.getElementById('id_reply_markup_create_form').reset();
-                $('#id_no_element').remove();
-                $('#id_reply_elements').append(object);
-                $('#id_add_button_reply').click();
             },
             error: function (xhr, errmsg, err) {
                 console.log(xhr.status + ": " + xhr.responseText);
@@ -1221,13 +1263,15 @@
 <script>
     $(document).on('submit', '#id_create_callback', function (e) {
         e.preventDefault();
+        var callback_text = $('#id_callback_text').find(":selected").text();
+        var react_text = $('#id_react_text').find(":selected").text();
 
         $.ajax({
             type: 'POST',
             url: '{% url "create_callback_url" token=token %}',
             data: {
-                callback_text: $('#id_callback_text').val(),
-                react_text: $('#id_react_text').val(),
+                callback_text: callback_text,
+                react_text: react_text,
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                 action: 'create_callback'
             },
@@ -1289,7 +1333,6 @@
     });
 
     function sendAjaxUpdateCallback(form) {
-        console.log(form[1]);
         var callback_text = form[1];
         var react_text = form[2];
 
@@ -1334,6 +1377,7 @@
                     $(elements[item]).find('input')[1].name = `callback_text_${item}`;
                     $(elements[item]).find('input')[2].name = `react_text_${item}`;
                     $(elements[item]).find('button')[1].name = `callback_element_for_${item}`;
+                    $(elements[item]).find('button')[1].id = `callback_element_for_${item}`;
                 }
 
                 if (elements.length == 0) {
@@ -1345,7 +1389,340 @@
             error: function (xhr, errmsg, err) {
                 console.log(xhr.status + ": " + xhr.responseText);
             }
-        })
+        });
+    }
+</script>
+{% elif request.path == inline_markup_url or request.path == inline_buttons_url %}
+<script>
+    $(document).on('submit', '#id_inline_markup_create', function (e) {
+        e.preventDefault();
+
+        var react_text = $('#id_react_text').val();
+        var row_width = $('#id_row_width').val();
+        var response_text = $('#id_response_text').val();
+        console.log(react_text, row_width, response_text);
+
+        $.ajax({
+            type: 'POST',
+            url: '',
+            data: {
+                react_text: react_text,
+                row_width: row_width,
+                response_text: response_text,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                action: 'create_inline_markup'
+            },
+            success: function (json) {
+                var object = '<div class="form-row mt-3" id="' + json.len_text + '_inline_element">' +
+                    '<div class="col-md-5">' +
+                    '<form onsubmit="sendAjaxInlineMarkupUpdate(this); return false;" method="POST">' +
+                    '<input type="hidden" name="csrfmiddlewaretoken" value="' + json.csrf + '">' +
+                    '<div class="input-group">' +
+                    '<div class="input-group-prepend">' +
+                    '<div class="input-group-text">Response</div>' +
+                    '</div>' +
+                    '<input class="form-control" type="text" name="response_text_inline_' + json.len_text + '" value="' + json.response_text + '">' +
+                    '</div>' +
+                    '<div class="form-row">' +
+                    '<div class="col-md-10">' +
+                    '<div class="input-group">' +
+                    '<div class="input-group-prepend">' +
+                    '<div class="input-group-text mt-2">React</div>' +
+                    '</div>' +
+                    '<input class="form-control mt-2" type="text" name="react_text_inline_' + json.len_text + '" value="' + json.react_text + '">' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="col-md-2">' +
+                    '<input class="form-control mt-2" type="number" min="1" max="5" name="row_width_inline_' + json.len_text + '" value="' + json.row_width + '">' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="form-row">' +
+                    '<div class="col-md-4">' +
+                    '<button type="submit" class="btn btn-outline-warning btn-sm mt-2 btn-block">Update markup</button>' +
+                    '</div>' +
+                    '<div class="col-md-4">' +
+                    '<button type="button" class="btn btn-outline-danger btn-sm mt-2 btn-block" onclick="sendAjaxInlineMarkupDelete(this);" id="id_delete_inline_' + json.len_text + '">Delete markup</button>' +
+                    '</div>' +
+                    '<div class="col-md-4">' +
+                    '<a href="/createBot/secondStep/' + json.token + '/inlineMarkup/inlineButtons/" class="btn btn-outline-dark btn-sm mt-2 btn-block">Add button</a>' +
+                    '</div>' +
+                    '</div>' +
+                    '</form>' +
+                    '</div>' +
+                    '<div class="col-md-7"></div>';
+
+                document.getElementById('id_inline_markup_create').reset();
+                $('#id_no_elements').remove();
+                $('#id_inline_elements').append(object);
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+    });
+
+    function sendAjaxInlineMarkupUpdate(form) {
+        console.log(form);
+
+        var response_text = form[1].value;
+        var react_text = form[2].value;
+        var row_width = form[3].value;
+        var index = form[1].name.split('_')[3];
+        console.log(index);
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "create_bot_second_step_inline_markup_update_url" token=token %}',
+            data: {
+                response_text: response_text,
+                react_text: react_text,
+                row_width: row_width,
+                markup_id: index,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                action: 'update_inline_markup'
+            },
+            success: function (json) {
+
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+    }
+
+    function sendAjaxInlineMarkupDelete(button) {
+        var index = button.id.split('_')[3];
+        console.log(index);
+
+        $.ajax({
+            type: 'GET',
+            url: '{% url "create_bot_second_step_inline_markup_delete_url" token=token %}',
+            data: {
+                button_id: index,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                action: 'delete_inline_markup'
+            },
+            success: function (json) {
+                var elements = $('#id_inline_elements').find('div[class^="form-row mt-3"]');
+                elements[json.markup_id].remove();
+                var elements = $('#id_inline_elements').find('div[class^="form-row mt-3"]');
+                console.log(elements);
+
+                for (var item = 0; item < elements.length; item++) {
+                    elements[item].id = `${item}_inline_element`;
+                    $(elements[item]).find('input')[1].name = `response_text_inline_${item}`;
+                    $(elements[item]).find('input')[2].name = `react_text_inline_${item}`;
+                    $(elements[item]).find('input')[3].name = `row_width_inline_${item}`;
+                    $(elements[item]).find('button')[1].id = `id_delete_inline_${item}`;
+                }
+
+                if (elements.length == 0) {
+                    $('#id_inline_elements').append(
+                        '<div class="alert alert-success mt-3" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
+                    );
+                }
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+    }
+
+    $(document).on('submit', '#id_inline_button_create', function (e) {
+        e.preventDefault();
+
+        var text = $('#id_text').val();
+        var url = $('#id_url').val();
+        var switch_inline = $('#id_switch_inline').val();
+        var switch_inline_current = $('#id_switch_inline_current').val();
+        var callback = $('#id_callback').val();
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "create_bot_second_step_inline_buttons_url" token=token %}',
+            data: {
+                text: text,
+                url: url,
+                switch_inline: switch_inline,
+                switch_inline_current: switch_inline_current,
+                callback: callback,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                action: 'create_inline_button'
+            },
+            success: function (json) {
+                console.log(json);
+                if (json.inline_button_error == null) {
+                    var some_object = '';
+                    if (json.url != '') {
+                        some_object = '<div class="input-group mb-2">' +
+                            '<div class="input-group-prepend">' +
+                            '<div class="input-group-text mt-2">Url</div>' +
+                            '</div>' +
+                            '<input class="form-control mt-2" type="text" name="url_inline_' + json.len_text + '_' + json.len_button + '" value="' + json.url + '">' +
+                            '</div>';
+                    }
+                    else if (json.callback != '') {
+                        some_object = '<div class="input-group mb-2">' +
+                            '<div class="input-group-prepend">' +
+                            '<div class="input-group-text mt-2">Callback</div>' +
+                            '</div>' +
+                            '<input class="form-control mt-2" type="text" name="callback_' + json.len_text + '_' + json.len_button + '" value="' + json.callback + '" id="callback_' + json.len_text + '_' + json.len_button + '">' +
+                            '</div>';
+                    }
+                    else if (json.switch_inline != '') {
+                        some_object = '<div class="input-group mb-2">' +
+                            '<div class="input-group-prepend">' +
+                            '<div class="input-group-text mt-2">Switch Inline</div>' +
+                            '</div>' +
+                            '<input class="form-control mt-2" type="text" name="switch_inline_' + json.len_text + '_' + json.len_button + '" value="' + json.switch_inline + '">' +
+                            '</div>';
+                    }
+                    else {
+                        some_object = '<div class="input-group mb-2">' +
+                            '<div class="input-group-prepend">' +
+                            '<div class="input-group-text mt-2">Switch Inline Current</div>' +
+                            '</div>' +
+                            '<input class="form-control mt-2" type="text" name="switch_inline_current_' + json.len_text + '_' + json.len_button + '" value="' + json.switch_inline_current + '" id="switch_inline_current_' + json.len_text + '_' + json.len_button + '">' +
+                            '</div>';
+                    }
+
+                    var object = '<form onsubmit="sendAjaxInlineButtonUpdate(this); return false;" method="POST" class="mb-3">' +
+                        '<input type="hidden" name="csrfmiddlewaretoken" value="' + json.csrf + '">' +
+                        '<div class="input-group">' +
+                        '<div class="input-group-prepend">' +
+                        '<div class="input-group-text">Text</div>' +
+                        '</div>' +
+                        '<input class="form-control" type="text" name="text_inline_' + json.len_text + '_' + json.len_button + '" value="' + json.text + '">' +
+                        '</div>' +
+                        some_object +
+                        '<div class="form-row mt-2">' +
+                        '<div class="col-md-6">' +
+                        '<button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update button</button>' +
+                        '</div>' +
+                        '<div class="col-md-6">' +
+                        '<button type="button" class="btn btn-outline-danger btn-sm btn-block" id="id_delete_inline_button_' + json.len_text + '_' + json.len_button + '" onclick="sendAjaxInlineButtonDelete(this);">Delete button</button>' +
+                        '</div>' +
+                        '</div>' +
+                        '</form>';
+
+                    document.getElementById('id_inline_button_create').reset();
+                    $('#id_url').removeAttr('readonly');
+                    $('#id_switch_inline').removeAttr('readonly');
+                    $('#id_switch_inline_current').removeAttr('readonly');
+                    $('#id_callback').removeAttr('readonly');
+                    $('#' + json.len_text + '_inline_element').find('div.col-md-7').append(object);
+                }
+                else {
+                    console.log('sdfsdf');
+                    var error = '<div class="alert alert-warning mt-2">' +
+                        json.inline_button_error.url[0] +
+                        '</div>';
+                    document.getElementById("id_inline_button_create").reset();
+                    $('#id_url').removeAttr('readonly');
+                    $('#id_switch_inline').removeAttr('readonly');
+                    $('#id_switch_inline_current').removeAttr('readonly');
+                    $('#id_callback').removeAttr('readonly');
+                    $('#errors').append(error);
+                }
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+    });
+
+    function sendAjaxInlineButtonUpdate(form) {
+        console.log(form);
+
+        var text = form[1].value;
+        var currnet_object = form[2].id.slice(0, -4)
+        if (currnet_object == 'callback') {
+            var callback = form[2].value;
+            var url = '';
+            var switch_inline = '';
+            var switch_inline_current = '';
+        }
+        else if (currnet_object == 'switch_inline') {
+            var callback = '';
+            var url = '';
+            var switch_inline = form[2].value;
+            var switch_inline_current = '';
+        }
+        else if (currnet_object == 'switch_inline_current') {
+            var callback = '';
+            var url = '';
+            var switch_inline = '';
+            var switch_inline_current = form[2].value;
+        }
+        else if (currnet_object == 'url_inline') {
+            var callback = '';
+            var url = form[2].value;
+            var switch_inline = '';
+            var switch_inline_current = '';
+        }
+
+        var markup_id = form[2].name.split('_')[form[2].name.split('_').length - 1 - 1];
+        var button_id = form[2].name.split('_')[form[2].name.split('_').length - 1];
+        console.log(markup_id, button_id);
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "create_bot_second_step_inline_buttons_update_url" token=token %}',
+            data: {
+                text: text,
+                callback: callback,
+                url: url,
+                switch_inline: switch_inline,
+                switch_inline_current: switch_inline_current,
+                button_id: button_id,
+                markup_id: markup_id,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                action: 'update_inline_button'
+            },
+            success: function (json) {
+
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+    }
+
+    function sendAjaxInlineButtonDelete(button) {
+        var markup_id = button.id.split('_')[4];
+        var button_id = button.id.split('_')[5];
+        console.log(markup_id, button_id);
+
+        $.ajax({
+            type: 'GET',
+            url: '{% url "create_bot_second_step_inline_buttons_delete_url" token=token %}',
+            data: {
+                markup_id: markup_id,
+                button_id: button_id,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                action: 'delete_inline_button'
+            },
+            success: function (json) {
+                console.log(json);
+                var elements = $($('#id_inline_elements').children()[json.markup_id]).find('div.col-md-7').find('form');
+                $(elements[json.button_id]).remove();
+                var elements = $($('#id_inline_elements').children()[json.markup_id]).find('div.col-md-7').find('form');
+                console.log(elements);
+
+                for (var item = 0; item < elements.length; item++) {
+                    var some = $(elements[item]).find('input')[2].name.slice(0, -3);
+                    var some1 = $(elements[item]).find('input')[2].id.slice(0, -3);
+
+                    $(elements[item]).find('input')[1].name = `text_inline_${markup_id}_${item}`;
+                    $(elements[item]).find('input')[2].name = `${some}${markup_id}_${item}`;
+                    $(elements[item]).find('input')[2].id = `${some1}${markup_id}_${item}`;
+                    $(elements[item]).find('button')[1].id = `id_delete_inline_button_${markup_id}_${item}`;
+                }
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
     }
 </script>
 {% endif %}

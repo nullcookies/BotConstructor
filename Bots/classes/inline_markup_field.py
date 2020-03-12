@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from ..functions import *
 from ..forms import InlineMarkup
+from django.http import JsonResponse
 
 
 class CreateInlineMarkupField(LoginRequiredMixin, View):
@@ -30,34 +31,45 @@ class CreateInlineMarkupField(LoginRequiredMixin, View):
                                                     get_object='inline_markup')
         inline_markup_form = InlineMarkup(request.POST)
 
-        if inline_markup_form.is_valid():
-            row_width = inline_markup_form.cleaned_data['row_width']
-            response_text = inline_markup_form.cleaned_data['response_text']
-            react_text = inline_markup_form.cleaned_data['react_text']
+        print(request.POST)
+        if request.POST.get('action') == 'create_inline_markup':
+            if inline_markup_form.is_valid():
+                print(inline_markup_form.cleaned_data)
+                row_width = int(inline_markup_form.cleaned_data['row_width'])
+                response_text = inline_markup_form.cleaned_data[
+                    'response_text'
+                ]
+                react_text = inline_markup_form.cleaned_data['react_text']
 
-            path = open_configuration(request, token)
-            with open(path, 'r+', encoding='utf-8') as file:
-                object_config = json.load(file)
+                path = open_configuration(request, token)
+                with open(path, 'r+', encoding='utf-8') as file:
+                    object_config = json.load(file)
 
-                try:
-                    object_config['inline_markup'].append({
-                        'row_width': row_width,
-                        'response_text': response_text,
-                        'react_text': react_text
-                    })
-                except KeyError:
-                    object_config['inline_markup'] = [{
-                        'row_width': row_width,
+                    try:
+                        object_config['inline_markup'].append({
+                            'row_width': row_width,
+                            'response_text': response_text,
+                            'react_text': react_text
+                        })
+                    except KeyError:
+                        object_config['inline_markup'] = [{
+                            'row_width': row_width,
+                            'react_text': react_text,
+                            'response_text': response_text
+                        }]
+                    file.seek(0)
+                    json.dump(object_config, file,
+                              indent=4, ensure_ascii=False)
+                    len_text = len(object_config['inline_markup']) - 1
+
+                    return JsonResponse({
                         'react_text': react_text,
-                        'response_text': response_text
-                    }]
-                file.seek(0)
-                json.dump(object_config, file,
-                          indent=4, ensure_ascii=False)
-                return redirect(
-                    'create_bot_second_step_inline_buttons_url',
-                    token=token
-                )
+                        'response_text': response_text,
+                        'row_width': row_width,
+                        'token': token,
+                        'csrf': request.POST.get('csrfmiddlewaretoken'),
+                        'len_text': len_text
+                    })
 
         self.context.update({
             'title': 'Second Step - BotConstructor',
@@ -71,59 +83,64 @@ class CreateInlineMarkupField(LoginRequiredMixin, View):
 class UpdateInlineMarkupField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_inline_markup_url'
+    context = {}
 
     def post(self, request, token: str):
         data = dict(request.POST)
         print(data)
 
-        path = open_configuration(request, token)
-        with open(path, 'r', encoding='utf-8') as file:
-            object_config = json.load(file)
+        if request.POST.get('action') == 'update_inline_markup':
+            response_text = request.POST.get('response_text')
+            react_text = request.POST.get('react_text')
+            row_width = int(request.POST.get('row_width'))
+            index = int(request.POST.get('markup_id'))
 
-        inline_markup_object = object_config['inline_markup']
-        final_data = []
-        index = int(list(data.items())[1][0].split('_')[-1])
+            path = open_configuration(request, token)
+            with open(path, 'r', encoding='utf-8') as file:
+                object_config = json.load(file)
 
-        for inline_markup in data.items():
-            if inline_markup[0] != 'csrfmiddlewaretoken':
-                text = inline_markup[1][0]
-                final_data.append([index, text])
+            inline_markup_object = object_config['inline_markup']
+            inline_markup_object[index]['react_text'] = react_text
+            inline_markup_object[index]['response_text'] = response_text
+            inline_markup_object[index]['row_width'] = row_width
+            object_config['inline_markup'] = inline_markup_object
 
-        for item in range(len(inline_markup_object)):
-            if item == index:
-                inline_markup_object[item][
-                    'react_text'
-                ] = final_data[1][1].strip()
-                inline_markup_object[item][
-                    'response_text'
-                ] = final_data[0][1].strip()
-                inline_markup_object[item]['row_width'] = final_data[2][1]
+            with open(path, 'w', encoding='utf-8') as file:
+                json.dump(object_config, file, indent=4, ensure_ascii=False)
+            return JsonResponse({})
 
-        object_config['inline_markup'] = inline_markup_object
-        with open(path, 'w', encoding='utf-8') as file:
-            json.dump(object_config, file, indent=4, ensure_ascii=False)
-        return redirect(
-            'create_bot_second_step_inline_markup_url',
-            token=token
-        )
+        self.context.update({
+            'title': 'Second Step - BotConstructor',
+            'token': token
+        })
+        return render(request, 'SecondStep.html', self.context)
 
 
 class DeleteInlineMarkupField(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_inline_markup_url'
+    context = {}
 
-    def get(self, request, token: str, markup_id: int):
-        path = open_configuration(request, token)
-        with open(path, 'r', encoding='utf-8') as file:
-            object_config = json.load(file)
+    def get(self, request, token: str):
+        if request.GET.get('action') == 'delete_inline_markup':
+            markup_id = int(request.GET.get('button_id'))
 
-        reply_markup_object = object_config['inline_markup']
-        reply_markup_object.remove(reply_markup_object[markup_id])
+            path = open_configuration(request, token)
+            with open(path, 'r', encoding='utf-8') as file:
+                object_config = json.load(file)
 
-        object_config['inline_markup'] = reply_markup_object
-        with open(path, 'w', encoding='utf-8') as file:
-            json.dump(object_config, file, indent=4, ensure_ascii=False)
-        return redirect(
-            'create_bot_second_step_inline_markup_url',
-            token=token
-        )
+            reply_markup_object = object_config['inline_markup']
+            reply_markup_object.remove(reply_markup_object[markup_id])
+
+            object_config['inline_markup'] = reply_markup_object
+            with open(path, 'w', encoding='utf-8') as file:
+                json.dump(object_config, file, indent=4, ensure_ascii=False)
+            return JsonResponse({
+                'markup_id': markup_id
+            })
+
+        self.context.update({
+            'title': 'Second Step - BotConstructor',
+            'token': token
+        })
+        return render(request, 'SecondStep.html', self.context)

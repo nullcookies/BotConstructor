@@ -22,8 +22,8 @@ class CreateReplyButtonsField(LoginRequiredMixin, View):
                                                    token=token,
                                                    get_object='reply_markup')
         reply_button_form = ReplyButton()
+
         current_url = resolve(request.path_info).url_name
-        print(current_url)
         if reply_markup_elements == [] \
                 and current_url != 'create_bot_second_step_reply_markup_url':
             return redirect(

@@ -19,6 +19,7 @@ import requests
 from .models import Profile
 from .forms import *
 from .tokens import account_activation_token
+from django.core.mail.message import EmailMultiAlternatives
 
 
 def base_view(request):
@@ -118,13 +119,13 @@ class UserRegistration(View):
                 email = EmailMessage(
                     mail_subject, message, to=[to_email]
                 )
+                email.content_subtype = "html"
                 email.send()
 
                 messages.error(
                     request,
                     'Now, a message will come to your mail'
                 )
-
                 return redirect('base_view_url')
             else:
                 messages.error(request, 'Sorry, you are the robot')

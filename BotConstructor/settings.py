@@ -27,7 +27,8 @@ SECRET_KEY = '9x5*helb@0lk6k+pv5xedzcd@x&tdh04my!bk_$k!#&r#33ren'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'bot-constructor.azurewebsites.net', '127.0.0.1'
+    'bot-constructor.azurewebsites.net', '127.0.0.1',
+    'bot-constructor.northeurope.cloudapp.azure.com'
 ]
 
 
@@ -110,18 +111,18 @@ WSGI_APPLICATION = 'BotConstructor.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'BotConstructor_DB',
-        'USER': 'postgres',
-        'PASSWORD': 'domestosroot50',
-        'HOST': 'localhost',
-        'PORT': '5432'
         # 'ENGINE': 'django.db.backends.postgresql',
         # 'NAME': 'BotConstructor_DB',
-        # 'USER': 'alexAdmin@bot-constructor',
-        # 'PASSWORD': 'liceuM@lex@aminP@$$',
-        # 'HOST': 'bot-constructor.postgres.database.azure.com',
+        # 'USER': 'postgres',
+        # 'PASSWORD': 'domestosroot50',
+        # 'HOST': 'localhost',
         # 'PORT': '5432'
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'BotConstructor_DB',
+        'USER': 'alexAdmin@bot-constructor',
+        'PASSWORD': 'liceuM@lex@aminP@$$',
+        'HOST': 'bot-constructor.postgres.database.azure.com',
+        'PORT': '5432'
     }
 }
 
@@ -176,7 +177,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'BotConstructor', 'media')
 
-GOOGLE_SECRET_KEY = '6Lf21b8UAAAAAD79VRNA7A1Hmot9u8GpGPqkJgNd'
+GOOGLE_SECRET_KEY = '6Lel7dcUAAAAAMGZJPLmh1yJW8JPkmF3KqFSthff'
 
 LOGIN_URL = '/signIn/'
 LOGOUT_REDIRECT_URL = 'base_view_url'

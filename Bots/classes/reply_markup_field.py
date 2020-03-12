@@ -99,6 +99,10 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
                 'token': token,
                 'len_text': len_text
             })
+        else:
+            return JsonResponse({
+                'reply_markup_error': reply_markup_form.errors
+            })
 
         self.context.update({
             'title': 'Second Step - BotConstructor',

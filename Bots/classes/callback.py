@@ -21,10 +21,46 @@ class CreateCallbackField(LoginRequiredMixin, View):
             request, token=token, get_object='callbacks'
         )
 
+        FIELDS_REACT = []
+        FIELDS_CALLBACK = []
+
+        path = open_configuration(request=request, token=token)
+        with open(path, 'r', encoding='utf-8') as file:
+            some = json.load(file)
+
+        # ! Get react text into a list
+        if 'reply_markup' in some:
+            for item in some['reply_markup']:
+                FIELDS_REACT.append(
+                    (f'{item["react_text"]}_key', item['react_text'])
+                )
+
+        if 'text' in some:
+            for item in some['text']:
+                FIELDS_REACT.append(
+                    (f'{item["react_text"]}_key', item['react_text'])
+                )
+
+        if 'inline_markup' in some:
+            for item in some['inline_markup']:
+                FIELDS_REACT.append(
+                    (f'{item["react_text"]}_key', item['react_text'])
+                )
+
+        # ! Get callbacks into a list
+        if 'inline_markup' in some:
+            for item in some['inline_markup']:
+                for button in item['buttons']:
+                    FIELDS_CALLBACK.append(
+                        (f'{button["callback"]}_key', button['callback'])
+                    )
+
         self.context.update({
             'title': 'CallBack - BotConstructor',
             'callback_form': callback_form,
             'token': token,
+            'fields_callback': FIELDS_CALLBACK,
+            'fields_react': FIELDS_REACT,
             'callback_elements': callback_elements
         })
         return render(request, 'SecondStep.html', self.context)
