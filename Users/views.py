@@ -84,6 +84,7 @@ class UserRegistration(View):
                 'response': recaptcha_response
             }
             response = requests.get(validate_url, params=properties)
+            print(response)
 
             if response.json()['success']:
                 username = register_form.cleaned_data['username']
