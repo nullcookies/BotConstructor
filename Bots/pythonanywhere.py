@@ -6,6 +6,7 @@ from pprint import pprint
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from sys import platform
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -63,11 +64,16 @@ class AutoDeploy:
         options = Options()
         options.headless = True
 
-        # ? Open driver
-        driver = webdriver.Chrome(
-            executable_path=os.path.join(
+        if platform == 'linux' or platform == 'linux2':
+            executable_path = os.path.join(
                 BASE_DIR, 'chromedriver.exe'
             ),
+        elif platform == "win32":
+            executable_path = '/usr/lib/chromium-browser/chromedriver'
+
+        # ? Open driver
+        driver = webdriver.Chrome(
+            executable_path=executable_path,
             chrome_options=options
         )
         driver.get(

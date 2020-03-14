@@ -28,7 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'bot-constructor.azurewebsites.net', '127.0.0.1',
-    'bot-constructor.northeurope.cloudapp.azure.com'
+    'bot-constructor.northeurope.cloudapp.azure.com',
+    '40.113.6.80'
 ]
 
 
