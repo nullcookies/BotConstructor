@@ -11,16 +11,24 @@
 
     {% for field in update_image_form %}
     {% if field.errors %}
-    <div class="alert alert-warning">
+    <div class="alert alert-warning alert-dismissible fade show">
         {{ field.errors }}
+
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
     {% endif %}
     {% endfor %}
 
     {% if messages %}
     {% for message in messages %}
-    <div class="alert alert-warning">
+    <div class="alert alert-warning alert-dismissible fade show">
         {{ message }}
+
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
     {% endfor %}
     {% endif %}
@@ -31,7 +39,7 @@
             {% if current_user.image %}
             <img src="{{ current_user.image.url }}" class="img-fluid w-100 border-class">
             {% else %}
-            <img src="{% static 'pictures/default.png' %}" class="img-fluid profile profile-img-class">
+            <img src="../../../BotConstructor/media/images.png" class="img-fluid profile profile-img-class">
             {% endif %}
 
             <form action="{% url 'profile_url' %}" method="POST" enctype="multipart/form-data" class="mt-2">

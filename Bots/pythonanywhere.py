@@ -65,11 +65,11 @@ class AutoDeploy:
         options.headless = True
 
         if platform == 'linux' or platform == 'linux2':
+            executable_path = '/usr/lib/chromium-browser/chromedriver'
+        elif platform == "win32":
             executable_path = os.path.join(
                 BASE_DIR, 'chromedriver.exe'
-            ),
-        elif platform == "win32":
-            executable_path = '/usr/lib/chromium-browser/chromedriver'
+            )
 
         # ? Open driver
         driver = webdriver.Chrome(

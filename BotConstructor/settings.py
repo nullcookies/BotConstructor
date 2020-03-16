@@ -112,18 +112,18 @@ WSGI_APPLICATION = 'BotConstructor.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.postgresql',
-        # 'NAME': 'BotConstructor_DB',
-        # 'USER': 'postgres',
-        # 'PASSWORD': 'domestosroot50',
-        # 'HOST': 'localhost',
-        # 'PORT': '5432'
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'BotConstructor_DB',
-        'USER': 'alexAdmin@bot-constructor',
-        'PASSWORD': 'liceuM@lex@aminP@$$',
-        'HOST': 'bot-constructor.postgres.database.azure.com',
+        'USER': 'postgres',
+        'PASSWORD': 'domestosroot50',
+        'HOST': 'localhost',
         'PORT': '5432'
+        # 'ENGINE': 'django.db.backends.postgresql',
+        # 'NAME': 'BotConstructor_DB',
+        # 'USER': 'alexAdmin@bot-constructor',
+        # 'PASSWORD': 'liceuM@lex@aminP@$$',
+        # 'HOST': 'bot-constructor.postgres.database.azure.com',
+        # 'PORT': '5432'
     }
 }
 

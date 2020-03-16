@@ -13,13 +13,17 @@ from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.core.mail import EmailMessage
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+from django.core.mail.message import EmailMultiAlternatives
+from sys import platform
 
+import os
 import requests
 
 from .models import Profile
 from .forms import *
 from .tokens import account_activation_token
-from django.core.mail.message import EmailMultiAlternatives
 
 
 def base_view(request):
@@ -109,7 +113,7 @@ class UserRegistration(View):
 
                 current_site = get_current_site(request)
                 mail_subject = 'Activate your account'
-                message = render_to_string('ActiveEmail.html', {
+                message_content = render_to_string('ActiveEmail.html', {
                     'user': some_user,
                     'domain': current_site.domain,
                     'uid': urlsafe_base64_encode(force_bytes(some_user.pk)),
@@ -117,11 +121,29 @@ class UserRegistration(View):
                     'request': request
                 })
                 to_email = register_form.cleaned_data.get('email')
-                email = EmailMessage(
-                    mail_subject, message, to=[to_email]
-                )
-                email.content_subtype = "html"
-                email.send()
+
+                if platform == 'linux' or platform == 'linux2':
+                    message = Mail(
+                        from_email='noreply@bot-constructor.northeurope.'
+                                   'cloudapp.azure.com',
+                        to_emails=to_email,
+                        subject=mail_subject,
+                        html_content=message_content)
+                    try:
+                        sg = SendGridAPIClient(
+                            'SG.48GCbtEqQtuRsR-25DMAZw.'
+                            'FsF0nzFOdIno4UNc_JQZLqstiaONAIn3eTOv22cJGJg'
+                        )
+                        response = sg.send(message)
+                        print(response.status_code)
+                    except Exception as e:
+                        print(e.message)
+                else:
+                    email = EmailMessage(
+                        mail_subject, message_content, to=[to_email]
+                    )
+                    email.content_subtype = "html"
+                    email.send()
 
                 messages.error(
                     request,
