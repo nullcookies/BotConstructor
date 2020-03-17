@@ -1,13 +1,12 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
-media/
 *.py[cod]
 *$py.class
 .vscode/
 ScriptsBots/
 DBScriptsBots/
 user_images/
-media/
+# media/
 
 # C extensions
 *.so
