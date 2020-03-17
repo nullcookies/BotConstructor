@@ -693,7 +693,7 @@
                 <div class="col-md-12">
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <div class="input-group-text">React</div>
+                            <div class="input-group-text">Callback</div>
                         </div>
                         <input type="text" class="form-control" name="callback_text_{{ callback_element.0 }}"
                             value="{{ callback_element.1.callback }}">
@@ -705,7 +705,7 @@
                         <div class="col-md-8">
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <div class="input-group-text">Callback</div>
+                                    <div class="input-group-text">React</div>
                                 </div>
                                 <input type="text" class="form-control" name="react_text_{{ callback_element.0 }}"
                                     value="{{ callback_element.1.react_text }}">
@@ -871,8 +871,12 @@
                     );
                 }
                 else {
-                    var error = '<div class="alert alert-warning mt-2">' +
+                    var error = '<div class="alert alert-warning alert-dismissible fade show mt-2">' +
                         json.text_error.react_text[0] +
+
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                        '<span aria-hidden="true">&times;</span>' +
+                        '</button>' +
                         '</div>';
                     document.getElementById("text-form").reset();
                     $('#errors').append(error);
@@ -1058,8 +1062,12 @@
                     $('#id_add_button_reply').click();
                 }
                 else {
-                    var error = '<div class="alert alert-warning mt-2">' +
+                    var error = '<div class="alert alert-warning alert-dismissible fade show mt-2">' +
                         json.reply_markup_error.react_text[0] +
+
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                        '<span aria-hidden="true">&times;</span>' +
+                        '</button>' +
                         '</div>';
                     document.getElementById("id_reply_markup_create_form").reset();
                     $('#errors').append(error);
@@ -1307,7 +1315,7 @@
                         '<div class="col-md-12">' +
                         '<div class="input-group">' +
                         '<div class="input-group-prepend">' +
-                        '<div class="input-group-text">React</div>' +
+                        '<div class="input-group-text">Callback</div>' +
                         '</div>' +
                         '<input type="text" class="form-control" name="callback_text_' + json.len_text + '" value="' + json.callback + '">' +
                         '</div>' +
@@ -1317,7 +1325,7 @@
                         '<div class="col-md-8">' +
                         '<div class="input-group">' +
                         '<div class="input-group-prepend">' +
-                        '<div class="input-group-text">Callback</div>' +
+                        '<div class="input-group-text">React</div>' +
                         '</div>' +
                         '<input type="text" class="form-control" name="react_text_' + json.len_text + '" value="' + json.react_text + '">' +
                         '</div>' +
@@ -1343,9 +1351,14 @@
                     }
                 }
                 else {
-                    var error = '<div class="alert alert-warning mt-2">' +
+                    var error = '<div class="alert alert-warning alert-dismissible fade show mt-2">' +
                         json.callback_error.react_text[0] +
+
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                        '<span aria-hidden="true">&times;</span>' +
+                        '</button>' +
                         '</div>';
+
                     document.getElementById("id_create_callback").reset();
                     $('#errors').append(error);
                 }
@@ -1637,9 +1650,12 @@
                     $('#' + json.len_text + '_inline_element').find('div.col-md-7').append(object);
                 }
                 else {
-                    console.log('sdfsdf');
-                    var error = '<div class="alert alert-warning mt-2">' +
-                        json.inline_button_error.url[0] +
+                    var error = '<div class="alert alert-warning alert-dismissible fade show mt-2">' +
+                        json.inline_button_error.react_text[0] +
+
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                        '<span aria-hidden="true">&times;</span>' +
+                        '</button>' +
                         '</div>';
                     document.getElementById("id_inline_button_create").reset();
                     $('#id_url').removeAttr('readonly');

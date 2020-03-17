@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import logging
+from sys import platform
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,7 +25,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '9x5*helb@0lk6k+pv5xedzcd@x&tdh04my!bk_$k!#&r#33ren'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if platform == 'linux' or platform == 'linux2':
+    DEBUG = False
+elif platform == 'win32':
+    DEBUG = True
 
 ALLOWED_HOSTS = [
     'bot-constructor.azurewebsites.net', '127.0.0.1',
@@ -80,50 +84,56 @@ TEMPLATES = [
 WSGI_APPLICATION = 'BotConstructor.wsgi.application'
 
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {
-#         'console': {
-#             'format': '%(name)-12s %(levelname)-8s %(message)s'
-#         },
-#         'file': {
-#             'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
-#         }
-#     },
-#     'handlers': {
-#         'file': {
-#             'level': 'ERROR',
-#             'class': 'logging.FileHandler',
-#             'filename': 'debug.log',
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file'],
-#             'level': 'ERROR',
-#             'propagate': True,
-#         },
-#     },
-# }
+if platform == 'linux' or platform == 'linux2':
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'console': {
+                'format': '%(name)-12s %(levelname)-8s %(message)s'
+            },
+            'file': {
+                'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
+            }
+        },
+        'handlers': {
+            'file': {
+                'level': 'ERROR',
+                'class': 'logging.FileHandler',
+                'filename': 'debug.log',
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['file'],
+                'level': 'ERROR',
+                'propagate': True,
+            },
+        },
+    }
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+
+
+if platform == 'linux' or platform == 'linux2':
+    user = 'alexAdmin@bot-constructor'
+    password = 'liceuM@lex@aminP@$$'
+    host = 'bot-constructor.postgres.database.azure.com'
+elif platform == 'win32':
+    user = 'postgres'
+    password = 'domestosroot50'
+    host = 'localhost'
+
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'BotConstructor_DB',
-        'USER': 'postgres',
-        'PASSWORD': 'domestosroot50',
-        'HOST': 'localhost',
-        'PORT': '5432'
-        # 'ENGINE': 'django.db.backends.postgresql',
-        # 'NAME': 'BotConstructor_DB',
-        # 'USER': 'alexAdmin@bot-constructor',
-        # 'PASSWORD': 'liceuM@lex@aminP@$$',
-        # 'HOST': 'bot-constructor.postgres.database.azure.com',
-        # 'PORT': '5432'
+        'USER': user,
+        'PASSWORD': password,
+        'HOST': host,
+        'PORT': 5432
     }
 }
 
@@ -183,9 +193,9 @@ GOOGLE_SECRET_KEY = '6Lel7dcUAAAAAMGZJPLmh1yJW8JPkmF3KqFSthff'
 LOGIN_URL = '/signIn/'
 LOGOUT_REDIRECT_URL = 'base_view_url'
 
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'bot.constructor.service@gmail.com'
-EMAIL_HOST_PASSWORD = 'bot-constructor21312'
-EMAIL_PORT = 587
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_USE_TLS = True
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_HOST_USER = 'bot.constructor.service@gmail.com'
+# EMAIL_HOST_PASSWORD = 'bot-constructor21312'
+# EMAIL_PORT = 587
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

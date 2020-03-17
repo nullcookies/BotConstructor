@@ -251,36 +251,61 @@ class CallbackForm(forms.Form):
         with open(path, 'r', encoding='utf-8') as file:
             object_config = json.load(file)
 
-        inline_object = object_config['inline_markup']
+        point_on_new_callback = False
+        for item in object_config['callbacks']:
+            if new_callback_text == item['callback']:
+                point_on_new_callback = True
 
-        point_callback = False
-        for value in inline_object:
-            for item in value['buttons']:
-                if new_callback_text == item['callback']:
-                    point_callback = True
+        if point_on_new_callback:
+            self.add_error(
+                'react_text',
+                'You have already created the object '
+                f'this callback: {new_callback_text}'
+            )
 
-        point_react_text = False
-        for value_1, value_2, value_3 in zip(object_config['text'],
-                                             object_config['reply_markup'],
-                                             inline_object):
-            if new_react_text == value_1['react_text'] or \
-                new_react_text == value_2['react_text'] or \
-                    new_react_text == value_3['react_text']:
-                point_react_text = True
+        if 'inline_markup' in object_config:
+            inline_object = object_config['inline_markup']
 
-        if point_callback:
-            print('Ok')
+            point_callback = False
+            for value in inline_object:
+                for item in value['buttons']:
+                    if new_callback_text == item['callback']:
+                        point_callback = True
+
+            if 'text' in object_config:
+                point_react_text = False
+                for value_1 in object_config['text']:
+                    #  object_config['reply_markup'],
+                    #  inline_object):
+                    if new_react_text == value_1['react_text']:
+                        # new_react_text == value_2['react_text'] or \
+                        #     new_react_text == value_3['react_text']:
+                        point_react_text = True
+
+                if point_callback:
+                    print('Ok')
+                else:
+                    self.add_error(
+                        'react_text',
+                        "Your config don't have this "
+                        f"callback: {new_callback_text}"
+                    )
+            else:
+                self.add_error(
+                    'react_text',
+                    "Your config don't have response text"
+                )
+
+            # if point_react_text:
+            #     print('Ok')
+            # else:
+            #     self.add_error(
+            #         'react_text',
+            #         f"Your config don't have this react text: "
+            #     )
         else:
             self.add_error(
                 'react_text',
-                f"Your config don't have this callback: {new_callback_text}"
+                "Your config don't have a inline markup"
             )
-
-        # if point_react_text:
-        #     print('Ok')
-        # else:
-        #     self.add_error(
-        #         'react_text',
-        #         f"Your config don't have this react text: {new_react_text}"
-        #     )
         return self.cleaned_data

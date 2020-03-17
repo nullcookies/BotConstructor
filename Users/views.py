@@ -107,7 +107,7 @@ class UserRegistration(View):
                 some_user.is_active = False
                 some_user.save()
 
-                some_user_profile = Profile.objects.create(
+                some_user_profile = Profile(
                     user=some_user, about=about)
                 some_user_profile.save()
 
@@ -122,28 +122,22 @@ class UserRegistration(View):
                 })
                 to_email = register_form.cleaned_data.get('email')
 
-                if platform == 'linux' or platform == 'linux2':
-                    message = Mail(
-                        from_email='noreply@bot-constructor.northeurope.'
-                                   'cloudapp.azure.com',
-                        to_emails=to_email,
-                        subject=mail_subject,
-                        html_content=message_content)
-                    try:
-                        sg = SendGridAPIClient(
-                            'SG.48GCbtEqQtuRsR-25DMAZw.'
-                            'FsF0nzFOdIno4UNc_JQZLqstiaONAIn3eTOv22cJGJg'
-                        )
-                        response = sg.send(message)
-                        print(response.status_code)
-                    except Exception as e:
-                        print(e.message)
-                else:
-                    email = EmailMessage(
-                        mail_subject, message_content, to=[to_email]
+                message = Mail(
+                    from_email='noreply@bot-constructor.northeurope.'
+                    'cloudapp.azure.com',
+                    to_emails=to_email,
+                    subject=mail_subject,
+                    html_content=message_content)
+                print(message)
+                try:
+                    sg = SendGridAPIClient(
+                        'SG.48GCbtEqQtuRsR-25DMAZw.'
+                        'FsF0nzFOdIno4UNc_JQZLqstiaONAIn3eTOv22cJGJg'
                     )
-                    email.content_subtype = "html"
-                    email.send()
+                    response = sg.send(message)
+                    print(response.status_code)
+                except Exception as e:
+                    print(e.message)
 
                 messages.error(
                     request,
