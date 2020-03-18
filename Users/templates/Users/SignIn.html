@@ -3,7 +3,7 @@
 {% block main_section %}
 {% include 'Navbar.html' %}
 <div class="container">
-    <h5 class="text-secondary mt-2">Here you can register in our site</h5>
+    <h2 class="text-secondary mt-2 text-center mt-4 mb-3">Sign In</h2>
 
     <form method="POST">
         {% csrf_token %}
@@ -12,7 +12,7 @@
         {% if field.errors %}
         <div class="alert alert-warning alert-dismissible fade show">
             {{ field.errors }}
-    
+
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -24,7 +24,7 @@
         {% for message in messages %}
         <div class="alert alert-warning alert-dismissible fade show">
             {{ message }}
-    
+
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -32,25 +32,23 @@
         {% endfor %}
         {% endif %}
 
-        <div class="form-row">
-            <div class="form-group col-md-6 mt-2 mb-2">
-                {{ auth_form.username.label }}
+        <div class="card">
+            <div class="card-body">
                 {{ auth_form.username }}
-            </div>
-            <div class="form-group col-md-6 mt-2 mb-2">
-                {{ auth_form.password.label }}
-                {{ auth_form.password }}
+                <div class="mb-2 mt-2">
+                    {{ auth_form.password }}
+                </div>
+
+                {% if is_captcha %}
+                <div class="mb-2">
+                    <script src='https://www.google.com/recaptcha/api.js'></script>
+                    <div class="g-recaptcha" data-sitekey="6Lel7dcUAAAAACNb9UpCPkKJj8450NHH2Q01rv7t"></div>
+                </div>
+                {% endif %}
+
+                <button type="submit" class="btn btn-outline-warning">SignIn</button>
             </div>
         </div>
-
-        {% if is_captcha %}
-        <div class="mb-2">
-            <script src='https://www.google.com/recaptcha/api.js'></script>
-            <div class="g-recaptcha" data-sitekey="6Lel7dcUAAAAACNb9UpCPkKJj8450NHH2Q01rv7t"></div>
-        </div>
-        {% endif %}
-
-        <button type="submit" class="btn btn-outline-warning">SignIn</button>
     </form>
 </div>
 {% endblock main_section %}

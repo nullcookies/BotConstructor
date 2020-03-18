@@ -97,6 +97,18 @@ class ShowTemplates(LoginRequiredMixin, View):
             with open(path_config, 'r', encoding='utf-8') as file:
                 access_token = json.load(file)['access_token']
 
+            current_user = Profile.objects.get(user=request.user)
+
+            bot_object = Bot(owner=current_user,
+                             access_token=access_token, title='NewsBot',
+                             username='NewsBotbot')
+            # bot_object.file_script.save(
+            #     f"{request.user.username}_{token.replace(':', '_')}"
+            #     "_test_bot.py",
+            #     File(open(path_template))
+            # )
+            bot_object.save()
+
             new_content = """
             import telebot
             from telebot.types import *
@@ -381,11 +393,13 @@ class StopBot(LoginRequiredMixin, View):
         )
         deploy.stop_bot(console_id=console_id)
 
+        if 'count_deploys' in request.session.keys():
+            del request.session['count_deploys']
+
         messages.error(
             request,
             f'Bot, with token: {token} has been stopped'
         )
-
         return redirect('show_bots_url')
 
 
@@ -397,10 +411,27 @@ class StartBot(LoginRequiredMixin, View):
     def get(self, request, token):
         path = open_configuration(request, token=token)
 
-        deploy = AutoDeploy(
-            file_title=f'{request.user.username}_{token}_test_bot.py'
-        )
-        deploy.run_bot(path)
+        if 'count_deploys' in request.session.keys():
+            if request.session['count_deploys'] <= 0:
+                deploy = AutoDeploy(
+                    file_title=f'{request.user.username}_{token}_test_bot.py'
+                )
+                deploy.run_bot(path)
+
+                request.session['count_deploys'] = 1
+            else:
+                messages.error(
+                    request,
+                    f'Bot, with token: {token} has already ran'
+                )
+                return redirect('show_bots_url')
+        else:
+            deploy = AutoDeploy(
+                file_title=f'{request.user.username}_{token}_test_bot.py'
+            )
+            deploy.run_bot(path)
+
+            request.session['count_deploys'] = 1
 
         messages.error(
             request,

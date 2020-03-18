@@ -6,7 +6,7 @@ __pycache__/
 ScriptsBots/
 DBScriptsBots/
 user_images/
-# media/
+media/
 
 # C extensions
 *.so

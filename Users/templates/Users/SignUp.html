@@ -3,7 +3,7 @@
 {% block main_section %}
 {% include 'Navbar.html' %}
 <div class="container">
-    <h5 class="text-secondary mt-2">Here you can register in our site</h5>
+    <h2 class="text-secondary mt-4 mb-3 text-center">Sign Up</h2>
 
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -12,7 +12,7 @@
         {% if field.errors %}
         <div class="alert alert-warning alert-dismissible fade show">
             {{ field.errors }}
-    
+
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -24,7 +24,7 @@
         {% for message in messages %}
         <div class="alert alert-warning alert-dismissible fade show">
             {{ message }}
-    
+
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -32,36 +32,40 @@
         {% endfor %}
         {% endif %}
 
-        <div class="form-row">
-            <div class="form-group col-md-6 mt-2 mb-2">
-                {{ register_form.first_name }}
-            </div>
-            <div class="form-group col-md-6 mt-2 mb-2">
-                {{ register_form.last_name }}
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-6 mb-2">
+                        {{ register_form.first_name }}
+                    </div>
+                    <div class="form-group col-md-6 mb-2">
+                        {{ register_form.last_name }}
+                    </div>
+                </div>
+                <div class="mb-2">
+                    {{ register_form.email }}
+                </div>
+
+                {{ register_form.username }}
+                <div class="form-row">
+                    <div class="col-md-6 mt-2">
+                        {{ register_form.password_some }}
+                    </div>
+                    <div class="col-md-6 mt-2">
+                        {{ register_form.password_confirm }}
+                    </div>
+                </div>
+
+                {{ profile_form.about }}
+
+                <script src='https://www.google.com/recaptcha/api.js'></script>
+                <div class="g-recaptcha" data-sitekey="6Lel7dcUAAAAACNb9UpCPkKJj8450NHH2Q01rv7t"></div>
+
+                <button type="submit" class="btn btn-outline-warning mt-2">SignUp</button>
+                <a href="{% url 'user_authentication_url' %}" class="text-success ml-2 mt-4">If you already have an
+                    account...</a>
             </div>
         </div>
-        <div class="mb-2">
-            {{ register_form.email }}
-        </div>
-
-        {{ register_form.username }}
-        <div class="form-row">
-            <div class="col-md-6 mt-2">
-                {{ register_form.password_some }}
-            </div>
-            <div class="col-md-6 mt-2">
-                {{ register_form.password_confirm }}
-            </div>
-        </div>
-
-        {{ register_form.about }}
-
-        <script src='https://www.google.com/recaptcha/api.js'></script>
-        <div class="g-recaptcha" data-sitekey="6Lel7dcUAAAAACNb9UpCPkKJj8450NHH2Q01rv7t"></div>
-
-        <button type="submit" class="btn btn-outline-warning mt-2">SignUp</button>
-        <a href="{% url 'user_authentication_url' %}" class="text-success ml-2 mt-4">If you already have an
-            account...</a>
     </form>
 </div>
 {% endblock main_section %}

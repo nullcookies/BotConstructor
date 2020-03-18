@@ -6,7 +6,7 @@
 <div class="container">
     <div class="image-with-text" style="height: 200px;">
         <img src="{% static 'pictures/apple_mac_os_x_el_capitan-2560x1440.png' %}" class="img-fluid cur-img">
-        <h3 class="text-on-img-2">Here you can see your profile</h3>
+        <h1 class="text-on-img-2">Your profile</h1>
     </div>
 
     {% for field in update_image_form %}
@@ -39,7 +39,7 @@
             {% if current_user.image %}
             <img src="{{ current_user.image.url }}" class="img-fluid w-100 border-class">
             {% else %}
-            <img src="../../../BotConstructor/media/images.png" class="img-fluid profile profile-img-class">
+            <img src="{% static 'pictures/images.png' %}" class="img-fluid profile profile-img-class">
             {% endif %}
 
             <form action="{% url 'profile_url' %}" method="POST" enctype="multipart/form-data" class="mt-2">
@@ -64,9 +64,6 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-row float-right">
-                        <a href="{% url 'user_delete_url' %}" class="btn btn-outline-danger float-right mr-2">🧹
-                            󠁛󠁛󠁛Delete user</a>
-
                         <a href="{% url 'update_profile_url' %}" class="btn btn-outline-primary float-right mr-1">🖊️
                             Edit profile</a>
                     </div>

@@ -1,3 +1,5 @@
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.contrib.auth.models import User
@@ -70,17 +72,20 @@ class UserRegistration(View):
 
     def get(self, request):
         register_form = UserRegistrationForm()
+        profile_form = ProfileForm()
 
         self.context.update({
             'title': 'Registration - BotConstructor',
-            'register_form': register_form
+            'register_form': register_form,
+            'profile_form': profile_form
         })
         return render(request, 'Users/SignUp.html', self.context)
 
     def post(self, request):
         register_form = UserRegistrationForm(request.POST, request.FILES)
+        profile_form = ProfileForm(request.POST)
 
-        if register_form.is_valid():
+        if register_form.is_valid() and profile_form.is_valid():
             recaptcha_response = request.POST.get('g-recaptcha-response')
             validate_url = 'https://www.google.com/recaptcha/api/siteverify'
             properties = {
@@ -99,7 +104,7 @@ class UserRegistration(View):
                 password_confirm = register_form.cleaned_data[
                     'password_confirm'
                 ]
-                about = register_form.cleaned_data['about']
+                about = profile_form.cleaned_data['about']
 
                 some_user = User.objects.create_user(
                     username=username, email=email, password=password,
@@ -295,10 +300,15 @@ class UpdateProfile(LoginRequiredMixin, View):
 
     def get(self, request):
         update_form = UserRegistrationForm(instance=request.user)
+        getted_current_user = Profile.objects.get(user=request.user)
+        update_profile_form = ProfileForm(instance=getted_current_user)
+        # form = PasswordChangeForm(request.user, request.POST)
 
         self.context.update({
             'title': 'Update Profile - BotConstructor',
-            'update_form': update_form
+            'update_form': update_form,
+            'update_profile_form': update_profile_form,
+            # 'form': form
         })
         return render(request, 'Users/UpdateProfile.html', self.context)
 
@@ -306,14 +316,16 @@ class UpdateProfile(LoginRequiredMixin, View):
         update_form = UserRegistrationForm(request.POST, instance=request.user)
         current_user = User.objects.get(id=int(request.user.id))
         current_profile = Profile.objects.get(user=request.user)
+        update_profile_form = ProfileForm(
+            request.POST, instance=current_profile)
 
-        if update_form.is_valid():
+        if update_form.is_valid() and update_profile_form.is_valid():
             username = update_form.cleaned_data['username']
             first_name = update_form.cleaned_data['first_name']
             last_name = update_form.cleaned_data['last_name']
             email = update_form.cleaned_data['email']
             password = update_form.cleaned_data['password_some']
-            about = update_form.cleaned_data['about']
+            about = update_profile_form.cleaned_data['about']
 
             current_user.username = username
             current_user.first_name = first_name
@@ -330,19 +342,20 @@ class UpdateProfile(LoginRequiredMixin, View):
 
         self.context.update({
             'title': 'Update Profile - BotConstructor',
-            'update_form': update_form
+            'update_form': update_form,
+            'update_profile_form': update_profile_form
         })
         return render(request, 'Users/UpdateProfile.html', self.context)
 
 
-class UserDelete(View):
-    def get(self, request):
-        context = {
-            'title': 'Delete User - BotConstructor',
-        }
-        return render(request, 'Users/DeleteUser.html', context)
+# class UserDelete(View):
+#     def get(self, request):
+#         context = {
+#             'title': 'Delete User - BotConstructor',
+#         }
+#         return render(request, 'Users/DeleteUser.html', context)
 
-    def post(self, request):
-        user = User.objects.get(id=int(request.user.id))
-        user.delete()
-        return redirect('base_view_url')
+#     def post(self, request):
+#         user = User.objects.get(id=int(request.user.id))
+#         user.delete()
+#         return redirect('base_view_url')
