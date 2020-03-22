@@ -24,6 +24,7 @@ from .classes.inline_buttons_field import *
 from .functions import *
 from .classes.steps import *
 from .classes.callback import *
+from json import JSONDecodeError
 
 
 data = {}
@@ -337,6 +338,43 @@ class RunBot(LoginRequiredMixin, View):
                 deploy = AutoDeploy(
                     file_title=f'{request.user.username}_{token}_test_bot.py')
                 deploy.upload_file()
+
+                try:
+                    console_id = deploy.create_console()
+                    deploy.open_console()
+
+                    deploy.send_input(console_id=console_id)
+
+                    path = open_configuration(request=request, token=token)
+                    with open(path, 'r+', encoding='utf-8') as file:
+                        object_config = json.load(file)
+                        object_config['console_id'] = console_id
+                        file.seek(0)
+                        json.dump(object_config, file,
+                                  indent=4, ensure_ascii=False)
+
+                    request.session['count_deploys'] = 1
+                    return redirect('show_bots_url')
+                except JSONDecodeError:
+                    messages.error(
+                        request,
+                        'Oooops... There is not consoles for hosting your bot'
+                    )
+                    return redirect(
+                        'create_bot_third_step_url',
+                        token=token
+                    )
+            else:
+                messages.error(request, 'You have already deployed your bot')
+                return redirect(
+                    'create_bot_third_step_url',
+                    token=token
+                )
+        else:
+            deploy = AutoDeploy(
+                file_title=f'{request.user.username}_{token}_test_bot.py')
+            deploy.upload_file()
+            try:
                 console_id = deploy.create_console()
                 deploy.open_console()
                 deploy.send_input(console_id=console_id)
@@ -350,30 +388,15 @@ class RunBot(LoginRequiredMixin, View):
                               indent=4, ensure_ascii=False)
 
                 request.session['count_deploys'] = 1
-                return redirect('show_bots_url')
-            else:
-                messages.error(request, 'You have already deployed your bot')
+            except JSONDecodeError:
+                messages.error(
+                    request,
+                    'Oooops... There is not consoles for hosting your bot'
+                )
                 return redirect(
                     'create_bot_third_step_url',
                     token=token
                 )
-        else:
-            deploy = AutoDeploy(
-                file_title=f'{request.user.username}_{token}_test_bot.py')
-            deploy.upload_file()
-            console_id = deploy.create_console()
-            deploy.open_console()
-            deploy.send_input(console_id=console_id)
-
-            path = open_configuration(request=request, token=token)
-            with open(path, 'r+', encoding='utf-8') as file:
-                object_config = json.load(file)
-                object_config['console_id'] = console_id
-                file.seek(0)
-                json.dump(object_config, file,
-                          indent=4, ensure_ascii=False)
-
-            request.session['count_deploys'] = 1
             return redirect('show_bots_url')
 
 

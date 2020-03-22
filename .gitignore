@@ -7,6 +7,7 @@ ScriptsBots/
 DBScriptsBots/
 user_images/
 media/
+*.exe
 
 # C extensions
 *.so

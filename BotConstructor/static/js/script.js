@@ -67,4 +67,3 @@ function changeSome() {
         react.outerHTML = '<div class="input-group"><div class="input-group-prepend"><div class="input-group-text">/</div></div>]' + react + '</div>';
     }
 }
-
