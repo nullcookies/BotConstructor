@@ -39,7 +39,6 @@ class CreateTextField(LoginRequiredMixin, View):
             if text_form.is_valid():
                 react_text = text_form.cleaned_data['react_text']
                 response_text = text_form.cleaned_data['response_text']
-                remove_reply = text_form.cleaned_data['remove_reply_markup']
 
                 csrf = request.POST.get('csrfmiddlewaretoken')
 
