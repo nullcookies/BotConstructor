@@ -32,10 +32,12 @@
         {% endfor %}
         {% endif %}
 
-        <div class="card">
+        <div class="card shadow">
             <div class="card-body">
+                {{ auth_form.username.label }}
                 {{ auth_form.username }}
                 <div class="mb-2 mt-2">
+                    {{ auth_form.password.label }}
                     {{ auth_form.password }}
                 </div>
 
@@ -46,7 +48,9 @@
                 </div>
                 {% endif %}
 
-                <button type="submit" class="btn btn-outline-warning">SignIn</button>
+                <button type="submit"
+                    class="btn btn-outline-light text-warning border-left border-bottom border-right shadow-sm mt-1">Sign
+                    In</button>
             </div>
         </div>
     </form>

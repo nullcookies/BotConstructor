@@ -36,29 +36,29 @@ class CreateBotForm(forms.ModelForm):
 
 class GetAccessToken(forms.Form):
     access_token = forms.CharField(widget=forms.TextInput(attrs={
-        'class': 'form-control',
+        'class': 'form-control shadow-sm',
         'placeholder': 'Access Token'
     }))
     name = forms.CharField(widget=forms.TextInput(attrs={
-        'class': 'form-control',
+        'class': 'form-control shadow-sm',
         'placeholder': 'Title'
     }))
     username = forms.CharField(widget=forms.TextInput(attrs={
-        'class': 'form-control',
+        'class': 'form-control shadow-sm',
         'placeholder': 'Telegram Nickname'
     }))
 
 
 class TextForm(forms.Form):
     response_text = forms.CharField(widget=forms.Textarea(attrs={
-        'class': 'form-control',
+        'class': 'form-control shadow-sm',
         'placeholder': 'Response Text',
         'style': 'height: 80px'
     }))
     react_text = forms.CharField(
         widget=forms.TextInput(
             attrs={
-                'class': 'form-control',
+                'class': 'form-control shadow-sm',
                 'placeholder': 'React Text'
             }
         ),
@@ -112,14 +112,20 @@ class ReplyMarkup(forms.Form):
         )
     )
     react_text = forms.CharField(widget=forms.TextInput(
-        attrs={'class': 'form-control mb-2', 'placeholder': 'React Text'}))
+        attrs={
+            'class': 'form-control mb-2 shadow-sm', 'placeholder': 'React Text'
+        })
+    )
     row_width = forms.IntegerField(max_value=5, min_value=1,
                                    widget=forms.NumberInput(attrs={
-                                       'class': 'form-control',
+                                       'class': 'form-control shadow-sm',
                                        'placeholder': 'Row Width'
                                    }))
     response_text_markup = forms.CharField(widget=forms.TextInput(
-        attrs={'class': 'form-control', 'placeholder': 'Response Text'}))
+        attrs={
+            'class': 'form-control shadow-sm', 'placeholder': 'Response Text'
+        })
+    )
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
@@ -152,7 +158,10 @@ class ReplyMarkup(forms.Form):
 
 class ReplyButton(forms.Form):
     response_text = forms.CharField(widget=forms.TextInput(
-        attrs={'class': 'form-control', 'placeholder': 'Response Text'}))
+        attrs={
+            'class': 'form-control shadow-sm', 'placeholder': 'Response Text'
+        })
+    )
     radio_buttons = forms.CharField(
         widget=forms.RadioSelect(choices=REPLY_BUTTONS_CHOICES),
         required=False
@@ -162,43 +171,44 @@ class ReplyButton(forms.Form):
 class InlineMarkup(forms.Form):
     row_width = forms.IntegerField(max_value=5, min_value=1,
                                    widget=forms.NumberInput(attrs={
-                                       'class': 'form-control',
+                                       'class': 'form-control shadow-sm',
                                        'placeholder': 'Row Width'
                                    }))
     response_text = forms.CharField(widget=forms.TextInput(attrs={
-        'class': 'form-control',
+        'class': 'form-control shadow-sm',
         'placeholder': 'Response Text'
     }))
     react_text = forms.CharField(widget=forms.TextInput(attrs={
-        'class': 'form-control',
+        'class': 'form-control shadow-sm',
         'placeholder': 'React Text'
     }))
 
 
 class InlineButton(forms.Form):
     text = forms.CharField(widget=forms.TextInput(attrs={
-        'class': 'form-control',
+        'class': 'form-control shadow-sm',
         'placeholder': 'Text'
     }))
     url = forms.URLField(required=False, widget=forms.URLInput(attrs={
-        'class': 'form-control',
+        'class': 'form-control shadow-sm',
         'placeholder': 'Url'
     }))
     callback = forms.CharField(widget=forms.TextInput(attrs={
-        'class': 'form-control',
+        'class': 'form-control shadow-sm',
         'placeholder': 'Callback Data'
     }), max_length=64, required=False)
     switch_inline = forms.CharField(required=False,
                                     widget=forms.TextInput(attrs={
-                                        'class': 'form-control',
+                                        'class': 'form-control shadow-sm',
                                         'placeholder': 'Switch Inline Query'
                                     }), max_length=50)
-    switch_inline_current = forms.CharField(required=False,
-                                            widget=forms.TextInput(attrs={
-                                                'class': 'form-control',
-                                                'placeholder': 'Switch Inline '
-                                                               'Current Chat'
-                                            }), max_length=50)
+    switch_inline_current = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control shadow-sm',
+            'placeholder': 'Switch Inline '
+            'Current Chat'
+        }), max_length=50)
 
     def clean_url(self):
         new_url = self.cleaned_data['url']
@@ -223,7 +233,7 @@ class CallbackForm(forms.Form):
     callback_text = forms.CharField(
         widget=forms.TextInput(
             attrs={
-                'class': 'form-control',
+                'class': 'form-control shadow-sm',
                 'placeholder': 'Callback'
             }
         )
@@ -231,7 +241,7 @@ class CallbackForm(forms.Form):
     react_text = forms.CharField(
         widget=forms.TextInput(
             attrs={
-                'class': 'form-control',
+                'class': 'form-control shadow-sm',
                 'placeholder': 'React Text'
             }
         )
@@ -251,17 +261,20 @@ class CallbackForm(forms.Form):
         with open(path, 'r', encoding='utf-8') as file:
             object_config = json.load(file)
 
-        point_on_new_callback = False
-        for item in object_config['callbacks']:
-            if new_callback_text == item['callback']:
-                point_on_new_callback = True
+        try:
+            point_on_new_callback = False
+            for item in object_config['callbacks']:
+                if new_callback_text == item['callback']:
+                    point_on_new_callback = True
 
-        if point_on_new_callback:
-            self.add_error(
-                'react_text',
-                'You have already created the object '
-                f'this callback: {new_callback_text}'
-            )
+            if point_on_new_callback:
+                self.add_error(
+                    'react_text',
+                    'You have already created the object '
+                    f'this callback: {new_callback_text}'
+                )
+        except KeyError:
+            pass
 
         if 'inline_markup' in object_config:
             inline_object = object_config['inline_markup']

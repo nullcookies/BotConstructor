@@ -29,11 +29,11 @@ class CreateCallbackField(LoginRequiredMixin, View):
             some = json.load(file)
 
         # ! Get react text into a list
-        if 'reply_markup' in some:
-            for item in some['reply_markup']:
-                FIELDS_REACT.append(
-                    (f'{item["react_text"]}_key', item['react_text'])
-                )
+        # if 'reply_markup' in some:
+        #     for item in some['reply_markup']:
+        #         FIELDS_REACT.append(
+        #             (f'{item["react_text"]}_key', item['react_text'])
+        #         )
 
         if 'text' in some:
             for item in some['text']:
@@ -41,19 +41,21 @@ class CreateCallbackField(LoginRequiredMixin, View):
                     (f'{item["react_text"]}_key', item['react_text'])
                 )
 
-        if 'inline_markup' in some:
-            for item in some['inline_markup']:
-                FIELDS_REACT.append(
-                    (f'{item["react_text"]}_key', item['react_text'])
-                )
+        # if 'inline_markup' in some:
+        #     for item in some['inline_markup']:
+        #         FIELDS_REACT.append(
+        #             (f'{item["react_text"]}_key', item['react_text'])
+        #         )
 
         # ! Get callbacks into a list
         if 'inline_markup' in some:
             for item in some['inline_markup']:
                 for button in item['buttons']:
-                    FIELDS_CALLBACK.append(
-                        (f'{button["callback"]}_key', button['callback'])
-                    )
+                    print(button['callback'])
+                    if button['callback'] is not False:
+                        FIELDS_CALLBACK.append(
+                            (f'{button["callback"]}_key', button['callback'])
+                        )
 
         self.context.update({
             'title': 'CallBack - BotConstructor',

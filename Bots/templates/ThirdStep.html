@@ -4,37 +4,36 @@
 {% block main_section %}
 {% include 'Navbar.html' %}
 <div class="container">
-    <div class="image-with-text" style="height: 105px;">
-        <img src="{% static 'pictures/yosemite-5120x2880-5k-4k-wallpaper-8k-forest-osx-apple-mountains-181.png' %}"
+    <div class="image-with-text shadow" style="height: 105px;">
+        <img src="{% static 'pictures/apple_mac_os_x_el_capitan-2560x1440.png' %}"
             class="max-width img-fluid">
         <div class="text-on-img-2">
-            <h4 class="text-light mt-2">Here you can download script or config</h4>
-            <ul class="text-light">
-                <li>It's final step. Now, you can download configuration or script of your bot</li>
-            </ul>
+            <h4 class="text-dark mt-2">Here you can download script or config</h4>
+            <h5 class="text-dark">It's final step. Now, you can download configuration or script of your bot</h5>
         </div>
     </div>
-    <hr>
-    <h4>Congratulations. You create your bot</h4>
-    <div class="form-row mt-3">
+    <h3 class="text-center mt-3 mb-3 text-secondary">Congratulations. You create your bot</h3>
+    <div class="form-row mt-3 mb-3">
         <div class="col-md-4">
-            <a href="{% url 'download_config_url' token=token %}" class="btn btn-outline-primary btn-sm btn-block">📜
+            <a href="{% url 'download_config_url' token=token %}"
+                class="btn btn-outline-light text-primary border-bottom border-left border-right shadow-sm btn-block">
                 Download config</a>
         </div>
         <div class="col-md-4">
-            <a href="{% url 'download_script_url' token=token %}" class="btn btn-outline-dark btn-sm btn-block">📃
+            <a href="{% url 'download_script_url' token=token %}"
+                class="btn btn-outline-light text-dark border-bottom border-left border-right shadow-sm btn-block">
                 Download script</a>
         </div>
         <div class="col-md-4">
             <a href="{% url 'auto_deploy_url' token=token %}"
-                class="btn btn-outline-success btn-sm btn-block">Deploy</a>
+                class="btn btn-outline-light border-bottom text-success border-left border-right shadow-sm btn-block">Deploy</a>
         </div>
     </div>
 
-    <div class="alert alert-success mt-2">
-        <h6>Below, you can edit the generated code</h6>
-        <hr class="mb-2">
-        <p class="mb-0">All changes will be applied at your own risk</p>
+    <div class="alert alert-light text-dark shadow-sm border-right border-left border-bottom border-right mt-2">
+        <h5>Below, you can edit the generated code</h5>
+        <hr class="mb-2 mt-2">
+        <h6 class="mb-1">All changes will be applied at your own risk</h6>
     </div>
 
     {% if messages %}
@@ -49,13 +48,13 @@
     {% endfor %}
     {% endif %}
 
-    <div id="editor" class="code-editor">{{ content }}</div>
+    <div id="editor" class="code-editor shadow">{{ content }}</div>
     <form action="{% url 'create_bot_third_step_url' token=token %}" method="POST">
         {% csrf_token %}
 
         <input type="hidden" name="code_editor" id="code_hello_world" value="">
         <button type="submit" onclick="buttonClick()"
-            class="btn btn-outline-success btn-sm btn-block mt-5">Edit</button>
+            class="btn btn-light text-success shadow-sm border-bottom border-left border-right btn-block mt-5 mb-4">Edit</button>
     </form>
 </div>
 {% endblock main_section %}

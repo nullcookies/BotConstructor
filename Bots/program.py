@@ -52,7 +52,6 @@ class TextBuilder(Builder):
         @bot.message_handler(func=lambda message: message.text \
 in text_dictionary_messages.keys())
         def response_message(message):
-            print(text_dictionary_messages[message.text])
             bot.send_message(chat_id=message.chat.id,
                             text=f'{text_dictionary_messages[message.text][0]}')
 
@@ -160,7 +159,7 @@ in inline_markup_dictionary.keys())
                     bot.send_message(chat_id=call.from_user.id,
                                      text="%s" % '{1}')
                 except Exception as error:
-                    print(error)
+                    pass
 
             """.format(key, value['response_text'])
 

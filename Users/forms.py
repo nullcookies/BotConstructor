@@ -8,12 +8,12 @@ from .models import *
 class UserRegistrationForm(forms.ModelForm):
     password_some = forms.CharField(label='Password',
                                     widget=forms.PasswordInput(attrs={
-                                        'class': 'form-control',
+                                        'class': 'form-control shadow-sm',
                                         'placeholder': 'Password'
                                     }))
     password_confirm = forms.CharField(label='Confirm password',
                                        widget=forms.PasswordInput(attrs={
-                                           'class': 'form-control',
+                                           'class': 'form-control shadow-sm',
                                            'placeholder': 'Confirm password'
                                        }))
 
@@ -23,20 +23,20 @@ class UserRegistrationForm(forms.ModelForm):
                   'password_some', 'password_confirm')
         widgets = {
             'username': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'form-control shadow-sm',
                 'placeholder': 'Username'
             }),
             'email': forms.EmailInput(attrs={
-                'class': 'form-control',
+                'class': 'form-control shadow-sm',
                 'placeholder': 'E-Mail',
                 'required': True
             }),
             'first_name': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'form-control shadow-sm',
                 'placeholder': 'First name'
             }),
             'last_name': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'form-control shadow-sm',
                 'placeholder': 'Last name'
             })
         }
@@ -58,7 +58,7 @@ class ProfileForm(forms.ModelForm):
         fields = ('about',)
         widgets = {
             'about': forms.Textarea(attrs={
-                'class': 'form-control mb-2 mt-2',
+                'class': 'form-control shadow-sm',
                 'style': 'height: 100px', 'placeholder': 'About'
             })
         }
@@ -67,13 +67,13 @@ class ProfileForm(forms.ModelForm):
 class UserAuthenticationForm(forms.Form):
     username = forms.CharField(
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
+            'class': 'form-control shadow-sm',
             'placeholder': 'Username'
         })
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control',
+            'class': 'form-control shadow-sm',
             'placeholder': 'Password'
         })
     )

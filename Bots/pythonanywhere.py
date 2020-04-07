@@ -117,7 +117,7 @@ class AutoDeploy:
         else:
             print(send_console_response.status_code)
 
-    def stop_bot(self, console_id: int):
+    def stop_bot(self, console_id: int) -> None:
         response = requests.delete(
             f'{self.BASE_URL}/api/v0/user/{self.USERNAME}/'
             f'consoles/{console_id}/',
@@ -125,7 +125,7 @@ class AutoDeploy:
         )
         print(response.status_code)
 
-    def run_bot(self, path):
+    def run_bot(self, path) -> None:
         console_id = self.create_console()
 
         with open(path, 'r+', encoding='utf-8') as file:
@@ -139,4 +139,52 @@ class AutoDeploy:
         self.send_input(console_id)
 
 
-# parser = AutoDeploy().stop_bot(14869773)
+def get_status_of_console(console_id: int) -> bool:
+    TOKEN = '54be38d4e853d62835b2c970d6b6fc23a653b901'
+    HEADERS = {
+        'Authorization': f'Token {TOKEN}'
+    }
+    USERNAME = 'AlexanderIvanov20'
+    BASE_URL = 'https://www.pythonanywhere.com'
+
+    current_console_url = (
+        f'{BASE_URL}/api/v0/user/'
+        f'{USERNAME}/consoles/{console_id}/'
+    )
+    status_id_console = requests.get(
+        current_console_url, headers=HEADERS)
+    data = status_id_console.json()
+    print(data)
+
+    if 'detail' in data.keys():
+        return False
+    else:
+        # latest_output = get_latest_output_of_current_console(console_id)
+        # if latest_output == 'bot.py' or 'bot.py' in latest_output:
+        #     return True
+        # else:
+        #     return False
+        return True
+
+
+# def get_latest_output_of_current_console(console_id: int) -> str:
+#     TOKEN = '54be38d4e853d62835b2c970d6b6fc23a653b901'
+#     HEADERS = {
+#         'Authorization': f'Token {TOKEN}'
+#     }
+#     USERNAME = 'AlexanderIvanov20'
+#     BASE_URL = 'https://www.pythonanywhere.com'
+
+#     current_console_url = (
+#         f'{BASE_URL}/api/v0/user/'
+#         f'{USERNAME}/consoles/{console_id}/get_latest_output/'
+#     )
+#     latest_output = requests.get(
+#         current_console_url, headers=HEADERS)
+#     print(latest_output)
+#     data = latest_output.json()['output'].strip().split('_')[-1]
+#     return data
+
+
+if __name__ == '__main__':
+    print(get_status_of_console(console_id=15220236))

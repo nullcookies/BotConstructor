@@ -7,6 +7,7 @@ from django.conf import settings
 from django.http import HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.core.files import File
+from django.utils import timezone
 
 import json
 import os
@@ -149,53 +150,57 @@ class GenerateFile(LoginRequiredMixin, View):
                               user_username=str(request.user.username))
 
         try:
-            final_text_dictionary = {}
-            for text_element in data['text']:
-                final_text_dictionary[
-                    text_element['react_text']
-                ] = [
-                    text_element['response_text'],
-                    text_element['remove_reply_markup']
-                ]
-            program.text_response(
-                token=token, text_dictionary=final_text_dictionary)
+            if data['text'] != []:
+                final_text_dictionary = {}
+                for text_element in data['text']:
+                    final_text_dictionary[
+                        text_element['react_text']
+                    ] = [
+                        text_element['response_text'],
+                        text_element['remove_reply_markup']
+                    ]
+                program.text_response(
+                    token=token, text_dictionary=final_text_dictionary)
         except KeyError as k_error:
             print(k_error)
 
         try:
-            final_reply_markup_keyboard = {}
-            for reply_markup_element in data['reply_markup']:
-                buttons = []
+            if data['reply_markup'] != []:
+                final_reply_markup_keyboard = {}
+                for reply_markup_element in data['reply_markup']:
+                    buttons = []
 
-                for button_element in reply_markup_element['buttons']:
-                    buttons.append(
-                        {
-                            'response': button_element['response_text'],
-                            'request_contact': button_element[
-                                'request_contact'
-                            ],
-                            'request_location': button_element[
-                                'request_location'
-                            ]
-                        }
-                    )
+                    for button_element in reply_markup_element['buttons']:
+                        buttons.append(
+                            {
+                                'response': button_element['response_text'],
+                                'request_contact': button_element[
+                                    'request_contact'
+                                ],
+                                'request_location': button_element[
+                                    'request_location'
+                                ]
+                            }
+                        )
 
-                final_reply_markup_keyboard[
-                    reply_markup_element['react_text']
-                ] = {
-                    'resize_keyboard': reply_markup_element['resize_keyboard'],
-                    'one_time_keyboard': reply_markup_element[
-                        'one_time_keyboard'
-                    ],
-                    'selective': reply_markup_element['selective'],
-                    'row_width': reply_markup_element['row_width'],
-                    'response_text': reply_markup_element['response_text'],
-                    'buttons': buttons
-                }
-            program.reply_markup_response(
-                reply_markup_dictionary=final_reply_markup_keyboard,
-                token=token
-            )
+                    final_reply_markup_keyboard[
+                        reply_markup_element['react_text']
+                    ] = {
+                        'resize_keyboard': reply_markup_element[
+                            'resize_keyboard'
+                        ],
+                        'one_time_keyboard': reply_markup_element[
+                            'one_time_keyboard'
+                        ],
+                        'selective': reply_markup_element['selective'],
+                        'row_width': reply_markup_element['row_width'],
+                        'response_text': reply_markup_element['response_text'],
+                        'buttons': buttons
+                    }
+                program.reply_markup_response(
+                    reply_markup_dictionary=final_reply_markup_keyboard,
+                    token=token
+                )
         except KeyError as k_error:
             k_error = str(k_error)
 
@@ -213,34 +218,39 @@ class GenerateFile(LoginRequiredMixin, View):
                 )
 
         try:
-            final_inline_markup_keyboard = {}
-            for inline_markup_element in data['inline_markup']:
-                buttons = []
+            if data['inline_markup'] != []:
+                final_inline_markup_keyboard = {}
+                for inline_markup_element in data['inline_markup']:
+                    buttons = []
 
-                for button_element in inline_markup_element['buttons']:
-                    buttons.append(
-                        {
-                            'text': button_element['text'],
-                            'url': button_element['url'],
-                            'callback': button_element['callback'],
-                            'switch_inline': button_element['switch_inline'],
-                            'switch_inline_current': button_element[
-                                'switch_inline_current'
-                            ]
-                        }
-                    )
+                    for button_element in inline_markup_element['buttons']:
+                        buttons.append(
+                            {
+                                'text': button_element['text'],
+                                'url': button_element['url'],
+                                'callback': button_element['callback'],
+                                'switch_inline': button_element[
+                                    'switch_inline'
+                                ],
+                                'switch_inline_current': button_element[
+                                    'switch_inline_current'
+                                ]
+                            }
+                        )
 
-                final_inline_markup_keyboard[
-                    inline_markup_element['react_text']
-                ] = {
-                    'row_width': inline_markup_element['row_width'],
-                    'response_text': inline_markup_element['response_text'],
-                    'buttons': buttons
-                }
-            program.inline_markup_response(
-                inline_markup_dictionary=final_inline_markup_keyboard,
-                token=token
-            )
+                    final_inline_markup_keyboard[
+                        inline_markup_element['react_text']
+                    ] = {
+                        'row_width': inline_markup_element['row_width'],
+                        'response_text': inline_markup_element[
+                            'response_text'
+                        ],
+                        'buttons': buttons
+                    }
+                program.inline_markup_response(
+                    inline_markup_dictionary=final_inline_markup_keyboard,
+                    token=token
+                )
         except KeyError as k_error:
             k_error = str(k_error)
 
@@ -259,25 +269,26 @@ class GenerateFile(LoginRequiredMixin, View):
                 )
 
         try:
-            final_callback_query = {}
-            for callback_element in data['callbacks']:
-                for value_1, value_2, value_3 in zip(data['text'],
-                                                     data['inline_markup'],
-                                                     data['reply_markup']):
-                    if callback_element['react_text'] == value_1['react_text']:
-                        final_callback_query[
-                            callback_element['callback']] = value_1
-                    # elif callback_element[
-                    #         'react_text'] == value_2['react_text']:
-                    #     final_callback_query[
-                    #         callback_element['callback']] = value_2
-                    # elif callback_element[
-                    #         'react_text'] == value_3['react_text']:
-                    #     final_callback_query[
-                    #         callback_element['callback']] = value_3
-            print(final_callback_query, 'hi')
+            if data['callbacks'] != []:
+                final_callback_query = {}
+                for callback_element in data['callbacks']:
+                    for value_1, value_2, value_3 in zip(data['text'],
+                                                         data['inline_markup'],
+                                                         data['reply_markup']):
+                        if callback_element['react_text'] == \
+                                value_1['react_text']:
+                            final_callback_query[
+                                callback_element['callback']] = value_1
+                        # elif callback_element[
+                        #         'react_text'] == value_2['react_text']:
+                        #     final_callback_query[
+                        #         callback_element['callback']] = value_2
+                        # elif callback_element[
+                        #         'react_text'] == value_3['react_text']:
+                        #     final_callback_query[
+                        #         callback_element['callback']] = value_3
 
-            program.callback_response(final_callback_query, token)
+                program.callback_response(final_callback_query, token)
         except KeyError as k_error:
             print(k_error)
 
@@ -304,7 +315,8 @@ class GenerateFile(LoginRequiredMixin, View):
         if is_existed_bot == []:
             bot_object = Bot(owner=current_user,
                              access_token=access_token, title=data['name'],
-                             username=data['username'])
+                             username=data['username'],
+                             date_created=timezone.now())
             bot_object.file_script.save(
                 f"{request.user.username}_{token.replace(':', '_')}"
                 "_test_bot.py",
@@ -312,7 +324,7 @@ class GenerateFile(LoginRequiredMixin, View):
             )
             bot_object.file_config.save(
                 f"{request.user.username}_{token.replace(':', '_')}"
-                "_configuration.py",
+                "_configuration.json",
                 File(open(file_config_path))
             )
             bot_object.save()
@@ -334,7 +346,7 @@ class RunBot(LoginRequiredMixin, View):
 
     def get(self, request, token: str):
         if 'count_deploys' in request.session.keys():
-            if request.session['count_deploys'] <= 0:
+            if request.session['count_deploys'] <= 1:
                 deploy = AutoDeploy(
                     file_title=f'{request.user.username}_{token}_test_bot.py')
                 deploy.upload_file()
@@ -435,7 +447,7 @@ class StartBot(LoginRequiredMixin, View):
         path = open_configuration(request, token=token)
 
         if 'count_deploys' in request.session.keys():
-            if request.session['count_deploys'] <= 0:
+            if request.session['count_deploys'] <= 1:
                 deploy = AutoDeploy(
                     file_title=f'{request.user.username}_{token}_test_bot.py'
                 )

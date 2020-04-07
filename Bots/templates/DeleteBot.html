@@ -8,7 +8,8 @@
     <form method="POST">
         {% csrf_token %}
 
-        <button type="submit" class="btn btn-outline-danger">Delete</button>
+        <button type="submit"
+            class="btn btn-outline-light text-danger shadow-sm border-bottom border-left border-right">Delete</button>
         <a href="{% url 'base_view_url' %}" class="text-success ml-2">Return back...</a>
     </form>
 </div>

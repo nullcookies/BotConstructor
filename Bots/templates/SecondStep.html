@@ -6,7 +6,7 @@
 <div class="container">
     {% if messages %}
     {% for message in messages %}
-    <div class="alert alert-warning alert-dismissible fade show mt-2">
+    <div class="alert alert-warning shadow-sm alert-dismissible fade show mt-2">
         {{ message }}
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -18,7 +18,7 @@
 
     {% for field in text_form %}
     {% if field.errors %}
-    <div class="alert alert-warning alert-dismissible fade show mt-2">
+    <div class="alert alert-warning shadow alert-dismissible fade show mt-2">
         {{ field.errors }}
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -76,9 +76,7 @@
     {% endif %}
     {% endfor %}
 
-    <div id="errors"></div>
-
-    <div class="image-with-text" style="height: 130px;">
+    <div class="image-with-text shadow mb-3" style="height: 130px;">
         <img src="{% static 'pictures/14961556102_13f1b039b4_o.png' %}" class="max-width img-fluid">
         <div class="text-on-img-2">
             <h4 class="text-light mt-2">Configure your bot here</h4>
@@ -93,38 +91,50 @@
             </ul>
         </div>
     </div>
-    <div class="d-flex flex-row btn-group mt-2">
-        {% url 'create_bot_second_step_text_url' token=token as text_url %}
-        {% url 'create_bot_second_step_reply_markup_url' token=token as reply_markup_url %}
-        {% url 'create_bot_second_step_reply_buttons_url' token=token as reply_buttons_url %}
-        {% url 'create_bot_second_step_inline_markup_url' token=token as inline_markup_url %}
-        {% url 'create_bot_second_step_inline_buttons_url' token=token as inline_buttons_url %}
-        {% url 'templates' token=token as templates_url %}
-        {% url 'create_callback_url' token=token as callback_url %}
-        <a href="{% url 'create_bot_second_step_text_url' token=token %}"
-            class="col-md-3 btn btn-outline-secondary {% if request.path == text_url %}active{% endif %}"
-            id="text">Text</a>
-        <a href="{% url 'create_bot_second_step_reply_markup_url' token=token %}"
-            class="col-md-3 btn btn-outline-secondary {% if request.path == reply_markup_url or request.path == reply_buttons_url %}active{% endif %}"
-            id="reply">Reply Buttons</a>
-        <a href="{% url 'create_bot_second_step_inline_markup_url' token=token %}"
-            class="col-md-3 btn btn-outline-secondary {% if request.path == inline_markup_url or request.path == inline_buttons_url %}active{% endif %}"
-            id="inline">Inline Buttons</a>
-        <a href="{% url 'create_callback_url' token=token %}"
-            class="col-md-3 btn btn-outline-secondary {% if request.path == callback_url %}active{% endif %}"
-            id="id_menu_callback">Callback</a>
-        <a href="{% url 'templates' token=token %}"
-            class="col-md-3 btn btn-outline-secondary {% if request.path == templates_url %}active{% endif %}">Templates</a>
+    <div id="errors"></div>
+    {% url 'create_bot_second_step_text_url' token=token as text_url %}
+    {% url 'create_bot_second_step_reply_markup_url' token=token as reply_markup_url %}
+    {% url 'create_bot_second_step_reply_buttons_url' token=token as reply_buttons_url %}
+    {% url 'create_bot_second_step_inline_markup_url' token=token as inline_markup_url %}
+    {% url 'create_bot_second_step_inline_buttons_url' token=token as inline_buttons_url %}
+    {% url 'templates' token=token as templates_url %}
+    {% url 'create_callback_url' token=token as callback_url %}
+    <div class="form-row">
+        <div class="col-md-3">
+            <a href="{% url 'create_bot_second_step_text_url' token=token %}"
+                class="btn btn-outline-light shadow-sm text-danger border-bottom border-left border-right btn-block {% if request.path == text_url %}active{% endif %}"
+                id="text">Text</a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'create_bot_second_step_reply_markup_url' token=token %}"
+                class="btn btn-outline-light shadow-sm text-danger border-bottom border-left border-right btn-block {% if request.path == reply_markup_url or request.path == reply_buttons_url %}active{% endif %}"
+                id="reply">Reply Buttons</a>
+        </div>
+        <div class="col-md-2">
+            <a href="{% url 'create_bot_second_step_inline_markup_url' token=token %}"
+                class="btn btn-outline-light shadow-sm text-danger border-bottom border-left border-right btn-block {% if request.path == inline_markup_url or request.path == inline_buttons_url %}active{% endif %}"
+                id="inline">Inline Buttons</a>
+        </div>
+        <div class="col-md-2">
+            <a href="{% url 'create_callback_url' token=token %}"
+                class="btn btn-outline-light shadow-sm text-danger border-bottom border-left border-right btn-block {% if request.path == callback_url %}active{% endif %}"
+                id="id_menu_callback">Callback</a>
+        </div>
+        <div class="col-md-2">
+            <a href="{% url 'templates' token=token %}"
+                class="btn btn-outline-light shadow-sm text-danger border-bottom border-left border-right btn-block {% if request.path == templates_url %}active{% endif %}">Templates</a>
+        </div>
     </div>
 
 
+
     {% if request.path == templates_url %}
-    <form action="{% url 'templates' token=token %}" method="POST" class="mt-2" onchange="onCheck()">
+    <form action="{% url 'templates' token=token %}" method="POST" class="mt-4" onchange="onCheck()">
         {% csrf_token %}
 
         <div onclick="onCheck();">
             {% for pk, choice in template_form.templates.field.widget.choices %}
-            <div class="custom-control custom-radio custom-control-inline">
+            <div class="custom-control custom-radio custom-control-inline mt-1">
                 <input id="id_{{ template_form.templates.name }}_{{ forloop.counter0 }}"
                     name="{{template_form.templates.name}}" type="{{ template_form.templates.field.widget.input_type }}"
                     value="{{ pk }}" class="custom-control-input"
@@ -136,7 +146,9 @@
             {% endfor %}
         </div>
 
-        <button type="submit" class="btn btn-outline-primary btn-sm mt-2" style="width: 25%;">Select</button>
+        <button type="submit"
+            class="btn btn-outline-light text-primary border-right border-left border-bottom shadow-sm btn-sm mt-3 mb-4"
+            style="width: 25%;">Select</button>
     </form>
     {% endif %}
 
@@ -144,56 +156,66 @@
     <div class="text_fields">
         {% if text_elements %}
         {% for text_item in text_elements %}
-        <form method="POST" class="mt-3" onsubmit="sendAjaxUpdate(this); return false;">
-            {% csrf_token %}
+        <div class="alert alert-light shadow text-dark mt-3">
+            <h5 class="mb-1">Item: #{{ text_item.0 }}</h5>
+            <form method="POST" onsubmit="sendAjaxUpdate(this); return false;">
+                {% csrf_token %}
 
-            <div class="form-row mb-3">
-                <div class="col-md-9">
-                    {% if text_item.1.react_text|first == '/' %}
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">/</div>
+                <div class="form-row mb-3">
+                    <div class="col-md-9">
+                        {% if text_item.1.react_text|first == '/' %}
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text shadow-sm">/</div>
+                            </div>
+                            <input class="form-control shadow-sm" name="react_text_{{ text_item.0 }}"
+                                value="{{ text_item.1.react_text }}">
                         </div>
-                        <input class="form-control" name="react_text_{{ text_item.0 }}"
-                            value="{{ text_item.1.react_text }}">
+                        {% else %}
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text shadow-sm">React</div>
+                            </div>
+                            <input class="form-control shadow-sm" name="react_text_{{ text_item.0 }}"
+                                value="{{ text_item.1.react_text }}">
+                        </div>
+                        {% endif %}
                     </div>
-                    {% else %}
-                    <input class="form-control" name="react_text_{{ text_item.0 }}"
-                        value="{{ text_item.1.react_text }}">
-                    {% endif %}
-                </div>
-                <div class="col-md-3">
-                    <div class="form-row">
-                        <div class="col-md-6">
-                            <button type="submit" class="btn btn-outline-success btn-block">Update</button>
-                        </div>
-                        <div class="col-md-6">
-                            <button type="button" id="id_delete_text_{{ text_item.0 }}"
-                                class="btn btn-outline-danger btn-block" onclick="sendAjaxDelete(this);">Delete</button>
+                    <div class="col-md-3">
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <button type="submit"
+                                    class="btn btn-outline-light text-success border-bottom border-left border-right shadow-sm btn-block">Update</button>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="button" id="id_delete_text_{{ text_item.0 }}"
+                                    class="btn btn-outline-light text-danger border-bottom border-left border-right shadow-sm btn-block"
+                                    onclick="sendAjaxDelete(this);">Delete</button>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-md-12">
-                    <textarea class="form-control mt-2" style="height: 100%;" aria-describedby="inputGroup-sizing-sm"
-                        name="response_text_{{ text_item.0 }}"
-                        id="response_text_text">{{ text_item.1.response_text }}</textarea>
-                </div>
+                    <div class="col-md-12">
+                        <textarea class="form-control mt-2 shadow-sm" style="height: 100%;"
+                            aria-describedby="inputGroup-sizing-sm" name="response_text_{{ text_item.0 }}"
+                            id="response_text_text">{{ text_item.1.response_text }}</textarea>
+                    </div>
 
-                <div class="col-md-12 mt-2">
-                    <div class="custom-control custom-checkbox custom-control-inline">
-                        <input type="checkbox" name="remove_reply_markup_{{ text_item.0 }}" class="custom-control-input"
-                            {% if text_item.1.remove_reply_markup %}checked{% endif %}
-                            id="remove_reply_markup_{{ text_item.0 }}">
-                        <label for="remove_reply_markup_{{ text_item.0 }}" class="custom-control-label">Remove Reply
-                            Markup</label>
+                    <div class="col-md-12 mt-2">
+                        <div class="custom-control custom-checkbox custom-control-inline">
+                            <input type="checkbox" name="remove_reply_markup_{{ text_item.0 }}"
+                                class="custom-control-input" {% if text_item.1.remove_reply_markup %}checked{% endif %}
+                                id="remove_reply_markup_{{ text_item.0 }}">
+                            <label for="remove_reply_markup_{{ text_item.0 }}" class="custom-control-label">Remove Reply
+                                Markup</label>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
         {% endfor %}
         {% else %}
-        <div class="alert alert-success mt-3" role="alert" id="id_no_element">
+        <div class="alert alert-light text-dark shadow mt-3" role="alert" id="id_no_element">
             <h5 class="alert-heading mb-0 mt-0">No such elements added</h5>
             <hr>
             <p class="mt-0 mb-0">If you want to add new text response check the form below</p>
@@ -203,195 +225,217 @@
     {% endif %}
 
     {% if request.path == text_url %}
-    <div class="form-row">
-        <h5 class="ml-1 text-dark">Create response text</h5>
-        <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="form-row">
+                <h5 class="ml-1 text-dark">Create response text</h5>
+                <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
+            </div>
+            <form method="POST" id="text-form">
+                {% csrf_token %}
+
+                <div class="form-row">
+                    <div class="col-md-10 mt-0">
+                        {{ text_form.react_text.label }}
+                        {{ text_form.react_text }}
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="submit"
+                            class="btn btn-outline-light border-right border-left border-bottom text-primary shadow-sm btn-block mt-4">Create
+                            Text</button>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    {{ text_form.response_text.label }}
+                    {{ text_form.response_text }}
+                </div>
+
+                <div class="form-row ml-0 mt-1">
+                    {% for pk, choice in text_form.remove_reply_markup.field.widget.choices %}
+                    <div class="custom-control custom-checkbox custom-control-inline">
+                        <input id="id_{{ text_form.remove_reply_markup.name }}_{{ forloop.counter0 }}"
+                            name="{{ text_form.remove_reply_markup.name }}"
+                            type="{{ text_form.remove_reply_markup.field.widget.input_type }}" value="{{ pk }}"
+                            class="custom-control-input"
+                            {% ifequal text_form.remove_reply_markup.data pk.0 %}checked="checked" {% endifequal %}>
+                        <label for="id_{{ text_form.remove_reply_markup.name }}_{{ forloop.counter0 }}"
+                            class="custom-control-label">{{ choice }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </form>
+        </div>
     </div>
-
-    <form method="POST" id="text-form">
-        {% csrf_token %}
-
-        <div class="form-row mt-0">
-            <div class="col-md-10">
-                {{ text_form.react_text }}
-            </div>
-
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-outline-primary btn-block">Create Text</button>
-            </div>
-        </div>
-        <div class="mt-2">
-            {{ text_form.response_text }}
-        </div>
-
-        <div class="form-row ml-0 mt-1">
-            {% for pk, choice in text_form.remove_reply_markup.field.widget.choices %}
-            <div class="custom-control custom-checkbox custom-control-inline">
-                <input id="id_{{ text_form.remove_reply_markup.name }}_{{ forloop.counter0 }}"
-                    name="{{ text_form.remove_reply_markup.name }}"
-                    type="{{ text_form.remove_reply_markup.field.widget.input_type }}" value="{{ pk }}"
-                    class="custom-control-input" {% ifequal text_form.remove_reply_markup.data pk.0 %}checked="checked"
-                    {% endifequal %}>
-                <label for="id_{{ text_form.remove_reply_markup.name }}_{{ forloop.counter0 }}"
-                    class="custom-control-label">{{ choice }}</label>
-            </div>
-            {% endfor %}
-        </div>
-    </form>
     {% elif request.path == reply_markup_url or request.path == reply_buttons_url %}
     <div class="reply_fields" id="id_reply_elements">
         {% if reply_markup_elements %}
-        {% for reply_markup_element in reply_markup_elements %}
-        <div class="form-row mt-3" id="{{ forloop.counter0 }}_reply_element">
-            <div class="col-md-5">
-                <form onsubmit="sendAjaxUpdateReply(this); return false;" method="POST" class="mb-3">
-                    {% csrf_token %}
+        <div class="alert alert-light text-dark shadow mt-3">
+            {% for reply_markup_element in reply_markup_elements %}
+            <h5 class="mb-1">Item: #{{ reply_markup_element.0 }}</h5>
+            <div class="form-row some" id="{{ forloop.counter0 }}_reply_element">
+                <div class="col-md-5">
+                    <form onsubmit="sendAjaxUpdateReply(this); return false;" method="POST" class="mb-3">
+                        {% csrf_token %}
 
-                    <div class="form-row row">
-                        <div class="col-md-8">
-                            <div class="input-group">
-                                {% if reply_markup_element.1.react_text|first == '/' %}
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">/</div>
+                        <div class="form-row row">
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    {% if reply_markup_element.1.react_text|first == '/' %}
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text shadow-sm">/</div>
+                                    </div>
+                                    <input class="form-control shadow-sm" name="react_text_{{ reply_markup_element.0 }}"
+                                        value="{{ reply_markup_element.1.react_text }}">
+                                    {% else %}
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text shadow-sm">React</div>
+                                    </div>
+                                    <input class="form-control shadow-sm" name="react_text_{{ reply_markup_element.0 }}"
+                                        value="{{ reply_markup_element.1.react_text }}">
+                                    {% endif %}
                                 </div>
-                                <input class="form-control" name="react_text_{{ reply_markup_element.0 }}"
-                                    value="{{ reply_markup_element.1.react_text }}">
-                                {% else %}
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">React</div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <input class="form-control shadow-sm" type="number" max="5" min="1"
+                                    name="row_width_{{ reply_markup_element.0 }}"
+                                    value="{{ reply_markup_element.1.row_width }}">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text mt-2 shadow-sm">Response</div>
+                            </div>
+                            <input class="form-control mt-2 shadow-sm"
+                                name="response_text_markup_{{ reply_markup_element.0 }}"
+                                value="{{ reply_markup_element.1.response_text }}">
+                        </div>
+
+                        <div class="form-row mt-2 mb-2">
+                            <div class="ml-1">
+                                <div class="custom-control custom-checkbox custom-control-inline">
+                                    <input type="checkbox" name="resize_keyboard_{{ reply_markup_element.0 }}"
+                                        class="custom-control-input"
+                                        {% if reply_markup_element.1.resize_keyboard %}checked{% endif %}
+                                        id="res_key_{{ reply_markup_element.0 }}">
+                                    <label for="res_key_{{ reply_markup_element.0 }}"
+                                        class="custom-control-label">Resize
+                                        keyboard</label>
                                 </div>
-                                <input class="form-control" name="react_text_{{ reply_markup_element.0 }}"
-                                    value="{{ reply_markup_element.1.react_text }}">
+                            </div>
+
+                            <div class="ml-1">
+                                <div class="custom-control custom-checkbox custom-control-inline">
+                                    <input type="checkbox" name="one_time_keyboard_{{ reply_markup_element.0 }}"
+                                        class="custom-control-input"
+                                        {% if reply_markup_element.1.one_time_keyboard %}checked{% endif %}
+                                        id="o_t_k_{{ reply_markup_element.0 }}">
+                                    <label for="o_t_k_{{ reply_markup_element.0 }}" class="custom-control-label">One
+                                        time
+                                        keyboard</label>
+                                </div>
+                            </div>
+
+                            <div class="ml-1">
+                                <div class="custom-control custom-checkbox custom-control-inline">
+                                    <input type="checkbox" name="selective_{{ reply_markup_element.0 }}"
+                                        class="custom-control-input"
+                                        {% if reply_markup_element.1.selective %}checked{% endif %}
+                                        id="s_{{ reply_markup_element.0 }}">
+                                    <label for="s_{{ reply_markup_element.0 }}"
+                                        class="custom-control-label">Selective</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-md-4">
+                                <button type="submit"
+                                    class="btn btn-outline-light text-warning shadow-sm border-bottom border-left border-right btn-sm btn-block">Update
+                                    keyboard</button>
+                            </div>
+
+                            <div class="col-md-4">
+                                <button type="button" id="reply_markup_{{ reply_markup_element.0 }}"
+                                    onclick="sendAjaxDeleteReply(this);"
+                                    class="btn btn-outline-light text-danger shadow-sm border-bottom border-left border-right btn-sm btn-block">Delete
+                                    keyboard</button>
+                            </div>
+
+                            <div class="col-md-4">
+                                {% if request.path == reply_buttons_url %}
+                                <a href="{% url 'create_bot_second_step_reply_markup_url' token=token %}"
+                                    class="btn btn-outline-light text-success btn-sm btn-block shadow-sm border-bottom border-left border-right">New
+                                    Keyboard</a>
+                                {% elif request.path == reply_markup_url %}
+                                <a href="{% url 'create_bot_second_step_reply_buttons_url' token=token %}"
+                                    class="btn btn-outline-light text-dark btn-sm btn-block shadow-sm border-bottom border-left border-right"
+                                    id="id_add_button_reply">Add button</a>
                                 {% endif %}
                             </div>
                         </div>
+                    </form>
+                </div>
 
-                        <div class="col-md-4">
-                            <input class="form-control" name="row_width_{{ reply_markup_element.0 }}"
-                                value="{{ reply_markup_element.1.row_width }}">
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text mt-2">Response</div>
-                        </div>
-                        <input class="form-control mt-2" name="response_text_markup_{{ reply_markup_element.0 }}"
-                            value="{{ reply_markup_element.1.response_text }}">
-                    </div>
+                <div class="col-md-7">
+                    {% for button_element in reply_markup_element.1.buttons %}
+                    <form onsubmit="sendAjaxUpdateReplyButton(this); return false;" method="POST" class="mb-3">
+                        {% csrf_token %}
 
-                    <div class="form-row mt-2 mb-2">
-                        <div class="ml-1">
-                            <div class="custom-control custom-checkbox custom-control-inline">
-                                <input type="checkbox" name="resize_keyboard_{{ reply_markup_element.0 }}"
-                                    class="custom-control-input"
-                                    {% if reply_markup_element.1.resize_keyboard %}checked{% endif %}
-                                    id="res_key_{{ reply_markup_element.0 }}">
-                                <label for="res_key_{{ reply_markup_element.0 }}" class="custom-control-label">Resize
-                                    keyboard</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text shadow-sm">Text</div>
+                            </div>
+                            <input class="form-control shadow-sm"
+                                name="response_text_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}"
+                                value="{{ button_element.response_text }}">
+                        </div>
+                        <div class="form-row mt-1 mb-1 ml-0">
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio"
+                                    name="radio_buttons_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}"
+                                    value="request_contact" class="custom-control-input"
+                                    {% if button_element.request_contact %}checked="checked" {% endif %}
+                                    id="req_con_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}">
+                                <label for="req_con_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}"
+                                    class="custom-control-label">Request
+                                    contact</label>
+                            </div>
+
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio"
+                                    name="radio_buttons_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}"
+                                    value="request_location" class="custom-control-input"
+                                    {% if button_element.request_location %}checked="checked" {% endif %}
+                                    id="req_loc_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}">
+                                <label for="req_loc_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}"
+                                    class="custom-control-label">Request
+                                    location</label>
                             </div>
                         </div>
 
-                        <div class="ml-1">
-                            <div class="custom-control custom-checkbox custom-control-inline">
-                                <input type="checkbox" name="one_time_keyboard_{{ reply_markup_element.0 }}"
-                                    class="custom-control-input"
-                                    {% if reply_markup_element.1.one_time_keyboard %}checked{% endif %}
-                                    id="o_t_k_{{ reply_markup_element.0 }}">
-                                <label for="o_t_k_{{ reply_markup_element.0 }}" class="custom-control-label">One time
-                                    keyboard</label>
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <button type="submit"
+                                    class="btn btn-outline-light text-warning shadow-sm border-bottom border-left border-right btn-sm btn-block">Update
+                                    button</button>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="button"
+                                    class="btn btn-outline-light text-danger shadow-sm border-bottom border-left border-right btn-sm btn-block"
+                                    id="id_delete_reply_button_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}"
+                                    onclick="sendAjaxDeleteReplyButton(this);">Delete button</button>
                             </div>
                         </div>
-
-                        <div class="ml-1">
-                            <div class="custom-control custom-checkbox custom-control-inline">
-                                <input type="checkbox" name="selective_{{ reply_markup_element.0 }}"
-                                    class="custom-control-input"
-                                    {% if reply_markup_element.1.selective %}checked{% endif %}
-                                    id="s_{{ reply_markup_element.0 }}">
-                                <label for="s_{{ reply_markup_element.0 }}"
-                                    class="custom-control-label">Selective</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="col-md-4">
-                            <button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update
-                                keyboard</button>
-                        </div>
-
-                        <div class="col-md-4">
-                            <button type="button" id="reply_markup_{{ reply_markup_element.0 }}"
-                                onclick="sendAjaxDeleteReply(this);"
-                                class="btn btn-outline-danger btn-sm btn-block">Delete keyboard</button>
-                        </div>
-
-                        <div class="col-md-4">
-                            {% if request.path == reply_buttons_url %}
-                            <a href="{% url 'create_bot_second_step_reply_markup_url' token=token %}"
-                                class="btn btn-outline-success btn-sm btn-block">New Keyboard</a>
-                            {% elif request.path == reply_markup_url %}
-                            <a href="{% url 'create_bot_second_step_reply_buttons_url' token=token %}"
-                                class="btn btn-outline-dark btn-sm btn-block" id="id_add_button_reply">Add button</a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <div class="col-md-7">
-                {% for button_element in reply_markup_element.1.buttons %}
-                <form onsubmit="sendAjaxUpdateReplyButton(this); return false;" method="POST" class="mb-3">
-                    {% csrf_token %}
-
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">Text</div>
-                        </div>
-                        <input class="form-control"
-                            name="response_text_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}"
-                            value="{{ button_element.response_text }}">
-                    </div>
-                    <div class="form-row mt-1 mb-1 ml-0">
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" name="radio_buttons_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}"
-                                value="request_contact" class="custom-control-input"
-                                {% if button_element.request_contact %}checked="checked" {% endif %}
-                                id="req_con_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}">
-                            <label for="req_con_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}"
-                                class="custom-control-label">Request
-                                contact</label>
-                        </div>
-
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" name="radio_buttons_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}"
-                                value="request_location" class="custom-control-input"
-                                {% if button_element.request_location %}checked="checked" {% endif %}
-                                id="req_loc_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}">
-                            <label for="req_loc_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}"
-                                class="custom-control-label">Request
-                                location</label>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="col-md-6">
-                            <button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update
-                                button</button>
-                        </div>
-                        <div class="col-md-6">
-                            <button type="button" class="btn btn-outline-danger btn-sm btn-block"
-                                id="id_delete_reply_button_{{ reply_markup_element.0 }}_{{ forloop.counter0 }}"
-                                onclick="sendAjaxDeleteReplyButton(this);">Delete button</button>
-                        </div>
-                    </div>
-                </form>
-                {% endfor %}
+                    </form>
+                    {% endfor %}
+                </div>
             </div>
         </div>
         {% endfor %}
         {% else %}
-        <div class="alert alert-success mt-3" role="alert" id="id_no_element">
+        <div class="alert alert-light text-dark shadow mt-3" role="alert" id="id_no_element">
             <h5 class="alert-heading mb-0 mt-0">No such elements added</h5>
             <hr>
             <p class="mt-0 mb-0">If you want to add new text response check the form below</p>
@@ -399,82 +443,104 @@
         {% endif %}
     </div>
 
-    <div class="form-row">
-        <h5 class="text-dark ml-1">Create reply markup</h5>
-        <h6 class="mt-1 ml-2 text-secondary">Keyboard settings</h6>
-    </div>
 
     {% if request.path == reply_buttons_url %}
-    <form id="id_reply_buttons_form" method="POST">
-        {% csrf_token %}
-
-        <div class="form-row">
-            <div class="col-md-10">
-                {{ reply_button_form.response_text }}
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-outline-primary btn-block">Create Button</button>
-            </div>
-        </div>
-
-        <div class="form-row ml-0 mt-1">
-            {% for pk, choice in reply_button_form.radio_buttons.field.widget.choices %}
-            <div class="custom-control custom-radio custom-control-inline">
-                <input id="id_{{ reply_button_form.radio_buttons.name }}_{{ forloop.counter0 }}"
-                    name="{{ reply_button_form.radio_buttons.name }}"
-                    type="{{ reply_button_form.radio_buttons.field.widget.input_type }}" value="{{ pk }}"
-                    class="custom-control-input"
-                    {% ifequal reply_button_form.radio_buttons.data pk.0 %}checked="checked" {% endifequal %}>
-                <label for="id_{{ reply_button_form.radio_buttons.name }}_{{ forloop.counter0 }}"
-                    class="custom-control-label">{{ choice }}</label>
-            </div>
-            {% endfor %}
-        </div>
-    </form>
-
-    {% elif request.path == reply_markup_url %}
-    <div id="id_reply_form">
-        <form method="POST" id="id_reply_markup_create_form">
-            {% csrf_token %}
-
+    <div class="card shadow">
+        <div class="card-body">
             <div class="form-row">
-                <div class="col-md-10">
-                    {{ reply_markup_form.react_text }}
-                </div>
-                <div class="col-md-2">
-                    {{ reply_markup_form.row_width }}
-                </div>
+                <h5 class="text-dark ml-1">Create reply markup</h5>
+                <h6 class="mt-1 ml-2 text-secondary">Keyboard settings</h6>
             </div>
+            <form id="id_reply_buttons_form" method="POST">
+                {% csrf_token %}
 
-            <div class="mb-2">
                 <div class="form-row">
                     <div class="col-md-10">
-                        {{ reply_markup_form.response_text_markup }}
+                        {{ reply_button_form.response_text.label }}
+                        {{ reply_button_form.response_text }}
                     </div>
                     <div class="col-md-2">
-                        <button type="submit" class="btn btn-outline-primary btn-block">Create Keyboard</button>
+                        <button type="submit"
+                            class="btn btn-outline-light text-primary border-right border-left shadow-sm border-bottom btn-block mt-4">Create
+                            Button</button>
                     </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="col-md-5">
-                    <div class="form-row ml-0" id="id_reply_checkboxes">
-                        {% for pk, choice in reply_markup_form.checkboxes.field.widget.choices %}
-                        <div class="custom-control custom-checkbox custom-control-inline">
-                            <input id="id_{{ reply_markup_form.checkboxes.name }}_{{ forloop.counter0 }}"
-                                name="{{ reply_markup_form.checkboxes.name }}"
-                                type="{{ reply_markup_form.checkboxes.field.widget.input_type }}" value="{{ pk }}"
-                                class="custom-control-input"
-                                {% ifequal reply_markup_form.checkboxes.data pk.0 %}checked="checked" {% endifequal %}>
-                            <label for="id_{{ reply_markup_form.checkboxes.name }}_{{ forloop.counter0 }}"
-                                class="custom-control-label">{{ choice }}</label>
-                        </div>
-                        {% endfor %}
+                <div class="form-row ml-0 mt-1">
+                    {% for pk, choice in reply_button_form.radio_buttons.field.widget.choices %}
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input id="id_{{ reply_button_form.radio_buttons.name }}_{{ forloop.counter0 }}"
+                            name="{{ reply_button_form.radio_buttons.name }}"
+                            type="{{ reply_button_form.radio_buttons.field.widget.input_type }}" value="{{ pk }}"
+                            class="custom-control-input"
+                            {% ifequal reply_button_form.radio_buttons.data pk.0 %}checked="checked" {% endifequal %}>
+                        <label for="id_{{ reply_button_form.radio_buttons.name }}_{{ forloop.counter0 }}"
+                            class="custom-control-label">{{ choice }}</label>
                     </div>
+                    {% endfor %}
                 </div>
+            </form>
+        </div>
+    </div>
+
+    {% elif request.path == reply_markup_url %}
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="form-row">
+                <h5 class="text-dark ml-1">Create reply markup</h5>
+                <h6 class="mt-1 ml-2 text-secondary">Keyboard settings</h6>
             </div>
-        </form>
+            <div id="id_reply_form">
+                <form method="POST" id="id_reply_markup_create_form">
+                    {% csrf_token %}
+
+                    <div class="form-row">
+                        <div class="col-md-10">
+                            {{ reply_markup_form.react_text.label }}
+                            {{ reply_markup_form.react_text }}
+                        </div>
+                        <div class="col-md-2">
+                            {{ reply_markup_form.row_width.label }}
+                            {{ reply_markup_form.row_width }}
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <div class="form-row">
+                            <div class="col-md-10">
+                                {{ reply_markup_form.response_text_markup.label }}
+                                {{ reply_markup_form.response_text_markup }}
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit"
+                                    class="btn btn-outline-light text-primary border-right border-left border-bottom shadow-sm btn-block mt-4">Create
+                                    Keyboard</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-md-5">
+                            <div class="form-row ml-0" id="id_reply_checkboxes">
+                                {% for pk, choice in reply_markup_form.checkboxes.field.widget.choices %}
+                                <div class="custom-control custom-checkbox custom-control-inline">
+                                    <input id="id_{{ reply_markup_form.checkboxes.name }}_{{ forloop.counter0 }}"
+                                        name="{{ reply_markup_form.checkboxes.name }}"
+                                        type="{{ reply_markup_form.checkboxes.field.widget.input_type }}"
+                                        value="{{ pk }}" class="custom-control-input"
+                                        {% ifequal reply_markup_form.checkboxes.data pk.0 %}checked="checked"
+                                        {% endifequal %}>
+                                    <label for="id_{{ reply_markup_form.checkboxes.name }}_{{ forloop.counter0 }}"
+                                        class="custom-control-label">{{ choice }}</label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
     </div>
     {% endif %}
     {% elif request.path == inline_markup_url or request.path == inline_buttons_url %}
@@ -488,9 +554,9 @@
 
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <div class="input-group-text">Response</div>
+                            <div class="input-group-text shadow-sm">Response</div>
                         </div>
-                        <input class="form-control" type="text"
+                        <input class="form-control shadow-sm" type="text"
                             name="response_text_inline_{{ inline_markup_element.0 }}"
                             value="{{ inline_markup_element.1.response_text }}">
                     </div>
@@ -500,23 +566,23 @@
                             <div class="input-group">
                                 {% if inline_markup_element.1.react_text|first == '/' %}
                                 <div class="input-group-prepend">
-                                    <div class="input-group-text mt-2">/</div>
+                                    <div class="input-group-text mt-2 shadow-sm">/</div>
                                 </div>
-                                <input class="form-control mt-2" type="text"
+                                <input class="form-control mt-2 shadow-sm" type="text"
                                     name="react_text_inline_{{ inline_markup_element.0 }}"
                                     value="{{ inline_markup_element.1.react_text }}">
                                 {% else %}
                                 <div class="input-group-prepend">
-                                    <div class="input-group-text mt-2">React</div>
+                                    <div class="input-group-text mt-2 shadow-sm">React</div>
                                 </div>
-                                <input class="form-control mt-2" type="text"
+                                <input class="form-control mt-2 shadow-sm" type="text"
                                     name="react_text_inline_{{ inline_markup_element.0 }}"
                                     value="{{ inline_markup_element.1.react_text }}">
                                 {% endif %}
                             </div>
                         </div>
                         <div class="col-md-2">
-                            <input class="form-control mt-2" type="number" min="1" max="5"
+                            <input class="form-control mt-2 shadow-sm" type="number" min="1" max="5"
                                 name="row_width_inline_{{ inline_markup_element.0 }}"
                                 value="{{ inline_markup_element.1.row_width }}">
                         </div>
@@ -524,21 +590,25 @@
 
                     <div class="form-row">
                         <div class="col-md-4">
-                            <button type="submit" class="btn btn-outline-warning btn-sm mt-2 btn-block">Update
+                            <button type="submit"
+                                class="btn btn-outline-light text-warning shadow-sm border-bottom border-left border-right btn-sm mt-2 btn-block">Update
                                 markup</button>
                         </div>
                         <div class="col-md-4">
-                            <button type="button" class="btn btn-outline-danger btn-sm mt-2 btn-block"
+                            <button type="button"
+                                class="btn btn-outline-light text-danger shadow-sm border-bottom border-left border-right btn-sm mt-2 btn-block"
                                 onclick="sendAjaxInlineMarkupDelete(this);"
                                 id="id_delete_inline_{{ inline_markup_element.0 }}">Delete markup</button>
                         </div>
                         <div class="col-md-4">
                             {% if request.path == inline_buttons_url %}
                             <a href="{% url 'create_bot_second_step_inline_markup_url' token=token %}"
-                                class="btn btn-outline-success btn-sm mt-2 btn-block">Add keyboard</a>
+                                class="btn btn-outline-light text-success btn-sm mt-2 btn-block shadow-sm border-bottom border-left border-right">Add
+                                keyboard</a>
                             {% else %}
                             <a href="{% url 'create_bot_second_step_inline_buttons_url' token=token %}"
-                                class="btn btn-outline-dark btn-sm mt-2 btn-block">Add button</a>
+                                class="btn btn-outline-light text-dark shadow-sm border-bottom border-left border-right btn-sm mt-2 btn-block">Add
+                                button</a>
                             {% endif %}
                         </div>
                     </div>
@@ -552,9 +622,9 @@
 
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <div class="input-group-text">Text</div>
+                            <div class="input-group-text shadow-sm">Text</div>
                         </div>
-                        <input class="form-control" type="text"
+                        <input class="form-control shadow-sm" type="text"
                             name="text_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}"
                             value="{{ inline_button.text }}">
                     </div>
@@ -562,9 +632,9 @@
                     {% if inline_button.url != False and inline_button.url != '' %}
                     <div class="input-group mb-2">
                         <div class="input-group-prepend">
-                            <div class="input-group-text mt-2">Url</div>
+                            <div class="input-group-text mt-2 shadow-sm">Url</div>
                         </div>
-                        <input class="form-control mt-2" type="text"
+                        <input class="form-control mt-2 shadow-sm" type="text"
                             name="url_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}"
                             value="{{ inline_button.url }}">
                     </div>
@@ -573,9 +643,9 @@
                     {% if inline_button.switch_inline != False and inline_button.switch_inline != '' %}
                     <div class="input-group mb-2">
                         <div class="input-group-prepend">
-                            <div class="input-group-text mt-2">Switch Inline</div>
+                            <div class="input-group-text mt-2 shadow-sm">Switch Inline</div>
                         </div>
-                        <input class="form-control mt-2" type="text"
+                        <input class="form-control mt-2 shadow-sm" type="text"
                             name="switch_inline_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}"
                             value="{{ inline_button.switch_inline }}">
                     </div>
@@ -584,9 +654,9 @@
                     {% if inline_button.switch_inline_current != False and inline_button.switch_inline_current != '' %}
                     <div class="input-group mb-2">
                         <div class="input-group-prepend">
-                            <div class="input-group-text mt-2">Switch Inline Current</div>
+                            <div class="input-group-text mt-2 shadow-sm">Switch Inline Current</div>
                         </div>
-                        <input class="form-control mt-2" type="text"
+                        <input class="form-control mt-2 shadow-sm" type="text"
                             name="switch_inline_current_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}"
                             value="{{ inline_button.switch_inline_current }}"
                             id="switch_inline_current_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}">
@@ -596,9 +666,9 @@
                     {% if inline_button.callback != False and inline_button.callback != '' %}
                     <div class="input-group mb-2">
                         <div class="input-group-prepend">
-                            <div class="input-group-text mt-2">Callback</div>
+                            <div class="input-group-text mt-2 shadow-sm">Callback</div>
                         </div>
-                        <input class="form-control mt-2" type="text"
+                        <input class="form-control mt-2 shadow-sm" type="text"
                             name="callback_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}"
                             value="{{ inline_button.callback }}"
                             id="callback_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}">
@@ -607,11 +677,13 @@
 
                     <div class="form-row mt-2">
                         <div class="col-md-6">
-                            <button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update
+                            <button type="submit"
+                                class="btn btn-outline-light text-warning shadow-sm border-bottom border-left border-right btn-sm btn-block">Update
                                 button</button>
                         </div>
                         <div class="col-md-6">
-                            <button type="button" class="btn btn-outline-danger btn-sm btn-block"
+                            <button type="button"
+                                class="btn btn-outline-light text-danger shadow-sm border-bottom border-left border-right btn-sm btn-block"
                                 id="id_delete_inline_button_{{ inline_markup_element.0 }}_{{ forloop.counter0 }}"
                                 onclick="sendAjaxInlineButtonDelete(this);">Delete
                                 button</button>
@@ -623,7 +695,7 @@
         </div>
         {% endfor %}
         {% else %}
-        <div class="alert alert-success mt-3" role="alert" id="id_no_elements">
+        <div class="alert alert-light text-dark shadow mt-3" role="alert" id="id_no_elements">
             <h5 class="alert-heading mb-0 mt-0">No such elements added</h5>
             <hr>
             <p class="mt-0 mb-0">If you want to add new text response check the form below</p>
@@ -631,56 +703,80 @@
         {% endif %}
     </div>
 
-    <div class="form-row mt-3">
-        <h5 class="ml-1 text-dark">Create inline markup</h5>
-        <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
-    </div>
-
-
     {% if request.path == inline_markup_url %}
-    <form id="id_inline_markup_create" method="POST">
-        {% csrf_token %}
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="form-row">
+                <h5 class="ml-1 text-dark">Create inline markup</h5>
+                <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
+            </div>
 
-        <div class="form-row">
-            <div class="col-md-10">
-                {{ inline_markup_form.react_text }}
-            </div>
-            <div class="col-md-2">
-                {{ inline_markup_form.row_width }}
-            </div>
-            <div class="col-md-10 mt-2">
-                {{ inline_markup_form.response_text }}
-            </div>
-            <div class="col-md-2 mt-2">
-                <button type="submit" class="btn btn-outline-success btn-block">Create inline</button>
-            </div>
+            <form id="id_inline_markup_create" method="POST">
+                {% csrf_token %}
+
+                <div class="form-row">
+                    <div class="col-md-10">
+                        {{ inline_markup_form.react_text.label }}
+                        {{ inline_markup_form.react_text }}
+                    </div>
+                    <div class="col-md-2">
+                        {{ inline_markup_form.row_width.label }}
+                        {{ inline_markup_form.row_width }}
+                    </div>
+                    <div class="col-md-10 mt-2">
+                        {{ inline_markup_form.response_text.label }}
+                        {{ inline_markup_form.response_text }}
+                    </div>
+                    <div class="col-md-2 mt-2">
+                        <button type="submit"
+                            class="btn btn-outline-light text-primary border-right border-left border-bottom shadow-sm btn-block mt-4">Create
+                            inline</button>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
     {% elif request.path == inline_buttons_url %}
-    <form method="POST" onchange="getInlineValues(this);" id="id_inline_button_create">
-        {% csrf_token %}
+    <div class="card shadow mt-3">
+        <div class="card-body">
+            <div class="form-row">
+                <h5 class="ml-1 text-dark">Create inline markup</h5>
+                <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
+            </div>
 
-        <div class="form-row">
-            <div class="col-md-6">
-                {{ inline_button_form.text }}
-            </div>
-            <div class="col-md-6">
-                {{ inline_button_form.url }}
-            </div>
-            <div class="col-md-12 mt-2">
-                {{ inline_button_form.switch_inline }}
-            </div>
-            <div class="col-md-12 mt-2">
-                {{ inline_button_form.switch_inline_current }}
-            </div>
-            <div class="col-md-10 mt-2">
-                {{ inline_button_form.callback }}
-            </div>
-            <div class="col-md-2 mt-2">
-                <button type="submit" class="btn btn-outline-success btn-block">Create button</button>
-            </div>
+            <form method="POST" onchange="getInlineValues(this);" id="id_inline_button_create">
+                {% csrf_token %}
+
+                <div class="form-row">
+                    <div class="col-md-6">
+                        {{ inline_button_form.text.label }}
+                        {{ inline_button_form.text }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ inline_button_form.url.label }}
+                        {{ inline_button_form.url }}
+                    </div>
+                    <div class="col-md-12 mt-2">
+                        {{ inline_button_form.switch_inline.label }}
+                        {{ inline_button_form.switch_inline }}
+                    </div>
+                    <div class="col-md-12 mt-2">
+                        {{ inline_button_form.switch_inline_current.label }}
+                        {{ inline_button_form.switch_inline_current }}
+                    </div>
+                    <div class="col-md-10 mt-2">
+                        {{ inline_button_form.callback.label }}
+                        {{ inline_button_form.callback }}
+                    </div>
+                    <div class="col-md-2 mt-2">
+                        <button type="submit"
+                            class="btn btn-outline-light text-primary border-right border-left border-bottom shadow-sm btn-block mt-4">Create
+                            button</button>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
     {% endif %}
     {% elif request.path == callback_url %}
     <div id="id_callback_fields">
@@ -693,9 +789,9 @@
                 <div class="col-md-12">
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <div class="input-group-text">Callback</div>
+                            <div class="input-group-text shadow-sm">Callback</div>
                         </div>
-                        <input type="text" class="form-control" name="callback_text_{{ callback_element.0 }}"
+                        <input type="text" class="form-control shadow-sm" name="callback_text_{{ callback_element.0 }}"
                             value="{{ callback_element.1.callback }}">
                     </div>
                 </div>
@@ -705,21 +801,25 @@
                         <div class="col-md-8">
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <div class="input-group-text">React</div>
+                                    <div class="input-group-text shadow-sm">React</div>
                                 </div>
-                                <input type="text" class="form-control" name="react_text_{{ callback_element.0 }}"
+                                <input type="text" class="form-control shadow-sm"
+                                    name="react_text_{{ callback_element.0 }}"
                                     value="{{ callback_element.1.react_text }}">
                             </div>
                         </div>
 
                         <div class="col-md-2">
-                            <button type="submit" class="btn btn-outline-warning btn-block">Update callback</button>
+                            <button type="submit"
+                                class="btn btn-outline-light text-warning shadow-sm border-bottom border-left border-right btn-block">Update
+                                callback</button>
                         </div>
 
                         <div class="col-md-2">
                             <button id="callback_element_for_{{ callback_element.0 }}"
                                 onclick="sendAjaxDeleteCallback(this);" type="button"
-                                class="btn btn-outline-danger btn-block">Delete callback</button>
+                                class="btn btn-outline-light text-danger shadow-sm border-bottom border-left border-right btn-block">Delete
+                                callback</button>
                         </div>
                     </div>
                 </div>
@@ -727,7 +827,7 @@
         </form>
         {% endfor %}
         {% else %}
-        <div class="alert alert-success mt-3" role="alert" id="id_no_element">
+        <div class="alert alert-light text-dark shadow mt-3" role="alert" id="id_no_element">
             <h5 class="alert-heading mb-0 mt-0">No such elements added</h5>
             <hr>
             <p class="mt-0 mb-0">If you want to add new text response check the form below</p>
@@ -735,55 +835,54 @@
         {% endif %}
     </div>
 
-    <div class="form-row mt-3">
-        <h5 class="ml-1 text-dark">Create callback</h5>
-        <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
-    </div>
-
     {% if request.path == callback_url %}
-    <form method="POST" id="id_create_callback">
-        {% csrf_token %}
+    <div class="card shadow mt-3">
+        <div class="card-body">
+            <div class="form-row">
+                <h5 class="ml-1 text-dark">Create callback</h5>
+                <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
+            </div>
+            <form method="POST" id="id_create_callback">
+                {% csrf_token %}
 
-        <select class="form-control" id="id_callback_text">
-            <option>----------------</option>
-            {% for callback in fields_callback %}
-            <option>{{ callback.1 }}</option>
-            {% endfor %}
-        </select>
-
-        <div class="form-row mt-2">
-            <div class="col-md-10">
-                <select class="form-control" id="id_react_text">
+                <label for="id_callback_text" class="mb-0">Callbacks</label>
+                <select class="form-control shadow-sm" id="id_callback_text">
                     <option>----------------</option>
-                    {% for react in fields_react %}
-                    <option>{{ react.1 }}</option>
+                    {% for callback in fields_callback %}
+                    <option>{{ callback.1 }}</option>
                     {% endfor %}
                 </select>
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-outline-primary btn-block">Create callback</button>
-            </div>
+
+                <div class="form-row mt-2">
+                    <div class="col-md-10">
+                        <label for="id_react_text" class="mb-0">React text</label>
+                        <select class="form-control shadow-sm" id="id_react_text">
+                            <option>----------------</option>
+                            {% for react in fields_react %}
+                            <option>{{ react.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit"
+                            class="btn btn-outline-light border-right border-left border-bottom text-primary shadow-sm btn-block mt-4">Create
+                            callback</button>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
     {% endif %}
     {% endif %}
 
-    <div style="position: relative; bottom: 0;">
-        <hr>
-        <div class="form-row">
-            <div class="col-md-9">
-                <h5 class="btn btn-outline-dark btn-sm btn-block text-dark disabled">To go to the next page you must
-                    press the button</h5>
-            </div>
 
-            <div class="col-md-3">
-                <form action="{% url 'create_bot_second_step_next_step_url' token=token %}" class="mb-2">
-                    {% csrf_token %}
+    <div class="mt-3">
+        <form action="{% url 'create_bot_second_step_next_step_url' token=token %}" class="mb-3">
+            {% csrf_token %}
 
-                    <button type="submit" class="btn btn-secondary btn-block btn-sm">Next</button>
-                </form>
-            </div>
-        </div>
+            <button type="submit"
+                class="btn btn-light text-dark border-bottom border-left border-right shadow btn-block">Next</button>
+        </form>
     </div>
 </div>
 {% endblock main_section %}
@@ -822,27 +921,28 @@
                 action: 'post'
             },
             success: function (json) {
-                console.log('sdfsdfsdf');
                 if (json.text_error == null) {
                     var object = '';
-                    object += `<form method="POST" class="mt-3" onsubmit="sendAjaxUpdate(this); return false;">` +
+                    object += '<div class="alert alert-light shadow text-dark mt-3">' +
+                        '<h5 class="mb-1">Item: #' + json.len_text + '</h5>' +
+                        `<form method="POST" onsubmit="sendAjaxUpdate(this); return false;">` +
                         '<input type="hidden" name="csrfmiddlewaretoken" value="' + json.csrf + '">' +
                         '<div class="form-row mb-3">' +
                         '<div class="col-md-9">' +
-                        '<input class="form-control" name="react_text_' + json.len_text + '" value="' + json.react_text + '">' +
+                        '<div class="input-group"><div class="input-group-prepend"><div class="input-group-text shadow-sm">React</div></div><input class="form-control shadow-sm" name="react_text_' + json.len_text + '" value="' + json.react_text + '"></div>' +
                         '</div>' +
                         '<div class="col-md-3">' +
                         '<div class="form-row">' +
                         '<div class="col-md-6">' +
-                        '<button type="submit" class="btn btn-outline-success btn-block">Update</button>' +
+                        '<button type="submit" class="btn btn-outline-light text-success shadow-sm border-bottom border-left border-right btn-block">Update</button>' +
                         '</div>' +
                         '<div class="col-md-6">' +
-                        '<button type="button" id="id_delete_text_' + json.len_text + '" class="btn btn-outline-danger btn-block" onclick="sendAjaxDelete(this);">Delete</button>' +
+                        '<button type="button" id="id_delete_text_' + json.len_text + '" class="btn btn-outline-light text-danger shadow-sm border-bottom border-left border-right btn-block" onclick="sendAjaxDelete(this);">Delete</button>' +
                         '</div>' +
                         '</div>' +
                         '</div>' +
                         '<div class="col-md-12">' +
-                        `<textarea class="form-control mt-2" style="height: 100%;" name="response_text_` + json.len_text + `" id="response_text_text">` + json.response_text + `</textarea>` +
+                        `<textarea class="form-control mt-2 shadow-sm" style="height: 100%;" name="response_text_` + json.len_text + `" id="response_text_text">` + json.response_text + `</textarea>` +
                         '</div>' +
                         '<div class="col-md-12 mt-2">' +
                         '<div class="custom-control custom-checkbox custom-control-inline">';
@@ -853,7 +953,7 @@
                             '</div>' +
                             '</div>' +
                             '</div>' +
-                            '</form>';
+                            '</form></div>';
                     }
                     else {
                         object += '<input type="checkbox" name="remove_reply_markup_' + json.len_text + '" class="custom-control-input" id="remove_reply_markup_' + json.len_text + '">' +
@@ -861,7 +961,7 @@
                             '</div>' +
                             '</div>' +
                             '</div>' +
-                            '</form>';
+                            '</form></div>';
                     }
 
                     document.getElementById("text-form").reset();
@@ -871,7 +971,7 @@
                     );
                 }
                 else {
-                    var error = '<div class="alert alert-warning alert-dismissible fade show mt-2">' +
+                    var error = '<div class="alert alert-light text-warning shadow alert-dismissible fade show mt-3">' +
                         json.text_error.react_text[0] +
 
                         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
@@ -913,7 +1013,7 @@
 
                 if (elements.length == 0) {
                     $('.text_fields').append(
-                        '<div class="alert alert-success mt-3" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
+                        '<div class="alert alert-light text-dark shadow mt-3" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
                     )
                 }
             },
@@ -997,28 +1097,28 @@
                         selective = '';
                     }
 
-                    var object = '<div class="form-row mt-3" id="' + json.len_text + '_reply_element">' +
+                    var object = '<div class="form-row some" id="' + json.len_text + '_reply_element">' +
                         '<div class="col-md-5">' +
                         '<form onsubmit="sendAjaxUpdateReply(this); return false;" method="POST" class="mb-3">' +
                         '<input type="hidden" name="csrfmiddlewaretoken" value="' + json.csrf + '">' +
                         '<div class="form-row row">' +
-                        '<div class="col-md-8">' +
+                        '<div class="col-md-10">' +
                         '<div class="input-group">' +
                         '<div class="input-group-prepend">' +
-                        '<div class="input-group-text">React</div>' +
+                        '<div class="input-group-text shadow-sm">React</div>' +
                         '</div>' +
-                        '<input class="form-control" name="react_text_' + json.len_text + '" value="' + json.react_text + '">' +
+                        '<input class="form-control shadow-sm" name="react_text_' + json.len_text + '" value="' + json.react_text + '">' +
                         '</div>' +
                         '</div>' +
-                        '<div class="col-md-4">' +
-                        '<input class="form-control" name="row_width_' + json.len_text + '" value="' + json.row_width + '">' +
+                        '<div class="col-md-2">' +
+                        '<input class="form-control shadow-sm" type="number" max="5" min="1" name="row_width_' + json.len_text + '" value="' + json.row_width + '">' +
                         '</div>' +
                         '</div>' +
                         '<div class="input-group">' +
                         '<div class="input-group-prepend">' +
-                        '<div class="input-group-text mt-2">Response</div>' +
+                        '<div class="input-group-text shadow-sm mt-2">Response</div>' +
                         '</div>' +
-                        '<input class="form-control mt-2" name="response_text_markup_' + json.len_text + '" value="asdasd">' +
+                        '<input class="form-control shadow-sm mt-2" name="response_text_markup_' + json.len_text + '" value="asdasd">' +
                         '</div>' +
                         '<div class="form-row mt-2 mb-2">' +
                         '<div class="ml-1">' +
@@ -1042,13 +1142,13 @@
                         '</div>' +
                         '<div class="form-row">' +
                         '<div class="col-md-4">' +
-                        '<button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update keyboard</button>' +
+                        '<button type="submit" class="btn btn-outline-light text-warning shadow-sm border-bottom border-left border-right btn-sm btn-block">Update keyboard</button>' +
                         '</div>' +
                         '<div class="col-md-4">' +
-                        '<button type="button" id="reply_markup_' + json.len_text + '" onclick="sendAjaxDeleteReply(this); " class="btn btn-outline-danger btn-sm btn-block">Delete keyboard</button>' +
+                        '<button type="button" id="reply_markup_' + json.len_text + '" onclick="sendAjaxDeleteReply(this); " class="btn btn-outline-light text-danger shadow-sm border-bottom border-left border-right btn-sm btn-block">Delete keyboard</button>' +
                         '</div>' +
                         '<div class="col-md-4">' +
-                        '<a href="/createBot/secondStep/' + json.token + '/replyMarkup/replyButtons/" class="btn btn-outline-dark btn-sm btn-block" id="id_add_button_reply">Add button</a>' +
+                        '<a href="/createBot/secondStep/' + json.token + '/replyMarkup/replyButtons/" class="btn btn-outline-light text-dark shadow-sm border-bottom border-left border-right btn-sm btn-block" id="id_add_button_reply">Add button</a>' +
                         '</div>' +
                         '</div>' +
                         '</form>' +
@@ -1062,7 +1162,7 @@
                     $('#id_add_button_reply').click();
                 }
                 else {
-                    var error = '<div class="alert alert-warning alert-dismissible fade show mt-2">' +
+                    var error = '<div class="alert alert-light text-warning shadow alert-dismissible fade show mt-3">' +
                         json.reply_markup_error.react_text[0] +
 
                         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
@@ -1123,9 +1223,9 @@
                 action: 'delete_reply_markup'
             },
             success: function (json) {
-                var elements = $('#id_reply_elements').find('div[class^="form-row mt-3"]');
+                var elements = $('#id_reply_elements').find('div[class^="form-row some"]');
                 elements[json.markup_id].remove();
-                var elements = $('#id_reply_elements').find('div[class^="form-row mt-3"]');
+                var elements = $('#id_reply_elements').find('div[class^="form-row some"]');
                 console.log(elements);
 
                 for (var item = 0; item < elements.length; item++) {
@@ -1147,7 +1247,7 @@
 
                 if (elements.length == 0) {
                     $('#id_reply_elements').append(
-                        '<div class="alert alert-success mt-3" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
+                        '<div class="alert alert-light text-dark shadow mt-3" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
                     );
                 }
             },
@@ -1190,9 +1290,9 @@
                     '<input type="hidden" name="csrfmiddlewaretoken" value="' + json.csrf + '">' +
                     '<div class="input-group">' +
                     '<div class="input-group-prepend">' +
-                    '<div class="input-group-text">Text</div>' +
+                    '<div class="input-group-text shadow-sm">Text</div>' +
                     '</div>' +
-                    '<input class="form-control" name="response_text_' + json.len_text + '_' + json.len_button + '" value="' + json.response_text + '">' +
+                    '<input class="form-control shadow-sm" name="response_text_' + json.len_text + '_' + json.len_button + '" value="' + json.response_text + '">' +
                     '</div>' +
                     '<div class="form-row mt-1 mb-1 ml-0">' +
                     '<div class="custom-control custom-radio custom-control-inline">' +
@@ -1206,10 +1306,10 @@
                     '</div>' +
                     '<div class="form-row">' +
                     '<div class="col-md-6">' +
-                    '<button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update button</button>' +
+                    '<button type="submit" class="btn btn-outline-light text-warning shadow-sm border-bottom border-left border-right btn-sm btn-block">Update button</button>' +
                     '</div>' +
                     '<div class="col-md-6">' +
-                    '<button type="button" class="btn btn-outline-danger btn-sm btn-block" id="id_delete_reply_button_' + json.len_text + '_' + json.len_button + '" onclick="sendAjaxDeleteReplyButton(this);">Delete button</button>' +
+                    '<button type="button" class="btn btn-outline-light text-danger shadow-sm border-bottom border-left border-right btn-sm btn-block" id="id_delete_reply_button_' + json.len_text + '_' + json.len_button + '" onclick="sendAjaxDeleteReplyButton(this);">Delete button</button>' +
                     '</div>' +
                     '</div>' +
                     '</form>';
@@ -1283,6 +1383,7 @@
                     $(elements[item]).find('input')[3].id = `req_loc_${markup_id}_${item}`;
                     $(elements[item]).find('label')[0].outerHTML = `<label for="req_con_${markup_id}_${item}" class="custom-control-label">Request contact</label>`;
                     $(elements[item]).find('label')[1].outerHTML = `<label for="req_loc_${markup_id}_${item}" class="custom-control-label">Request location</label>`;
+                    $(elements[item]).find('button')[1].id = `id_delete_reply_button_${markup_id}_${item}`;
                 }
             },
             error: function (xhr, errmsg, err) {
@@ -1315,9 +1416,9 @@
                         '<div class="col-md-12">' +
                         '<div class="input-group">' +
                         '<div class="input-group-prepend">' +
-                        '<div class="input-group-text">Callback</div>' +
+                        '<div class="input-group-text shadow-sm">Callback</div>' +
                         '</div>' +
-                        '<input type="text" class="form-control" name="callback_text_' + json.len_text + '" value="' + json.callback + '">' +
+                        '<input type="text" class="form-control shadow-sm" name="callback_text_' + json.len_text + '" value="' + json.callback + '">' +
                         '</div>' +
                         '</div>' +
                         '<div class="col-md-12 mt-2">' +
@@ -1325,16 +1426,16 @@
                         '<div class="col-md-8">' +
                         '<div class="input-group">' +
                         '<div class="input-group-prepend">' +
-                        '<div class="input-group-text">React</div>' +
+                        '<div class="input-group-text shadow-sm">React</div>' +
                         '</div>' +
-                        '<input type="text" class="form-control" name="react_text_' + json.len_text + '" value="' + json.react_text + '">' +
+                        '<input type="text" class="form-control shadow-sm" name="react_text_' + json.len_text + '" value="' + json.react_text + '">' +
                         '</div>' +
-                        '</div>' +
-                        '<div class="col-md-2">' +
-                        '<button type="submit" class="btn btn-outline-warning btn-block">Update callback</button>' +
                         '</div>' +
                         '<div class="col-md-2">' +
-                        '<button id="callback_element_for_' + json.len_text + '" onclick="sendAjaxDeleteCallback(this);" type="button" class="btn btn-outline-danger btn-block">Delete callback</button>' +
+                        '<button type="submit" class="btn btn-outline-light text-warning shadow-sm border-bottom border-left border-right btn-block">Update callback</button>' +
+                        '</div>' +
+                        '<div class="col-md-2">' +
+                        '<button id="callback_element_for_' + json.len_text + '" onclick="sendAjaxDeleteCallback(this);" type="button" class="btn btn-outline-light text-danger shadow-sm border-bottom border-left border-right btn-block">Delete callback</button>' +
                         '</div>' +
                         '</div>' +
                         '</div>' +
@@ -1351,7 +1452,7 @@
                     }
                 }
                 else {
-                    var error = '<div class="alert alert-warning alert-dismissible fade show mt-2">' +
+                    var error = '<div class="alert alert-light text-warning shadow alert-dismissible fade show mt-3">' +
                         json.callback_error.react_text[0] +
 
                         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
@@ -1419,7 +1520,7 @@
 
                 if (elements.length == 0) {
                     $('#id_callback_fields').append(
-                        '<div class="alert alert-success mt-3" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
+                        '<div class="alert alert-light text-dark shadow mt-3" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
                     );
                 }
             },
@@ -1456,40 +1557,40 @@
                     '<input type="hidden" name="csrfmiddlewaretoken" value="' + json.csrf + '">' +
                     '<div class="input-group">' +
                     '<div class="input-group-prepend">' +
-                    '<div class="input-group-text">Response</div>' +
+                    '<div class="input-group-text shadow-sm">Response</div>' +
                     '</div>' +
-                    '<input class="form-control" type="text" name="response_text_inline_' + json.len_text + '" value="' + json.response_text + '">' +
+                    '<input class="form-control shadow-sm" type="text" name="response_text_inline_' + json.len_text + '" value="' + json.response_text + '">' +
                     '</div>' +
                     '<div class="form-row">' +
                     '<div class="col-md-10">' +
                     '<div class="input-group">' +
                     '<div class="input-group-prepend">' +
-                    '<div class="input-group-text mt-2">React</div>' +
+                    '<div class="input-group-text mt-2 shadow-sm">React</div>' +
                     '</div>' +
-                    '<input class="form-control mt-2" type="text" name="react_text_inline_' + json.len_text + '" value="' + json.react_text + '">' +
+                    '<input class="form-control mt-2 shadow-sm" type="text" name="react_text_inline_' + json.len_text + '" value="' + json.react_text + '">' +
                     '</div>' +
                     '</div>' +
                     '<div class="col-md-2">' +
-                    '<input class="form-control mt-2" type="number" min="1" max="5" name="row_width_inline_' + json.len_text + '" value="' + json.row_width + '">' +
+                    '<input class="form-control shadow-sm mt-2" type="number" min="1" max="5" name="row_width_inline_' + json.len_text + '" value="' + json.row_width + '">' +
                     '</div>' +
                     '</div>' +
                     '<div class="form-row">' +
                     '<div class="col-md-4">' +
-                    '<button type="submit" class="btn btn-outline-warning btn-sm mt-2 btn-block">Update markup</button>' +
+                    '<button type="submit" class="btn btn-outline-light text-warning shadow-sm border-bottom border-right border-left btn-sm mt-2 btn-block">Update markup</button>' +
                     '</div>' +
                     '<div class="col-md-4">' +
-                    '<button type="button" class="btn btn-outline-danger btn-sm mt-2 btn-block" onclick="sendAjaxInlineMarkupDelete(this);" id="id_delete_inline_' + json.len_text + '">Delete markup</button>' +
+                    '<button type="button" class="btn btn-outline-light text-danger shadow-sm border-bottom border-right border-left btn-sm mt-2 btn-block" onclick="sendAjaxInlineMarkupDelete(this);" id="id_delete_inline_' + json.len_text + '">Delete markup</button>' +
                     '</div>' +
                     '<div class="col-md-4">' +
-                    '<a href="/createBot/secondStep/' + json.token + '/inlineMarkup/inlineButtons/" class="btn btn-outline-dark btn-sm mt-2 btn-block">Add button</a>' +
+                    '<a href="/createBot/secondStep/' + json.token + '/inlineMarkup/inlineButtons/" class="btn btn-outline-light text-dark shadow-sm border-bottom border-right border-left btn-sm mt-2 btn-block">Add button</a>' +
                     '</div>' +
                     '</div>' +
                     '</form>' +
                     '</div>' +
                     '<div class="col-md-7"></div>';
 
+                document.getElementById('id_no_element').remove();
                 document.getElementById('id_inline_markup_create').reset();
-                $('#id_no_elements').remove();
                 $('#id_inline_elements').append(object);
             },
             error: function (xhr, errmsg, err) {
@@ -1555,7 +1656,7 @@
 
                 if (elements.length == 0) {
                     $('#id_inline_elements').append(
-                        '<div class="alert alert-success mt-3" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
+                        '<div class="alert alert-light text-dark shadow mt-3" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
                     );
                 }
             },
@@ -1593,33 +1694,33 @@
                     if (json.url != '') {
                         some_object = '<div class="input-group mb-2">' +
                             '<div class="input-group-prepend">' +
-                            '<div class="input-group-text mt-2">Url</div>' +
+                            '<div class="input-group-text mt-2 shadow-sm">Url</div>' +
                             '</div>' +
-                            '<input class="form-control mt-2" type="text" name="url_inline_' + json.len_text + '_' + json.len_button + '" value="' + json.url + '">' +
+                            '<input class="form-control mt-2 shadow-sm" type="text" name="url_inline_' + json.len_text + '_' + json.len_button + '" value="' + json.url + '">' +
                             '</div>';
                     }
                     else if (json.callback != '') {
                         some_object = '<div class="input-group mb-2">' +
                             '<div class="input-group-prepend">' +
-                            '<div class="input-group-text mt-2">Callback</div>' +
+                            '<div class="input-group-text mt-2 shadow-sm">Callback</div>' +
                             '</div>' +
-                            '<input class="form-control mt-2" type="text" name="callback_' + json.len_text + '_' + json.len_button + '" value="' + json.callback + '" id="callback_' + json.len_text + '_' + json.len_button + '">' +
+                            '<input class="form-control mt-2 shadow-sm" type="text" name="callback_' + json.len_text + '_' + json.len_button + '" value="' + json.callback + '" id="callback_' + json.len_text + '_' + json.len_button + '">' +
                             '</div>';
                     }
                     else if (json.switch_inline != '') {
                         some_object = '<div class="input-group mb-2">' +
                             '<div class="input-group-prepend">' +
-                            '<div class="input-group-text mt-2">Switch Inline</div>' +
+                            '<div class="input-group-text mt-2 shadow-sm">Switch Inline</div>' +
                             '</div>' +
-                            '<input class="form-control mt-2" type="text" name="switch_inline_' + json.len_text + '_' + json.len_button + '" value="' + json.switch_inline + '">' +
+                            '<input class="form-control mt-2 shadow-sm" type="text" name="switch_inline_' + json.len_text + '_' + json.len_button + '" value="' + json.switch_inline + '">' +
                             '</div>';
                     }
                     else {
                         some_object = '<div class="input-group mb-2">' +
                             '<div class="input-group-prepend">' +
-                            '<div class="input-group-text mt-2">Switch Inline Current</div>' +
+                            '<div class="input-group-text mt-2 shadow-sm">Switch Inline Current</div>' +
                             '</div>' +
-                            '<input class="form-control mt-2" type="text" name="switch_inline_current_' + json.len_text + '_' + json.len_button + '" value="' + json.switch_inline_current + '" id="switch_inline_current_' + json.len_text + '_' + json.len_button + '">' +
+                            '<input class="form-control mt-2 shadow-sm" type="text" name="switch_inline_current_' + json.len_text + '_' + json.len_button + '" value="' + json.switch_inline_current + '" id="switch_inline_current_' + json.len_text + '_' + json.len_button + '">' +
                             '</div>';
                     }
 
@@ -1627,17 +1728,17 @@
                         '<input type="hidden" name="csrfmiddlewaretoken" value="' + json.csrf + '">' +
                         '<div class="input-group">' +
                         '<div class="input-group-prepend">' +
-                        '<div class="input-group-text">Text</div>' +
+                        '<div class="input-group-text shadow-sm">Text</div>' +
                         '</div>' +
-                        '<input class="form-control" type="text" name="text_inline_' + json.len_text + '_' + json.len_button + '" value="' + json.text + '">' +
+                        '<input class="form-control shadow-sm" type="text" name="text_inline_' + json.len_text + '_' + json.len_button + '" value="' + json.text + '">' +
                         '</div>' +
                         some_object +
                         '<div class="form-row mt-2">' +
                         '<div class="col-md-6">' +
-                        '<button type="submit" class="btn btn-outline-warning btn-sm btn-block">Update button</button>' +
+                        '<button type="submit" class="btn btn-outline-light text-warning shadow-sm border-bottom border-right border-left btn-sm btn-block">Update button</button>' +
                         '</div>' +
                         '<div class="col-md-6">' +
-                        '<button type="button" class="btn btn-outline-danger btn-sm btn-block" id="id_delete_inline_button_' + json.len_text + '_' + json.len_button + '" onclick="sendAjaxInlineButtonDelete(this);">Delete button</button>' +
+                        '<button type="button" class="btn btn-outline-light text-danger shadow-sm border-bottom border-right border-left btn-sm btn-block" id="id_delete_inline_button_' + json.len_text + '_' + json.len_button + '" onclick="sendAjaxInlineButtonDelete(this);">Delete button</button>' +
                         '</div>' +
                         '</div>' +
                         '</form>';
@@ -1650,7 +1751,7 @@
                     $('#' + json.len_text + '_inline_element').find('div.col-md-7').append(object);
                 }
                 else {
-                    var error = '<div class="alert alert-warning alert-dismissible fade show mt-2">' +
+                    var error = '<div class="alert alert-light text-warning shadow alert-dismissible fade show mt-3">' +
                         json.inline_button_error.react_text[0] +
 
                         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +

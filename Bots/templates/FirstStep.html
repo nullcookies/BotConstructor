@@ -4,7 +4,7 @@
 {% block main_section %}
 {% include 'Navbar.html' %}
 <div class="container">
-    <div style="position: relative; overflow: hidden; height: 150px; border-radius: 3px;">
+    <div style="position: relative; overflow: hidden; height: 150px; border-radius: 3px;" class="shadow">
         <img src="{% static 'pictures/14961556102_13f1b039b4_o.png' %}" class="img-fluid"
             style="width: 100%; top: -90%;">
         <div style="position: absolute; top: 10px; left: 10px; color: white; padding-left: 20px; padding-right: 20px;">
@@ -16,29 +16,38 @@
             </ul>
         </div>
     </div>
-    <hr>
-    <h5 class="text-secondary mt-2">You must to enter API token</h5>
 
-    <form method="POST">
-        {% csrf_token %}
+    <div class="card shadow mt-3">
+        <div class="card-body">
+            <h4 class="text-dark mb-3">You must to enter API token</h4>
 
-        {{ first_form.access_token }}
+            <form method="POST">
+                {% csrf_token %}
 
-        <div class="form-row">
-            <div class="col-md-6 mt-2">
-                {{ first_form.name }}
-            </div>
-            <div class="col-md-6 mt-2">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text">@</div>
+                {{ first_form.access_token.label }}
+                {{ first_form.access_token }}
+
+                <div class="form-row">
+                    <div class="col-md-6 mt-1">
+                        {{ first_form.name.label }}
+                        {{ first_form.name }}
                     </div>
-                    {{ first_form.username }}
+                    <div class="col-md-6 mt-1">
+                        {{ first_form.username.label }}
+                        <div class="input-group shadow-sm">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">@</div>
+                            </div>
+                            {{ first_form.username }}
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <button type="submit" class="btn btn-outline-success btn-sm mt-2" style="width: 20%;">Next</button>
-    </form>
+                <button type="submit"
+                    class="btn btn-outline-light text-success border-left border-bottom border-right shadow-sm btn-sm mt-3"
+                    style="width: 20%;">Next</button>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock main_section %}

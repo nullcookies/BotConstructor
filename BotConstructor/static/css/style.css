@@ -76,3 +76,15 @@
     height: 503px;
     border-radius: 3px;
 }
+
+.shadow-sm {
+    box-shadow: 0 .125rem .25rem #00000013 !important;
+}
+
+.shadow-lg {
+    box-shadow: 0 1rem 3rem #0000002d !important;
+}
+
+.shadow {
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+}
