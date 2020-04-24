@@ -14,7 +14,8 @@ import os
 import autopep8
 
 from .models import Profile, Bot
-from .program import TextBuilder
+from .program import BotFacade, TextBuilder, ReplyMarkupBuilder, \
+    InlineMarkupBuilder, CallbackBuilder
 from .forms import *
 from .pythonanywhere import AutoDeploy
 from .classes.text_field import *
@@ -104,11 +105,6 @@ class ShowTemplates(LoginRequiredMixin, View):
             bot_object = Bot(owner=current_user,
                              access_token=access_token, title='NewsBot',
                              username='NewsBotbot')
-            # bot_object.file_script.save(
-            #     f"{request.user.username}_{token.replace(':', '_')}"
-            #     "_test_bot.py",
-            #     File(open(path_template))
-            # )
             bot_object.save()
 
             new_content = """
@@ -146,153 +142,17 @@ class GenerateFile(LoginRequiredMixin, View):
         with open(path, 'r', encoding='utf-8') as file:
             data = json.load(file)
 
-        program = TextBuilder(token=data['access_token'],
-                              user_username=str(request.user.username))
+        username = str(request.user.username)
 
-        try:
-            if data['text'] != []:
-                final_text_dictionary = {}
-                for text_element in data['text']:
-                    final_text_dictionary[
-                        text_element['react_text']
-                    ] = [
-                        text_element['response_text'],
-                        text_element['remove_reply_markup']
-                    ]
-                program.text_response(
-                    token=token, text_dictionary=final_text_dictionary)
-        except KeyError as k_error:
-            print(k_error)
+        text_builder = TextBuilder(token, username)
+        reply_markup_builder = ReplyMarkupBuilder(token, username, request)
+        inline_markup_builder = InlineMarkupBuilder(token, username, request)
+        callback_builder = CallbackBuilder(token, username)
 
-        try:
-            if data['reply_markup'] != []:
-                final_reply_markup_keyboard = {}
-                for reply_markup_element in data['reply_markup']:
-                    buttons = []
-
-                    for button_element in reply_markup_element['buttons']:
-                        buttons.append(
-                            {
-                                'response': button_element['response_text'],
-                                'request_contact': button_element[
-                                    'request_contact'
-                                ],
-                                'request_location': button_element[
-                                    'request_location'
-                                ]
-                            }
-                        )
-
-                    final_reply_markup_keyboard[
-                        reply_markup_element['react_text']
-                    ] = {
-                        'resize_keyboard': reply_markup_element[
-                            'resize_keyboard'
-                        ],
-                        'one_time_keyboard': reply_markup_element[
-                            'one_time_keyboard'
-                        ],
-                        'selective': reply_markup_element['selective'],
-                        'row_width': reply_markup_element['row_width'],
-                        'response_text': reply_markup_element['response_text'],
-                        'buttons': buttons
-                    }
-                program.reply_markup_response(
-                    reply_markup_dictionary=final_reply_markup_keyboard,
-                    token=token
-                )
-        except KeyError as k_error:
-            k_error = str(k_error)
-
-            message = ''
-            if k_error == "'buttons'":
-                message += ' You have not added buttons to the reply keyboard.'
-
-                messages.error(
-                    request,
-                    f'You have a problem: {k_error}.' + message
-                )
-                return redirect(
-                    'create_bot_second_step_reply_buttons_url',
-                    token=token
-                )
-
-        try:
-            if data['inline_markup'] != []:
-                final_inline_markup_keyboard = {}
-                for inline_markup_element in data['inline_markup']:
-                    buttons = []
-
-                    for button_element in inline_markup_element['buttons']:
-                        buttons.append(
-                            {
-                                'text': button_element['text'],
-                                'url': button_element['url'],
-                                'callback': button_element['callback'],
-                                'switch_inline': button_element[
-                                    'switch_inline'
-                                ],
-                                'switch_inline_current': button_element[
-                                    'switch_inline_current'
-                                ]
-                            }
-                        )
-
-                    final_inline_markup_keyboard[
-                        inline_markup_element['react_text']
-                    ] = {
-                        'row_width': inline_markup_element['row_width'],
-                        'response_text': inline_markup_element[
-                            'response_text'
-                        ],
-                        'buttons': buttons
-                    }
-                program.inline_markup_response(
-                    inline_markup_dictionary=final_inline_markup_keyboard,
-                    token=token
-                )
-        except KeyError as k_error:
-            k_error = str(k_error)
-
-            message = ''
-            if k_error == "'buttons'":
-                message += (' You have not added buttons '
-                            'to the inline keyboard.')
-
-                messages.error(
-                    request,
-                    f'You have a problem: {k_error}.' + message
-                )
-                return redirect(
-                    'create_bot_second_step_inline_buttons_url',
-                    token=token
-                )
-
-        try:
-            if data['callbacks'] != []:
-                final_callback_query = {}
-                for callback_element in data['callbacks']:
-                    for value_1, value_2, value_3 in zip(data['text'],
-                                                         data['inline_markup'],
-                                                         data['reply_markup']):
-                        if callback_element['react_text'] == \
-                                value_1['react_text']:
-                            final_callback_query[
-                                callback_element['callback']] = value_1
-                        # elif callback_element[
-                        #         'react_text'] == value_2['react_text']:
-                        #     final_callback_query[
-                        #         callback_element['callback']] = value_2
-                        # elif callback_element[
-                        #         'react_text'] == value_3['react_text']:
-                        #     final_callback_query[
-                        #         callback_element['callback']] = value_3
-
-                program.callback_response(final_callback_query, token)
-        except KeyError as k_error:
-            print(k_error)
-
-        program.polling_bot(token=token)
+        program = BotFacade(text_builder, reply_markup_builder,
+                            inline_markup_builder, callback_builder,
+                            token, username, data)
+        program.operation()
 
         some_path = open_test_bot(request=request, token=token)
         with open(some_path, 'r+', encoding='utf-8') as file:
