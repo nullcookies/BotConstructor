@@ -10,7 +10,7 @@
 
         {% for field in register_form %}
         {% if field.errors %}
-        <div class="alert alert-warning alert-dismissible fade show">
+        <div class="alert alert-dark shadow-sm alert-dismissible fade show">
             {{ field.errors }}
 
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -22,7 +22,7 @@
 
         {% if messages %}
         {% for message in messages %}
-        <div class="alert alert-warning alert-dismissible fade show">
+        <div class="alert alert-dark shadow-sm alert-dismissible fade show">
             {{ message }}
 
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">

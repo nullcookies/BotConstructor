@@ -6,7 +6,7 @@
 <div class="container">
     {% if messages %}
     {% for message in messages %}
-    <div class="alert alert-warning shadow-sm alert-dismissible fade show mt-2">
+    <div class="alert alert-dark shadow-sm alert-dismissible fade show mt-2">
         {{ message }}
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -18,7 +18,7 @@
 
     {% for field in text_form %}
     {% if field.errors %}
-    <div class="alert alert-warning shadow alert-dismissible fade show mt-2">
+    <div class="alert alert-dark shadow-sm alert-dismissible fade show mt-2">
         {{ field.errors }}
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -30,7 +30,7 @@
 
     {% for field in reply_markup_form %}
     {% if field.errors %}
-    <div class="alert alert-warning alert-dismissible fade show mt-2">
+    <div class="alert alert-dark shadow-sm alert-dismissible fade show mt-2">
         {{ field.errors }}
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -42,7 +42,7 @@
 
     {% for field in template_form %}
     {% if field.errors %}
-    <div class="alert alert-warning alert-dismissible fade show mt-2">
+    <div class="alert alert-dark shadow-sm alert-dismissible fade show mt-2">
         {{ field.errors }}
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -54,7 +54,7 @@
 
     {% for field in inline_markup_form %}
     {% if field.errors %}
-    <div class="alert alert-warning alert-dismissible fade show mt-2">
+    <div class="alert alert-dark shadow-sm alert-dismissible fade show mt-2">
         {{ field.errors }}
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -66,7 +66,7 @@
 
     {% for field in callback_form %}
     {% if field.errors %}
-    <div class="alert alert-warning alert-dismissible fade show mt-2">
+    <div class="alert alert-dark shadow-sm alert-dismissible fade show mt-2">
         {{ field.errors }}
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -126,8 +126,6 @@
         </div>
     </div>
 
-
-
     {% if request.path == templates_url %}
     <form action="{% url 'templates' token=token %}" method="POST" class="mt-4" onchange="onCheck()">
         {% csrf_token %}
@@ -156,12 +154,11 @@
     <div class="text_fields">
         {% if text_elements %}
         {% for text_item in text_elements %}
-        <div class="alert alert-light shadow text-dark mt-3">
-            <h5 class="mb-1">Item: #{{ text_item.0 }}</h5>
+        <div class="alert alert-light shadow text-dark mt-4">
             <form method="POST" onsubmit="sendAjaxUpdate(this); return false;">
                 {% csrf_token %}
 
-                <div class="form-row mb-3">
+                <div class="form-row mb-3 mt-2">
                     <div class="col-md-9">
                         {% if text_item.1.react_text|first == '/' %}
                         <div class="input-group">
@@ -215,7 +212,7 @@
         </div>
         {% endfor %}
         {% else %}
-        <div class="alert alert-light text-dark shadow mt-3" role="alert" id="id_no_element">
+        <div class="alert alert-light text-dark shadow mt-4" role="alert" id="id_no_element">
             <h5 class="alert-heading mb-0 mt-0">No such elements added</h5>
             <hr>
             <p class="mt-0 mb-0">If you want to add new text response check the form below</p>
@@ -225,7 +222,7 @@
     {% endif %}
 
     {% if request.path == text_url %}
-    <div class="card shadow">
+    <div class="card shadow mt-4">
         <div class="card-body">
             <div class="form-row">
                 <h5 class="ml-1 text-dark">Create response text</h5>
@@ -270,10 +267,9 @@
     {% elif request.path == reply_markup_url or request.path == reply_buttons_url %}
     <div class="reply_fields" id="id_reply_elements">
         {% if reply_markup_elements %}
-        <div class="alert alert-light text-dark shadow mt-3">
+        <div class="alert alert-light text-dark shadow mt-4">
             {% for reply_markup_element in reply_markup_elements %}
-            <h5 class="mb-1">Item: #{{ reply_markup_element.0 }}</h5>
-            <div class="form-row some" id="{{ forloop.counter0 }}_reply_element">
+            <div class="form-row some mt-2" id="{{ forloop.counter0 }}_reply_element">
                 <div class="col-md-5">
                     <form onsubmit="sendAjaxUpdateReply(this); return false;" method="POST" class="mb-3">
                         {% csrf_token %}
@@ -435,7 +431,7 @@
         </div>
         {% endfor %}
         {% else %}
-        <div class="alert alert-light text-dark shadow mt-3" role="alert" id="id_no_element">
+        <div class="alert alert-light text-dark shadow mt-4" role="alert" id="id_no_element">
             <h5 class="alert-heading mb-0 mt-0">No such elements added</h5>
             <hr>
             <p class="mt-0 mb-0">If you want to add new text response check the form below</p>
@@ -443,9 +439,8 @@
         {% endif %}
     </div>
 
-
     {% if request.path == reply_buttons_url %}
-    <div class="card shadow">
+    <div class="card shadow mt-4">
         <div class="card-body">
             <div class="form-row">
                 <h5 class="text-dark ml-1">Create reply markup</h5>
@@ -484,7 +479,7 @@
     </div>
 
     {% elif request.path == reply_markup_url %}
-    <div class="card shadow">
+    <div class="card shadow mt-4">
         <div class="card-body">
             <div class="form-row">
                 <h5 class="text-dark ml-1">Create reply markup</h5>
@@ -923,11 +918,10 @@
             success: function (json) {
                 if (json.text_error == null) {
                     var object = '';
-                    object += '<div class="alert alert-light shadow text-dark mt-3">' +
-                        '<h5 class="mb-1">Item: #' + json.len_text + '</h5>' +
+                    object += '<div class="alert alert-light shadow text-dark mt-4">' +
                         `<form method="POST" onsubmit="sendAjaxUpdate(this); return false;">` +
                         '<input type="hidden" name="csrfmiddlewaretoken" value="' + json.csrf + '">' +
-                        '<div class="form-row mb-3">' +
+                        '<div class="form-row mb-3 mt-2">' +
                         '<div class="col-md-9">' +
                         '<div class="input-group"><div class="input-group-prepend"><div class="input-group-text shadow-sm">React</div></div><input class="form-control shadow-sm" name="react_text_' + json.len_text + '" value="' + json.react_text + '"></div>' +
                         '</div>' +
@@ -971,7 +965,7 @@
                     );
                 }
                 else {
-                    var error = '<div class="alert alert-light text-warning shadow alert-dismissible fade show mt-3">' +
+                    var error = '<div class="alert alert-light text-warning shadow alert-dismissible fade show mt-4">' +
                         json.text_error.react_text[0] +
 
                         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
@@ -998,9 +992,9 @@
                 action: 'delete_text'
             },
             success: function (json) {
-                var elements = $('.text_fields').find('form');
+                var elements = $('.text_fields').find('.alert');
                 elements[json.button_id].remove();
-                var elements = $('.text_fields').find('form');
+                var elements = $('.text_fields').find('.alert');
 
                 for (var item = 0; item < elements.length; item++) {
                     $(elements[item]).find('input')[1].name = `react_text_${item}`;
@@ -1013,7 +1007,7 @@
 
                 if (elements.length == 0) {
                     $('.text_fields').append(
-                        '<div class="alert alert-light text-dark shadow mt-3" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
+                        '<div class="alert alert-light text-dark shadow mt-4" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
                     )
                 }
             },
@@ -1097,7 +1091,8 @@
                         selective = '';
                     }
 
-                    var object = '<div class="form-row some" id="' + json.len_text + '_reply_element">' +
+                    var object = ''
+                        '<div class="form-row some" id="' + json.len_text + '_reply_element">' +
                         '<div class="col-md-5">' +
                         '<form onsubmit="sendAjaxUpdateReply(this); return false;" method="POST" class="mb-3">' +
                         '<input type="hidden" name="csrfmiddlewaretoken" value="' + json.csrf + '">' +
