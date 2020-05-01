@@ -33,43 +33,44 @@
     {% endfor %}
     {% endif %}
 
-
-    <div class="row mt-3">
-        <div class="col-md-2">
-            {% if current_user.image %}
-            <img src="{{ current_user.image.url }}" class="img-fluid w-100 border-class">
-            {% else %}
-            <img src="{% static 'pictures/images.png' %}" class="img-fluid profile profile-img-class">
-            {% endif %}
-
-
-        </div>
-
-        <div class="col-md-10">
-            <div class="row">
-                <div class="col-md-6">
-                    <h2>{{ current_user.user.username }}</h2>
+    <div class="card mt-4 shadow">
+        <div class="card-body">
+            <div class="row mt-3">
+                <div class="col-md-2">
+                    {% if current_user.image %}
+                    <img src="{{ current_user.image.url }}" class="img-fluid w-100 border-class">
+                    {% else %}
+                    <img src="{% static 'pictures/images.png' %}" class="img-fluid profile profile-img-class">
+                    {% endif %}
                 </div>
-                <div class="col-md-6">
-                    <div class="form-row float-right">
-                        <a href="{% url 'update_profile_url' %}"
-                            class="btn btn-outline-light text-primary border-left border-bottom border-right shadow-sm float-right mr-1">
-                            Edit profile</a>
+
+                <div class="col-md-10">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h2 class="ml-3">@{{ current_user.user.username }}</h2>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-row float-right">
+                                <a href="{% url 'update_profile_url' %}"
+                                    class="btn btn-outline-light text-primary border-left border-bottom border-right shadow-sm float-right mr-1">
+                                    Edit profile</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-light shadow-sm mt-3">
+                        <h5 class="text-dark mb-0">{{ current_user.user.first_name }} {{ current_user.user.last_name }}
+                        </h5>
+                        <h5 class="text-dark mb-0">{{ current_user.user.email }}</h5>
+                        <h5 class="text-dark mb-0">Last login: {{ current_user.user.last_login }}</h5>
                     </div>
                 </div>
             </div>
 
-            <div class="alert alert-light shadow mt-3">
-                    <h5 class="text-dark mb-0">{{ current_user.user.first_name }} {{ current_user.user.last_name }}
-                    </h5>
-                    <h5 class="text-dark mb-0">{{ current_user.user.email }}</h5>
-                    <h5 class="text-dark mb-0">Last login: {{ current_user.user.last_login }}</h5>
+            <div class="alert alert-light shadow-sm mt-2">
+                <h6 class="text-dark">{{ current_user.about }}</h6>
             </div>
         </div>
-    </div>
-
-    <div class="alert alert-light shadow mt-2">
-        <h6 class="text-dark">{{ current_user.about }}</h6>
     </div>
 </div>
 {% endblock main_section %}
