@@ -5,12 +5,12 @@
 {% include 'Navbar.html' %}
 <div class="container">
     <div class="image-with-text shadow" style="height: 163px;">
-        <img src="{% static 'pictures/894308.png' %}"
-            class="max-width img-fluid">
+        <img src="{% static 'pictures/894308.png' %}" class="max-width img-fluid">
         <div class="text-on-img-2">
             <h4 class="text-light mt-3 mb-3">Congratulations. You create your bot</h4>
             <h5 class="text-light ml-0 mt-4">Here you can download script or config</h5>
-            <p class="text-light ml-0" style="line-height: 50%">It's final step. Now, you can download configuration or script of your bot</p>
+            <p class="text-light ml-0" style="line-height: 50%">It's final step. Now, you can download configuration or
+                script of your bot</p>
         </div>
     </div>
 
@@ -39,7 +39,8 @@
 
     {% if messages %}
     {% for message in messages %}
-    <div class="alert alert-light border-bottom border-left border-right text-dark alert-dismissible fade show mt-2">
+    <div
+        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-2">
         {{ message }}
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">

@@ -6,7 +6,8 @@
 <div class="container">
     {% if messages %}
     {% for message in messages %}
-    <div class="alert alert-dark shadow-sm alert-dismissible fade show mt-2">
+    <div
+        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
         {{ message }}
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -18,7 +19,8 @@
 
     {% for field in text_form %}
     {% if field.errors %}
-    <div class="alert alert-dark shadow-sm alert-dismissible fade show mt-2">
+    <div
+        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
         {{ field.errors }}
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -30,7 +32,8 @@
 
     {% for field in reply_markup_form %}
     {% if field.errors %}
-    <div class="alert alert-dark shadow-sm alert-dismissible fade show mt-2">
+    <div
+        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
         {{ field.errors }}
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -42,7 +45,8 @@
 
     {% for field in template_form %}
     {% if field.errors %}
-    <div class="alert alert-dark shadow-sm alert-dismissible fade show mt-2">
+    <div
+        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
         {{ field.errors }}
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -54,7 +58,8 @@
 
     {% for field in inline_markup_form %}
     {% if field.errors %}
-    <div class="alert alert-dark shadow-sm alert-dismissible fade show mt-2">
+    <div
+        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
         {{ field.errors }}
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -66,7 +71,8 @@
 
     {% for field in callback_form %}
     {% if field.errors %}
-    <div class="alert alert-dark shadow-sm alert-dismissible fade show mt-2">
+    <div
+        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
         {{ field.errors }}
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
