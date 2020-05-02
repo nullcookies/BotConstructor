@@ -4,16 +4,17 @@
 {% block main_section %}
 {% include 'Navbar.html' %}
 <div class="container">
-    <div class="image-with-text shadow" style="height: 105px;">
-        <img src="{% static 'pictures/apple_mac_os_x_el_capitan-2560x1440.png' %}"
+    <div class="image-with-text shadow" style="height: 163px;">
+        <img src="{% static 'pictures/894308.png' %}"
             class="max-width img-fluid">
         <div class="text-on-img-2">
-            <h4 class="text-dark mt-2">Here you can download script or config</h4>
-            <h5 class="text-dark">It's final step. Now, you can download configuration or script of your bot</h5>
+            <h4 class="text-light mt-3 mb-3">Congratulations. You create your bot</h4>
+            <h5 class="text-light ml-0 mt-4">Here you can download script or config</h5>
+            <p class="text-light ml-0" style="line-height: 50%">It's final step. Now, you can download configuration or script of your bot</p>
         </div>
     </div>
-    <h3 class="text-center mt-3 mb-3 text-secondary">Congratulations. You create your bot</h3>
-    <div class="form-row mt-3 mb-3">
+
+    <div class="form-row mt-4">
         <div class="col-md-4">
             <a href="{% url 'download_config_url' token=token %}"
                 class="btn btn-outline-light text-primary border-bottom border-left border-right shadow-sm btn-block">
@@ -30,10 +31,10 @@
         </div>
     </div>
 
-    <div class="alert alert-light text-dark shadow-sm border-right border-left border-bottom border-right mt-2">
+    <div class="alert alert-light text-dark shadow-sm border-right border-left border-bottom border-right mt-4">
         <h5>Below, you can edit the generated code</h5>
         <hr class="mb-2 mt-2">
-        <h6 class="mb-1">All changes will be applied at your own risk</h6>
+        <p class="mb-1">All changes will be applied at your own risk</p>
     </div>
 
     {% if messages %}

@@ -40,29 +40,10 @@ class ProfileView(LoginRequiredMixin, View):
 
     def get(self, request):
         current_user = Profile.objects.get(user=request.user)
-        update_image_form = UpdateImageForm(instance=current_user)
-        print(current_user.image)
 
         self.context.update({
             'title': 'Profile - BotCostructor',
-            'current_user': current_user,
-            'update_image_form': update_image_form
-        })
-        return render(request, 'Users/Profile.html', self.context)
-
-    def post(self, request):
-        current_user = Profile.objects.get(user=request.user)
-        update_image_form = UpdateImageForm(
-            request.POST, request.FILES, instance=current_user)
-
-        if update_image_form.is_valid():
-            update_image_form.save()
-            return redirect('profile_url')
-
-        self.context.update({
-            'title': 'Profile - BotConstructor',
-            'current_user': current_user,
-            'update_image_form': update_image_form
+            'current_user': current_user
         })
         return render(request, 'Users/Profile.html', self.context)
 
@@ -73,7 +54,6 @@ class UserRegistration(View):
     def get(self, request):
         register_form = UserRegistrationForm()
         profile_form = ProfileForm()
-        print(request.session.values(), request.session.keys())
 
         self.context.update({
             'title': 'Registration - BotConstructor',
@@ -392,24 +372,28 @@ class UpdateProfile(LoginRequiredMixin, View):
         update_form = UserRegistrationForm(instance=request.user)
         getted_current_user = Profile.objects.get(user=request.user)
         update_profile_form = ProfileForm(instance=getted_current_user)
-        # form = PasswordChangeForm(request.user, request.POST)
+        update_image_form = UpdateImageForm(instance=getted_current_user)
 
         self.context.update({
             'title': 'Update Profile - BotConstructor',
             'update_form': update_form,
             'update_profile_form': update_profile_form,
-            # 'form': form
+            'update_image_form': update_image_form,
+            'getted_current_user': getted_current_user
         })
         return render(request, 'Users/UpdateProfile.html', self.context)
 
     def post(self, request):
         update_form = UserRegistrationForm(request.POST, instance=request.user)
         current_user = User.objects.get(id=int(request.user.id))
-        current_profile = Profile.objects.get(user=request.user)
+        getted_current_user = Profile.objects.get(user=request.user)
         update_profile_form = ProfileForm(
-            request.POST, instance=current_profile)
+            request.POST, instance=getted_current_user)
+        update_image_form = UpdateImageForm(
+            request.POST, request.FILES, instance=getted_current_user)
 
-        if update_form.is_valid() and update_profile_form.is_valid():
+        if update_form.is_valid() and update_profile_form.is_valid() and \
+                update_image_form.is_valid():
             username = update_form.cleaned_data['username']
             first_name = update_form.cleaned_data['first_name']
             last_name = update_form.cleaned_data['last_name']
@@ -422,9 +406,12 @@ class UpdateProfile(LoginRequiredMixin, View):
             current_user.last_name = last_name
             current_user.email = email
             current_user.set_password(password)
-            current_profile.about = about
-            current_profile.save()
             current_user.save()
+
+            getted_current_user.about = about
+            getted_current_user.save()
+
+            update_image_form.save()
 
             new_user = authenticate(username=username, password=password)
             login(request, new_user)
@@ -433,7 +420,9 @@ class UpdateProfile(LoginRequiredMixin, View):
         self.context.update({
             'title': 'Update Profile - BotConstructor',
             'update_form': update_form,
-            'update_profile_form': update_profile_form
+            'update_profile_form': update_profile_form,
+            'update_image_form': update_image_form,
+            'getted_current_user': getted_current_user
         })
         return render(request, 'Users/UpdateProfile.html', self.context)
 

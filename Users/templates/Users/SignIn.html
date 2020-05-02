@@ -3,8 +3,6 @@
 {% block main_section %}
 {% include 'Navbar.html' %}
 <div class="container">
-    <h2 class="text-secondary mt-2 text-center mt-4 mb-3">Sign In</h2>
-
     <form method="POST">
         {% csrf_token %}
 
@@ -32,8 +30,9 @@
         {% endfor %}
         {% endif %}
 
-        <div class="card shadow">
+        <div class="card shadow mt-4">
             <div class="card-body">
+                <h2 class="text-secondary text-center mb-3">Sign In</h2>
                 {{ auth_form.username.label }}
                 {{ auth_form.username }}
                 <div class="mb-2 mt-2">
@@ -49,7 +48,7 @@
                 {% endif %}
 
                 <button type="submit"
-                    class="btn btn-outline-light text-warning border-left border-bottom border-right shadow-sm mt-1">Sign
+                    class="btn btn-outline-light text-dark border-left border-bottom border-right shadow-sm mt-2">Sign
                     In</button>
             </div>
         </div>

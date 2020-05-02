@@ -1,64 +1,96 @@
 {% extends 'Base.html' %}
+{% load static %}
 
 {% block main_section %}
 {% include 'Navbar.html' %}
 <div class="container">
-    <h2 class="text-secondary text-center mt-4 mb-3">Updating credentials</h2>
+    {% for field in update_form %}
+    {% if field.errors %}
+    <div class="alert alert-dark shadow-sm alert-dismissible fade show">
+        {{ field.errors }}
 
-    <form method="POST">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-dark shadow-sm alert-dismissible fade show">
+        {{ message }}
+
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <form method="POST" action="{% url 'update_profile_url' %}" enctype="multipart/form-data">
         {% csrf_token %}
 
-        {% for field in update_form %}
-        {% if field.errors %}
-        <div class="alert alert-dark shadow-sm alert-dismissible fade show">
-            {{ field.errors }}
-
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        {% endif %}
-        {% endfor %}
-
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-dark shadow-sm alert-dismissible fade show">
-            {{ message }}
-
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        {% endfor %}
-        {% endif %}
-
-        <div class="card">
+        <div class="card shadow mt-4">
             <div class="card-body">
+                <h2 class="text-secondary text-center mb-3">Updating credentials</h2>
+
                 <div class="form-row">
                     <div class="form-group col-md-6 mt-2 mb-2">
+                        {{ update_form.first_name.label }}
                         {{ update_form.first_name }}
                     </div>
                     <div class="form-group col-md-6 mt-2 mb-2">
+                        {{ update_form.last_name.label }}
                         {{ update_form.last_name }}
                     </div>
                 </div>
                 <div class="mb-2">
+                    {{ update_form.email.label }}
                     {{ update_form.email }}
                 </div>
 
+                {{ update_form.username.label }}
                 {{ update_form.username }}
                 <div class="form-row">
                     <div class="col-md-6 mt-2">
+                        {{ update_form.password_some.label }}
                         {{ update_form.password_some }}
                     </div>
                     <div class="col-md-6 mt-2">
+                        {{ update_form.password_confirm.label }}
                         {{ update_form.password_confirm }}
                     </div>
                 </div>
 
-                
-                {{ update_profile_form.about }}
-                <button type="submit" class="btn btn-outline-warning mt-0">Update profile</button>
+                <div class="mt-2 mb-2">
+                    {{ update_profile_form.about.label }}
+                    {{ update_profile_form.about }}
+                </div>
+                <button type="submit"
+                    class="btn btn-light text-success shadow-sm border-bottom border-left border-right mt-2">Update</button>
+            </div>
+        </div>
+
+        <div class="card shadow mt-4 mb-4">
+            <div class="card-body">
+                <h2 class="text-secondary text-center mb-3">Updating images</h2>
+
+                <div class="col-md-5 mt-4">
+                    <div class="d-flex justify-content-left">
+                        {% if getted_current_user.image %}
+                        <img src="{{ getted_current_user.image.url }}" class="img-fluid w-100 border-class">
+                        {% else %}
+                        <img src="{% static 'pictures/images.png' %}" class="img-fluid profile profile-img-class">
+                        {% endif %}
+                    </div>
+
+                    <div class="mt-3">
+                        {{ update_image_form }}<br>
+                    </div>
+                    <button type="submit"
+                        class="btn btn-light text-success shadow-sm border-bottom border-left border-right mt-3 mb-2">Update</button>
+                </div>
             </div>
         </div>
     </form>

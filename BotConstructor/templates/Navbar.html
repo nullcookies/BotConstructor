@@ -22,7 +22,7 @@
                 {% csrf_token %}
 
                 <button type="submit"
-                    class="btn btn-outline-light text-dark border-left border-bottom border-right shadow-sm ml-2">Exit</button>
+                    class="btn btn-outline-light text-dark border-left border-bottom border-right shadow-sm ml-3">Exit</button>
             </form>
             {% else %}
             <a href="{% url 'user_authentication_url' %}"

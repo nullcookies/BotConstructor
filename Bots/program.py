@@ -50,7 +50,7 @@ class BotFacade:
             pass
 
         try:
-            self._callback_builder.create_option_dict(self._data['callbacks'])
+            self._callback_builder.create_option_dict(self._data)
         except KeyError:
             pass
         self.__end()
@@ -342,14 +342,15 @@ class CallbackBuilder:
         try:
             if data != []:
                 final_callback_query = {}
-                for callback_element in data:
+                for callback_element in data['callbacks']:
                     for value_1 in data['text']:
                         if callback_element['react_text'] == \
                                 value_1['react_text']:
                             final_callback_query[
-                                callback_element['callback']] = value_1
+                                callback_element['callback']
+                            ] = value_1
                 self.__callback_dictionary = final_callback_query
-                self.__generate_inline_code()
+                self.__generate_callback_code()
         except KeyError as k_error:
             print(k_error)
 

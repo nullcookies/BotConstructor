@@ -12,7 +12,8 @@
         <div class="col-md-6">
             <div class="row float-right mr-0">
                 <a href="{% url 'create_bot_first_step_url' %}"
-                    class="btn btn-outline-light shadow-sm text-success ml-2 mt-2 border-left border-bottom border-right">Create bot</a>
+                    class="btn btn-outline-light shadow-sm text-success ml-2 mt-2 border-left border-bottom border-right">Create
+                    bot</a>
             </div>
         </div>
     </div>
@@ -54,14 +55,17 @@
             <p class="text-secondary">{{ bot.access_token }}</p>
             <!-- <div class="d-flex justify-content-between align-items-center"> -->
             <a href="{% url 'delete_bot_url' bot_id=bot.id %}"
-                class="btn btn-sm btn-outline-light shadow-sm text-danger border-left border-bottom border-right">󠁛󠁛󠁛Delete</a>
+                class="btn btn-sm btn-outline-light shadow-sm text-danger border-left border-bottom border-right"
+                style="width: 100px;">󠁛󠁛󠁛Delete</a>
             <a href="{% url 'create_bot_third_step_url' token=bot.access_token %}"
-                class="btn btn-sm btn-outline-light shadow-sm text-primary border-left border-bottom border-right">Download</a>
+                class="btn btn-sm btn-outline-light shadow-sm ml-2 text-primary border-left border-bottom border-right"
+                style="width: 100px;">Download</a>
             <a href="{% url 'create_bot_second_step_text_url' token=bot.access_token %}"
-                class="btn btn-sm btn-outline-light shadow-sm text-warning border-left border-bottom border-right">Edit</a>
+                class="btn btn-sm btn-outline-light shadow-sm ml-2 text-dark border-left border-bottom border-right"
+                style="width: 100px;">Edit</a>
             <!-- </div> -->
 
-            <div class="row mt-2">
+            <div class="row mt-3">
                 <div class="col-6">
                     <strong class="text-muted">{{ bot.owner.user.first_name }} {{ bot.owner.user.last_name }}</strong>
                 </div>
