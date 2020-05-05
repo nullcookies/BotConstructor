@@ -90,10 +90,10 @@
     {% url 'templates' token=token as templates_url %}
     {% url 'create_callback_url' token=token as callback_url %}
 
-    <div class="image-with-text shadow mb-3" style="height: 150px;">
-        <img src="{% static 'pictures/14961556102_13f1b039b4_o.png' %}" class="max-width img-fluid">
+    <div class="image-with-text shadow mb-3" style="height: 200px;">
+        <img src="{% static 'pictures/some.png' %}" class="max-width img-fluid">
         <div class="text-on-img-2">
-            <h4 class="text-light mt-3">Configure your bot here</h4>
+            <h4 class="text-light mt-5">Configure your bot here</h4>
             <ul class="text-light">
                 {% if request.path == templates_url %}
                 <li>Select one of the proposed options here to continue editing it</li>
@@ -106,7 +106,7 @@
         </div>
     </div>
 
-    <div class="form-row mt-4">
+    <div class="form-row mt-4 mb-5">
         <div class="col-md-3">
             <a href="{% url 'create_bot_second_step_text_url' token=token %}"
                 class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block {% if request.path == text_url %}active{% endif %}"
@@ -137,7 +137,7 @@
     <div id="errors"></div>
 
     {% if request.path == templates_url %}
-    <div class="alert alert-light shadow-sm border-right border-left border-bottom text-dark mt-4">
+    <div class="alert alert-light shadow-sm border-right border-left border-bottom text-dark mt-5">
         <form action="{% url 'templates' token=token %}" method="POST" onchange="onCheck();">
             {% csrf_token %}
 
@@ -225,7 +225,7 @@
         </div>
         {% endfor %}
         {% else %}
-        <div class="alert alert-light text-dark shadow-sm border-bottom border-right border-left mt-4" role="alert"
+        <div class="alert alert-light text-dark shadow-sm border-bottom border-right border-left mt-5" role="alert"
             id="id_no_element">
             <h5 class="alert-heading mb-0 mt-0">No such elements added</h5>
             <hr>
@@ -236,7 +236,7 @@
     {% endif %}
 
     {% if request.path == text_url %}
-    <div class="card shadow mt-4">
+    <div class="card shadow mt-5">
         <div class="card-body">
             <div class="form-row">
                 <h5 class="ml-1 text-dark">Create text</h5>
@@ -442,7 +442,7 @@
         </div>
         {% endfor %}
         {% else %}
-        <div class="alert alert-light text-dark shadow-sm border-bottom border-right border-left mt-4" role="alert"
+        <div class="alert alert-light text-dark shadow-sm border-bottom border-right border-left mt-5" role="alert"
             id="id_no_element">
             <h5 class="alert-heading mb-0 mt-0">No such elements added</h5>
             <hr>
@@ -452,7 +452,7 @@
     </div>
 
     {% if request.path == reply_buttons_url %}
-    <div class="card shadow mt-4">
+    <div class="card shadow mt-5">
         <div class="card-body">
             <div class="form-row">
                 <h5 class="text-dark ml-1">Create reply markup</h5>
@@ -490,7 +490,7 @@
     </div>
 
     {% elif request.path == reply_markup_url %}
-    <div class="card shadow mt-4">
+    <div class="card shadow mt-5">
         <div class="card-body">
             <div class="form-row">
                 <h5 class="text-dark ml-1">Create reply markup</h5>
@@ -699,7 +699,7 @@
         </div>
         {% endfor %}
         {% else %}
-        <div class="alert alert-light text-dark shadow-sm border-bottom border-right border-left mt-4" role="alert"
+        <div class="alert alert-light text-dark shadow-sm border-bottom border-right border-left mt-5" role="alert"
             id="id_no_element">
             <h5 class="alert-heading mb-0 mt-0">No such elements added</h5>
             <hr>
@@ -709,7 +709,7 @@
     </div>
 
     {% if request.path == inline_markup_url %}
-    <div class="card shadow mt-4">
+    <div class="card shadow mt-5">
         <div class="card-body">
             <div class="form-row">
                 <h5 class="ml-1 text-dark">Create inline markup</h5>
@@ -741,7 +741,7 @@
         </div>
     </div>
     {% elif request.path == inline_buttons_url %}
-    <div class="card shadow mt-4">
+    <div class="card shadow mt-5">
         <div class="card-body">
             <div class="form-row">
                 <h5 class="ml-1 text-dark">Create inline markup</h5>
@@ -830,7 +830,7 @@
         </div>
         {% endfor %}
         {% else %}
-        <div class="alert alert-light text-dark border-bottom border-right border-left shadow-sm mt-4" role="alert"
+        <div class="alert alert-light text-dark border-bottom border-right border-left shadow-sm mt-5" role="alert"
             id="id_no_element">
             <h5 class="alert-heading mb-0 mt-0">No such elements added</h5>
             <hr>
@@ -840,7 +840,7 @@
     </div>
 
     {% if request.path == callback_url %}
-    <div class="card shadow mt-4">
+    <div class="card shadow mt-5">
         <div class="card-body">
             <div class="form-row">
                 <h5 class="ml-1 text-dark">Create callback</h5>
@@ -901,6 +901,8 @@
 {% url 'templates' token=token as templates_url %}
 {% url 'create_callback_url' token=token as callback_url %}
 
+<script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+    crossorigin="anonymous"></script>
 {% if request.path == text_url %}
 <script>
     $(document).on('submit', '#text-form', function (e) {
@@ -1014,7 +1016,7 @@
 
                 if (elements.length == 0) {
                     $('.text_fields').append(
-                        '<div class="alert alert-light text-dark border-bottom border-right border-left shadow-sm mt-4" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
+                        '<div class="alert alert-light text-dark border-bottom border-right border-left shadow-sm mt-5" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
                     )
                 }
             },
@@ -1165,7 +1167,7 @@
                     $('#id_add_button_reply').click();
                 }
                 else {
-                    var error = '<div class="alert alert-light text-dark shadow alert-dismissible fade show mt-3">' +
+                    var error = '<div class="alert alert-light text-dark shadow alert-dismissible fade show mt-4">' +
                         json.reply_markup_error.react_text[0] +
                         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
                         '<span aria-hidden="true">&times;</span>' +
@@ -1249,7 +1251,7 @@
 
                 if (elements.length == 0) {
                     $('#id_reply_elements').append(
-                        '<div class="alert alert-light text-dark border-bottom border-right border-left shadow-sm mt-4" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
+                        '<div class="alert alert-light text-dark border-bottom border-right border-left shadow-sm mt-5" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
                     );
                 }
             },
@@ -1456,7 +1458,7 @@
                     }
                 }
                 else {
-                    var error = '<div class="alert alert-light text-dark shadow alert-dismissible fade show mt-3">' +
+                    var error = '<div class="alert alert-light text-dark shadow alert-dismissible fade show mt-4">' +
                         json.callback_error.react_text[0] +
                         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
                         '<span aria-hidden="true">&times;</span>' +
@@ -1523,7 +1525,7 @@
 
                 if (elements.length == 0) {
                     $('#id_callback_fields').append(
-                        '<div class="alert alert-light text-dark border-bottom border-right border-left shadow-sm mt-4" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
+                        '<div class="alert alert-light text-dark border-bottom border-right border-left shadow-sm mt-5" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
                     );
                 }
             },
@@ -1661,7 +1663,7 @@
 
                 if (elements.length == 0) {
                     $('#id_inline_elements').append(
-                        '<div class="alert alert-light text-dark border-bottom border-right border-left shadow-sm mt-4" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
+                        '<div class="alert alert-light text-dark border-bottom border-right border-left shadow-sm mt-5" role="alert" id="id_no_element"><h5 class="alert-heading mb-0 mt-0">No such elements added</h5><hr><p class="mt-0 mb-0">If you want to add new text response check the form below</p></div>'
                     );
                 }
             },

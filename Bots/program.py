@@ -2,10 +2,10 @@ from django.conf import settings
 from abc import ABC, abstractmethod, abstractproperty
 from telebot.types import *
 from django.contrib import messages
+from django.shortcuts import redirect
 
 import textwrap
 import os
-from django.shortcuts import redirect
 
 
 PATH = os.path.join(settings.BASE_DIR, 'BotConstructor',
@@ -56,11 +56,12 @@ class BotFacade:
         self.__end()
 
     def __start(self) -> None:
+        some_token = self.__token.replace('_', ':')
         init_object = f"""\
         import telebot
         from telebot.types import *
 
-        bot = telebot.TeleBot(token='{self.__token}')
+        bot = telebot.TeleBot(token='{some_token}')
 
         """
         final_path = os.path.join(PATH, f'{self.__username}')

@@ -308,11 +308,20 @@ class StartBot(LoginRequiredMixin, View):
 
         if 'count_deploys' in request.session.keys():
             if request.session['count_deploys'] <= 1:
-                deploy = AutoDeploy(
-                    file_title=f'{request.user.username}_{token}_test_bot.py'
-                )
-                deploy.run_bot(path)
-
+                try:
+                    deploy = AutoDeploy(
+                        file_title=f'{request.user.username}_{token}_test_bot.py'
+                    )
+                    deploy.run_bot(path)
+                except JSONDecodeError:
+                    messages.error(
+                        request,
+                        'Oooops... There is not consoles for hosting your bot'
+                    )
+                    return redirect(
+                        'create_bot_third_step_url',
+                        token=token
+                    )
                 request.session['count_deploys'] = 1
             else:
                 messages.error(
@@ -321,11 +330,20 @@ class StartBot(LoginRequiredMixin, View):
                 )
                 return redirect('show_bots_url')
         else:
-            deploy = AutoDeploy(
-                file_title=f'{request.user.username}_{token}_test_bot.py'
-            )
-            deploy.run_bot(path)
-
+            try:
+                deploy = AutoDeploy(
+                    file_title=f'{request.user.username}_{token}_test_bot.py'
+                )
+                deploy.run_bot(path)
+            except JSONDecodeError:
+                messages.error(
+                    request,
+                    'Oooops... There is not consoles for hosting your bot'
+                )
+                return redirect(
+                    'create_bot_third_step_url',
+                    token=token
+                )
             request.session['count_deploys'] = 1
 
         messages.error(

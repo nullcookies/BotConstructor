@@ -4,10 +4,10 @@
 {% block main_section %}
 {% include 'Navbar.html' %}
 <div class="container">
-    <div class="image-with-text shadow" style="height: 163px;">
-        <img src="{% static 'pictures/894308.png' %}" class="max-width img-fluid">
+    <div class="image-with-text shadow" style="height: 200px;">
+        <img src="{% static 'pictures/some7.png' %}" class="max-width img-fluid">
         <div class="text-on-img-2">
-            <h4 class="text-light mt-3 mb-3">Congratulations. You create your bot</h4>
+            <h4 class="text-light mt-4 mb-3">Congratulations. You create your bot</h4>
             <h5 class="text-light ml-0 mt-4">Here you can download script or config</h5>
             <p class="text-light ml-0" style="line-height: 50%">It's final step. Now, you can download configuration or
                 script of your bot</p>
@@ -15,23 +15,23 @@
     </div>
 
     <div class="form-row mt-4">
-        <div class="col-md-4">
+        <!-- <div class="col-md-4">
             <a href="{% url 'download_config_url' token=token %}"
                 class="btn btn-outline-light text-primary border-bottom border-left border-right shadow-sm btn-block">
                 Download config</a>
-        </div>
-        <div class="col-md-4">
+        </div> -->
+        <div class="col-md-6">
             <a href="{% url 'download_script_url' token=token %}"
                 class="btn btn-outline-light text-dark border-bottom border-left border-right shadow-sm btn-block">
                 Download script</a>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <a href="{% url 'auto_deploy_url' token=token %}"
                 class="btn btn-outline-light border-bottom text-success border-left border-right shadow-sm btn-block">Deploy</a>
         </div>
     </div>
 
-    <div class="alert alert-light text-dark shadow-sm border-right border-left border-bottom border-right mt-4">
+    <div class="alert alert-light text-dark shadow-sm border-right border-left border-bottom border-right mt-5">
         <h5>Below, you can edit the generated code</h5>
         <hr class="mb-2 mt-2">
         <p class="mb-1">All changes will be applied at your own risk</p>
@@ -40,7 +40,7 @@
     {% if messages %}
     {% for message in messages %}
     <div
-        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-2">
+        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
         {{ message }}
 
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -50,13 +50,13 @@
     {% endfor %}
     {% endif %}
 
-    <div id="editor" class="code-editor shadow">{{ content }}</div>
+    <div id="editor" class="code-editor shadow mt-5">{{ content }}</div>
     <form action="{% url 'create_bot_third_step_url' token=token %}" method="POST">
         {% csrf_token %}
 
         <input type="hidden" name="code_editor" id="code_hello_world" value="">
         <button type="submit" onclick="buttonClick()"
-            class="btn btn-light text-success shadow-sm border-bottom border-left border-right btn-block mt-5 mb-4">Edit</button>
+            class="btn btn-outline-light text-success shadow border-bottom border-left border-right btn-block mt-5 mb-4">Edit</button>
     </form>
 </div>
 {% endblock main_section %}

@@ -52,6 +52,31 @@ class UserRegistrationForm(forms.ModelForm):
         return cleaned_data
 
 
+class UpdatingForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name')
+        widgets = {
+            'username': forms.TextInput(attrs={
+                'class': 'form-control shadow-sm',
+                'placeholder': 'Username'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control shadow-sm',
+                'placeholder': 'E-Mail',
+                'required': True
+            }),
+            'first_name': forms.TextInput(attrs={
+                'class': 'form-control shadow-sm',
+                'placeholder': 'First name'
+            }),
+            'last_name': forms.TextInput(attrs={
+                'class': 'form-control shadow-sm',
+                'placeholder': 'Last name'
+            })
+        }
+
+
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile

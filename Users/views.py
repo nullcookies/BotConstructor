@@ -369,7 +369,7 @@ class UpdateProfile(LoginRequiredMixin, View):
     redirect_field_name = 'base_view_url'
 
     def get(self, request):
-        update_form = UserRegistrationForm(instance=request.user)
+        update_form = UpdatingForm(instance=request.user)
         getted_current_user = Profile.objects.get(user=request.user)
         update_profile_form = ProfileForm(instance=getted_current_user)
         update_image_form = UpdateImageForm(instance=getted_current_user)
@@ -384,7 +384,7 @@ class UpdateProfile(LoginRequiredMixin, View):
         return render(request, 'Users/UpdateProfile.html', self.context)
 
     def post(self, request):
-        update_form = UserRegistrationForm(request.POST, instance=request.user)
+        update_form = UpdatingForm(request.POST, instance=request.user)
         current_user = User.objects.get(id=int(request.user.id))
         getted_current_user = Profile.objects.get(user=request.user)
         update_profile_form = ProfileForm(
@@ -398,14 +398,12 @@ class UpdateProfile(LoginRequiredMixin, View):
             first_name = update_form.cleaned_data['first_name']
             last_name = update_form.cleaned_data['last_name']
             email = update_form.cleaned_data['email']
-            password = update_form.cleaned_data['password_some']
             about = update_profile_form.cleaned_data['about']
 
             current_user.username = username
             current_user.first_name = first_name
             current_user.last_name = last_name
             current_user.email = email
-            current_user.set_password(password)
             current_user.save()
 
             getted_current_user.about = about
@@ -413,7 +411,8 @@ class UpdateProfile(LoginRequiredMixin, View):
 
             update_image_form.save()
 
-            new_user = authenticate(username=username, password=password)
+            new_user = authenticate(
+                username=username, password=current_user.password)
             login(request, new_user)
             return redirect('profile_url')
 

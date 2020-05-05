@@ -14,14 +14,15 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
-    def save(self, *args, **kwargs):
-        super(Profile, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     print(self.image)
+    #     super(Profile, self).save(*args, **kwargs)
 
-        if self.id and self.image:
-            image = Image.open(self.image)
-            width, height = image.size
+    #     if self.id and self.image:
+    #         image = Image.open(self.image)
+    #         width, height = image.size
 
-            image = image.resize((width//2, height//2), Image.ANTIALIAS)
-            image.save(self.image.path, optimize=True, quality=100)
-        else:
-            return
+    #         image = image.resize((width//2, height//2), Image.ANTIALIAS)
+    #         image.save(self.image.path)
+    #     else:
+    #         return
