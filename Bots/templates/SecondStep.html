@@ -1,8 +1,39 @@
 {% extends 'Base.html' %}
 {% load static %}
 
+
+{% block head %}
+<style>
+    #showcase7 {
+        background: url("{% static 'pictures/some.png' %}") center center/cover no-repeat;
+        min-height: 350px;
+        max-height: 350px;
+        position: relative;
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+{% endblock head %}
+
+
 {% block main_section %}
 {% include 'Navbar.html' %}
+<section id="showcase7" class="d-flex justify-content-center align-items-center shadow">
+    <div id="header" class="container text-white">
+        <h4 class="text-light">Configure your bot here</h4>
+        <ul class="text-light">
+            {% if request.path == templates_url %}
+            <li>Select one of the proposed options here to continue editing it</li>
+            <li>After the election you will be missing the rest of the editing settings.</li>
+            {% else %}
+            <li>Click on one of the submenu items to start</li>
+            <li>Correctly fill out all of the form data</li>
+            {% endif %}
+        </ul>
+    </div>
+</section>
+
+
 <div class="container">
     {% if messages %}
     {% for message in messages %}
@@ -89,24 +120,7 @@
     {% url 'create_bot_second_step_inline_buttons_url' token=token as inline_buttons_url %}
     {% url 'templates' token=token as templates_url %}
     {% url 'create_callback_url' token=token as callback_url %}
-
-    <div class="image-with-text shadow mb-3" style="height: 200px;">
-        <img src="{% static 'pictures/some.png' %}" class="max-width img-fluid">
-        <div class="text-on-img-2">
-            <h4 class="text-light mt-5">Configure your bot here</h4>
-            <ul class="text-light">
-                {% if request.path == templates_url %}
-                <li>Select one of the proposed options here to continue editing it</li>
-                <li>After the election you will be missing the rest of the editing settings.</li>
-                {% else %}
-                <li>Click on one of the submenu items to start</li>
-                <li>Correctly fill out all of the form data</li>
-                {% endif %}
-            </ul>
-        </div>
-    </div>
-
-    <div class="form-row mt-4 mb-5">
+    <div class="form-row mt-5 mb-5">
         <div class="col-md-3">
             <a href="{% url 'create_bot_second_step_text_url' token=token %}"
                 class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block {% if request.path == text_url %}active{% endif %}"
@@ -137,7 +151,7 @@
     <div id="errors"></div>
 
     {% if request.path == templates_url %}
-    <div class="alert alert-light shadow-sm border-right border-left border-bottom text-dark mt-5">
+    <div class="alert alert-light shadow p-4 mt-5 text-dark">
         <form action="{% url 'templates' token=token %}" method="POST" onchange="onCheck();">
             {% csrf_token %}
 
@@ -157,7 +171,7 @@
             </div>
 
             <button type="submit"
-                class="btn btn-outline-light text-primary border-right border-left border-bottom shadow-sm btn-sm mt-3 mb-2"
+                class="btn btn-outline-light text-dark border-right border-left border-bottom shadow-sm btn-sm mt-3 mb-2"
                 style="width: 25%;">Select</button>
         </form>
     </div>
@@ -236,47 +250,44 @@
     {% endif %}
 
     {% if request.path == text_url %}
-    <div class="card shadow mt-5">
-        <div class="card-body">
-            <div class="form-row">
-                <h5 class="ml-1 text-dark">Create text</h5>
-                <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
-            </div>
-            <form method="POST" id="text-form">
-                {% csrf_token %}
-
-                <div class="form-row">
-                    <div class="col-md-10 mt-0">
-                        {{ text_form.react_text.label }}
-                        {{ text_form.react_text }}
-                    </div>
-
-                    <div class="col-md-2">
-                        <button type="submit"
-                            class="btn btn-outline-light border-right border-left border-bottom text-primary shadow-sm btn-block mt-4">Create
-                            Text</button>
-                    </div>
-                </div>
-                <div class="mt-2">
-                    {{ text_form.response_text.label }}
-                    {{ text_form.response_text }}
-                </div>
-
-                <div class="form-row ml-0 mt-1">
-                    {% for pk, choice in text_form.remove_reply_markup.field.widget.choices %}
-                    <div class="custom-control custom-checkbox custom-control-inline">
-                        <input id="id_{{ text_form.remove_reply_markup.name }}_{{ forloop.counter0 }}"
-                            name="{{ text_form.remove_reply_markup.name }}"
-                            type="{{ text_form.remove_reply_markup.field.widget.input_type }}" value="{{ pk }}"
-                            class="custom-control-input"
-                            {% ifequal text_form.remove_reply_markup.data pk.0 %}checked="checked" {% endifequal %}>
-                        <label for="id_{{ text_form.remove_reply_markup.name }}_{{ forloop.counter0 }}"
-                            class="custom-control-label">{{ choice }}</label>
-                    </div>
-                    {% endfor %}
-                </div>
-            </form>
+    <div class="alert alert-light shadow p-4 mt-5">
+        <div class="form-row">
+            <h5 class="ml-1 text-dark">Create text</h5>
+            <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
         </div>
+        <form method="POST" id="text-form" class="text-dark">
+            {% csrf_token %}
+
+            <div class="form-row">
+                <div class="col-md-10 mt-0">
+                    {{ text_form.react_text.label }}
+                    {{ text_form.react_text }}
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit"
+                        class="btn btn-outline-light border-right border-left border-bottom text-dark shadow-sm btn-block mt-4">Create</button>
+                </div>
+            </div>
+            <div class="mt-2">
+                {{ text_form.response_text.label }}
+                {{ text_form.response_text }}
+            </div>
+
+            <div class="form-row ml-0 mt-1">
+                {% for pk, choice in text_form.remove_reply_markup.field.widget.choices %}
+                <div class="custom-control custom-checkbox custom-control-inline">
+                    <input id="id_{{ text_form.remove_reply_markup.name }}_{{ forloop.counter0 }}"
+                        name="{{ text_form.remove_reply_markup.name }}"
+                        type="{{ text_form.remove_reply_markup.field.widget.input_type }}" value="{{ pk }}"
+                        class="custom-control-input"
+                        {% ifequal text_form.remove_reply_markup.data pk.0 %}checked="checked" {% endifequal %}>
+                    <label for="id_{{ text_form.remove_reply_markup.name }}_{{ forloop.counter0 }}"
+                        class="custom-control-label">{{ choice }}</label>
+                </div>
+                {% endfor %}
+            </div>
+        </form>
     </div>
     {% elif request.path == reply_markup_url or request.path == reply_buttons_url %}
     <div class="reply_fields" id="id_reply_elements">
@@ -452,99 +463,95 @@
     </div>
 
     {% if request.path == reply_buttons_url %}
-    <div class="card shadow mt-5">
-        <div class="card-body">
+    <div class="alert alert-light shadow p-4 mt-5">
+        <div class="form-row">
+            <h5 class="text-dark ml-1">Create reply markup</h5>
+            <h6 class="mt-1 ml-2 text-secondary">Keyboard settings</h6>
+        </div>
+        <form id="id_reply_buttons_form" method="POST" class="text-dark">
+            {% csrf_token %}
+
             <div class="form-row">
-                <h5 class="text-dark ml-1">Create reply markup</h5>
-                <h6 class="mt-1 ml-2 text-secondary">Keyboard settings</h6>
+                <div class="col-md-10">
+                    {{ reply_button_form.response_text.label }}
+                    {{ reply_button_form.response_text }}
+                </div>
+                <div class="col-md-2">
+                    <button type="submit"
+                        class="btn btn-outline-light text-dark border-right border-left shadow-sm border-bottom btn-block mt-4">Create</button>
+                </div>
             </div>
-            <form id="id_reply_buttons_form" method="POST">
+
+            <div class="form-row ml-0 mt-1">
+                {% for pk, choice in reply_button_form.radio_buttons.field.widget.choices %}
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input id="id_{{ reply_button_form.radio_buttons.name }}_{{ forloop.counter0 }}"
+                        name="{{ reply_button_form.radio_buttons.name }}"
+                        type="{{ reply_button_form.radio_buttons.field.widget.input_type }}" value="{{ pk }}"
+                        class="custom-control-input"
+                        {% ifequal reply_button_form.radio_buttons.data pk.0 %}checked="checked" {% endifequal %}>
+                    <label for="id_{{ reply_button_form.radio_buttons.name }}_{{ forloop.counter0 }}"
+                        class="custom-control-label">{{ choice }}</label>
+                </div>
+                {% endfor %}
+            </div>
+        </form>
+    </div>
+
+    {% elif request.path == reply_markup_url %}
+    <div class="alert alert-light shadow p-4 mt-5">
+        <div class="form-row">
+            <h5 class="text-dark ml-1">Create reply markup</h5>
+            <h6 class="mt-1 ml-2 text-secondary">Keyboard settings</h6>
+        </div>
+        <div id="id_reply_form">
+            <form method="POST" id="id_reply_markup_create_form" class="text-dark">
                 {% csrf_token %}
 
                 <div class="form-row">
                     <div class="col-md-10">
-                        {{ reply_button_form.response_text.label }}
-                        {{ reply_button_form.response_text }}
+                        {{ reply_markup_form.react_text.label }}
+                        {{ reply_markup_form.react_text }}
                     </div>
                     <div class="col-md-2">
-                        <button type="submit"
-                            class="btn btn-outline-light text-primary border-right border-left shadow-sm border-bottom btn-block mt-4">Create</button>
+                        {{ reply_markup_form.row_width.label }}
+                        {{ reply_markup_form.row_width }}
                     </div>
                 </div>
 
-                <div class="form-row ml-0 mt-1">
-                    {% for pk, choice in reply_button_form.radio_buttons.field.widget.choices %}
-                    <div class="custom-control custom-radio custom-control-inline">
-                        <input id="id_{{ reply_button_form.radio_buttons.name }}_{{ forloop.counter0 }}"
-                            name="{{ reply_button_form.radio_buttons.name }}"
-                            type="{{ reply_button_form.radio_buttons.field.widget.input_type }}" value="{{ pk }}"
-                            class="custom-control-input"
-                            {% ifequal reply_button_form.radio_buttons.data pk.0 %}checked="checked" {% endifequal %}>
-                        <label for="id_{{ reply_button_form.radio_buttons.name }}_{{ forloop.counter0 }}"
-                            class="custom-control-label">{{ choice }}</label>
-                    </div>
-                    {% endfor %}
-                </div>
-            </form>
-        </div>
-    </div>
-
-    {% elif request.path == reply_markup_url %}
-    <div class="card shadow mt-5">
-        <div class="card-body">
-            <div class="form-row">
-                <h5 class="text-dark ml-1">Create reply markup</h5>
-                <h6 class="mt-1 ml-2 text-secondary">Keyboard settings</h6>
-            </div>
-            <div id="id_reply_form">
-                <form method="POST" id="id_reply_markup_create_form">
-                    {% csrf_token %}
-
+                <div class="mb-2">
                     <div class="form-row">
                         <div class="col-md-10">
-                            {{ reply_markup_form.react_text.label }}
-                            {{ reply_markup_form.react_text }}
+                            {{ reply_markup_form.response_text_markup.label }}
+                            {{ reply_markup_form.response_text_markup }}
                         </div>
                         <div class="col-md-2">
-                            {{ reply_markup_form.row_width.label }}
-                            {{ reply_markup_form.row_width }}
+                            <button type="submit"
+                                class="btn btn-outline-light text-dark border-right border-left border-bottom shadow-sm btn-block mt-4">Create</button>
                         </div>
                     </div>
+                </div>
 
-                    <div class="mb-2">
-                        <div class="form-row">
-                            <div class="col-md-10">
-                                {{ reply_markup_form.response_text_markup.label }}
-                                {{ reply_markup_form.response_text_markup }}
+                <div class="form-row">
+                    <div class="col-md-5">
+                        <div class="form-row ml-0" id="id_reply_checkboxes">
+                            {% for pk, choice in reply_markup_form.checkboxes.field.widget.choices %}
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input id="id_{{ reply_markup_form.checkboxes.name }}_{{ forloop.counter0 }}"
+                                    name="{{ reply_markup_form.checkboxes.name }}"
+                                    type="{{ reply_markup_form.checkboxes.field.widget.input_type }}" value="{{ pk }}"
+                                    class="custom-control-input"
+                                    {% ifequal reply_markup_form.checkboxes.data pk.0 %}checked="checked"
+                                    {% endifequal %}>
+                                <label for="id_{{ reply_markup_form.checkboxes.name }}_{{ forloop.counter0 }}"
+                                    class="custom-control-label">{{ choice }}</label>
                             </div>
-                            <div class="col-md-2">
-                                <button type="submit"
-                                    class="btn btn-outline-light text-primary border-right border-left border-bottom shadow-sm btn-block mt-4">Create</button>
-                            </div>
+                            {% endfor %}
                         </div>
                     </div>
+                </div>
 
-                    <div class="form-row">
-                        <div class="col-md-5">
-                            <div class="form-row ml-0" id="id_reply_checkboxes">
-                                {% for pk, choice in reply_markup_form.checkboxes.field.widget.choices %}
-                                <div class="custom-control custom-checkbox custom-control-inline">
-                                    <input id="id_{{ reply_markup_form.checkboxes.name }}_{{ forloop.counter0 }}"
-                                        name="{{ reply_markup_form.checkboxes.name }}"
-                                        type="{{ reply_markup_form.checkboxes.field.widget.input_type }}"
-                                        value="{{ pk }}" class="custom-control-input"
-                                        {% ifequal reply_markup_form.checkboxes.data pk.0 %}checked="checked"
-                                        {% endifequal %}>
-                                    <label for="id_{{ reply_markup_form.checkboxes.name }}_{{ forloop.counter0 }}"
-                                        class="custom-control-label">{{ choice }}</label>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-
-                </form>
-            </div>
+            </form>
         </div>
     </div>
     {% endif %}
@@ -709,76 +716,72 @@
     </div>
 
     {% if request.path == inline_markup_url %}
-    <div class="card shadow mt-5">
-        <div class="card-body">
-            <div class="form-row">
-                <h5 class="ml-1 text-dark">Create inline markup</h5>
-                <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
-            </div>
-
-            <form id="id_inline_markup_create" method="POST">
-                {% csrf_token %}
-
-                <div class="form-row">
-                    <div class="col-md-10">
-                        {{ inline_markup_form.react_text.label }}
-                        {{ inline_markup_form.react_text }}
-                    </div>
-                    <div class="col-md-2">
-                        {{ inline_markup_form.row_width.label }}
-                        {{ inline_markup_form.row_width }}
-                    </div>
-                    <div class="col-md-10 mt-2">
-                        {{ inline_markup_form.response_text.label }}
-                        {{ inline_markup_form.response_text }}
-                    </div>
-                    <div class="col-md-2 mt-2">
-                        <button type="submit"
-                            class="btn btn-outline-light text-primary border-right border-left border-bottom shadow-sm btn-block mt-4">Create</button>
-                    </div>
-                </div>
-            </form>
+    <div class="alert alert-light shadow p-4 mt-5">
+        <div class="form-row">
+            <h5 class="ml-1 text-dark">Create inline markup</h5>
+            <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
         </div>
+
+        <form id="id_inline_markup_create" method="POST" class="text-dark">
+            {% csrf_token %}
+
+            <div class="form-row">
+                <div class="col-md-10">
+                    {{ inline_markup_form.react_text.label }}
+                    {{ inline_markup_form.react_text }}
+                </div>
+                <div class="col-md-2">
+                    {{ inline_markup_form.row_width.label }}
+                    {{ inline_markup_form.row_width }}
+                </div>
+                <div class="col-md-10 mt-2">
+                    {{ inline_markup_form.response_text.label }}
+                    {{ inline_markup_form.response_text }}
+                </div>
+                <div class="col-md-2 mt-2">
+                    <button type="submit"
+                        class="btn btn-outline-light text-dark border-right border-left border-bottom shadow-sm btn-block mt-4">Create</button>
+                </div>
+            </div>
+        </form>
     </div>
     {% elif request.path == inline_buttons_url %}
-    <div class="card shadow mt-5">
-        <div class="card-body">
-            <div class="form-row">
-                <h5 class="ml-1 text-dark">Create inline markup</h5>
-                <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
-            </div>
-
-            <form method="POST" onchange="getInlineValues(this);" id="id_inline_button_create">
-                {% csrf_token %}
-
-                <div class="form-row">
-                    <div class="col-md-6">
-                        {{ inline_button_form.text.label }}
-                        {{ inline_button_form.text }}
-                    </div>
-                    <div class="col-md-6">
-                        {{ inline_button_form.url.label }}
-                        {{ inline_button_form.url }}
-                    </div>
-                    <div class="col-md-12 mt-2">
-                        {{ inline_button_form.switch_inline.label }}
-                        {{ inline_button_form.switch_inline }}
-                    </div>
-                    <div class="col-md-12 mt-2">
-                        {{ inline_button_form.switch_inline_current.label }}
-                        {{ inline_button_form.switch_inline_current }}
-                    </div>
-                    <div class="col-md-10 mt-2">
-                        {{ inline_button_form.callback.label }}
-                        {{ inline_button_form.callback }}
-                    </div>
-                    <div class="col-md-2 mt-2">
-                        <button type="submit"
-                            class="btn btn-outline-light text-primary border-right border-left border-bottom shadow-sm btn-block mt-4">Create</button>
-                    </div>
-                </div>
-            </form>
+    <div class="alert alert-light shadow p-4 mt-5">
+        <div class="form-row">
+            <h5 class="ml-1 text-dark">Create inline markup</h5>
+            <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
         </div>
+
+        <form method="POST" onchange="getInlineValues(this);" id="id_inline_button_create" class="text-dark">
+            {% csrf_token %}
+
+            <div class="form-row">
+                <div class="col-md-6">
+                    {{ inline_button_form.text.label }}
+                    {{ inline_button_form.text }}
+                </div>
+                <div class="col-md-6">
+                    {{ inline_button_form.url.label }}
+                    {{ inline_button_form.url }}
+                </div>
+                <div class="col-md-12 mt-2">
+                    {{ inline_button_form.switch_inline.label }}
+                    {{ inline_button_form.switch_inline }}
+                </div>
+                <div class="col-md-12 mt-2">
+                    {{ inline_button_form.switch_inline_current.label }}
+                    {{ inline_button_form.switch_inline_current }}
+                </div>
+                <div class="col-md-10 mt-2">
+                    {{ inline_button_form.callback.label }}
+                    {{ inline_button_form.callback }}
+                </div>
+                <div class="col-md-2 mt-2">
+                    <button type="submit"
+                        class="btn btn-outline-light text-dark border-right border-left border-bottom shadow-sm btn-block mt-4">Create</button>
+                </div>
+            </div>
+        </form>
     </div>
     {% endif %}
     {% elif request.path == callback_url %}
@@ -840,40 +843,38 @@
     </div>
 
     {% if request.path == callback_url %}
-    <div class="card shadow mt-5">
-        <div class="card-body">
-            <div class="form-row">
-                <h5 class="ml-1 text-dark">Create callback</h5>
-                <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
-            </div>
-            <form method="POST" id="id_create_callback">
-                {% csrf_token %}
-
-                <label for="id_callback_text" class="mb-0">Callbacks</label>
-                <select class="form-control shadow-sm" id="id_callback_text">
-                    <option>----------------</option>
-                    {% for callback in fields_callback %}
-                    <option>{{ callback.1 }}</option>
-                    {% endfor %}
-                </select>
-
-                <div class="form-row mt-2">
-                    <div class="col-md-10">
-                        <label for="id_react_text" class="mb-0">React text</label>
-                        <select class="form-control shadow-sm" id="id_react_text">
-                            <option>----------------</option>
-                            {% for react in fields_react %}
-                            <option>{{ react.1 }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="submit"
-                            class="btn btn-outline-light border-right border-left border-bottom text-primary shadow-sm btn-block mt-4">Create</button>
-                    </div>
-                </div>
-            </form>
+    <div class="alert alert-light shadow p-4 mt-5">
+        <div class="form-row">
+            <h5 class="ml-1 text-dark">Create callback</h5>
+            <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
         </div>
+        <form method="POST" id="id_create_callback" class="text-dark">
+            {% csrf_token %}
+
+            <label for="id_callback_text" class="mb-0">Callbacks</label>
+            <select class="form-control shadow-sm" id="id_callback_text">
+                <option>----------------</option>
+                {% for callback in fields_callback %}
+                <option>{{ callback.1 }}</option>
+                {% endfor %}
+            </select>
+
+            <div class="form-row mt-2">
+                <div class="col-md-10">
+                    <label for="id_react_text" class="mb-0">React text</label>
+                    <select class="form-control shadow-sm" id="id_react_text">
+                        <option>----------------</option>
+                        {% for react in fields_react %}
+                        <option>{{ react.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit"
+                        class="btn btn-outline-light border-right border-left border-bottom text-dark shadow-sm btn-block mt-4">Create</button>
+                </div>
+            </div>
+        </form>
     </div>
     {% endif %}
     {% endif %}

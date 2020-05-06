@@ -1,57 +1,82 @@
 {% extends 'Base.html' %}
+{% load static %}
+
+
+{% block head %}
+<meta name="Description" content="Your profile, Profile, BotConstructor Profile">
+
+<style>
+    #showcase3 {
+        background: url("{% static 'pictures/some13.png' %}") center center/cover no-repeat;
+        min-height: 350px;
+        max-height: 350px;
+        position: relative;
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+{% endblock head %}
+
 
 {% block main_section %}
 {% include 'Navbar.html' %}
-<div class="container">
-    <form method="POST">
-        {% csrf_token %}
+<section id="showcase3" class="d-flex justify-content-center align-items-center shadow">
+    <div id="header" class="container text-white">
+        <h1 class="text-light">Sign In</h1>
+    </div>
+</section>
 
-        {% for field in auth_form %}
-        {% if field.errors %}
-        <div class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
-            {{ field.errors }}
 
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        {% endif %}
-        {% endfor %}
+<div class="shadow p-5">
+    <div class="container">
+        <form method="POST">
+            {% csrf_token %}
 
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
-            {{ message }}
+            {% for field in auth_form %}
+            {% if field.errors %}
+            <div
+                class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
+                {{ field.errors }}
 
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        {% endfor %}
-        {% endif %}
-
-        <div class="card shadow mt-4">
-            <div class="card-body">
-                <h2 class="text-secondary text-center mb-3">Sign In</h2>
-                {{ auth_form.username.label }}
-                {{ auth_form.username }}
-                <div class="mb-2 mt-2">
-                    {{ auth_form.password.label }}
-                    {{ auth_form.password }}
-                </div>
-
-                {% if is_captcha %}
-                <div class="mb-2">
-                    <script src='https://www.google.com/recaptcha/api.js'></script>
-                    <div class="g-recaptcha" data-sitekey="6Lel7dcUAAAAACNb9UpCPkKJj8450NHH2Q01rv7t"></div>
-                </div>
-                {% endif %}
-
-                <button type="submit"
-                    class="btn btn-outline-light text-dark border-left border-bottom border-right shadow-sm mt-2">Sign
-                    In</button>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-        </div>
-    </form>
+            {% endif %}
+            {% endfor %}
+
+            {% if messages %}
+            {% for message in messages %}
+            <div
+                class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
+                {{ message }}
+
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+
+            {{ auth_form.username.label }}
+            {{ auth_form.username }}
+            <div class="mb-2 mt-2">
+                {{ auth_form.password.label }}
+                {{ auth_form.password }}
+            </div>
+
+            {% if is_captcha %}
+            <div class="mb-2">
+                <script src='https://www.google.com/recaptcha/api.js'></script>
+                <div class="g-recaptcha" data-sitekey="6Lel7dcUAAAAACNb9UpCPkKJj8450NHH2Q01rv7t"></div>
+            </div>
+            {% endif %}
+
+            <button type="submit"
+                class="btn btn-outline-light text-dark border-left border-bottom border-right shadow-sm mt-2">Sign
+                In</button>
+        </form>
+    </div>
 </div>
 {% endblock main_section %}

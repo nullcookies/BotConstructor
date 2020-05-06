@@ -2,20 +2,35 @@
 {% load online %}
 {% load static %}
 
+
+{% block head %}
+<style>
+    #showcase1 {
+        background: url("{% static 'pictures/some6.png' %}") center center/cover no-repeat;
+        min-height: 350px;
+        max-height: 350px;
+        position: relative;
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+{% endblock head %}
+
+
 {% block main_section %}
 {% include 'Navbar.html' %}
-<div class="container">
-    <div class="image-with-text shadow mb-3" style="height: 200px;">
-        <img src="{% static 'pictures/some6.png' %}" class="max-width img-fluid">
-        <div class="text-on-img-2">
-            <h4 class="text-light mt-5">Your Telegram Bots</h4>
-            <a href="{% url 'create_bot_first_step_url' %}" style="width: 210px;"
-                class="btn btn-light shadow-sm text-dark mt-2 border-left border-bottom border-right">Create new
-                bot</a>
-        </div>
+<section id="showcase1" class="d-flex justify-content-center align-items-center shadow">
+    <div id="header" class="container text-white">
+        <h4 class="text-light">Your Telegram Bots</h4>
+        <a href="{% url 'create_bot_first_step_url' %}" style="width: 210px;"
+            class="btn btn-light shadow-sm text-dark mt-2 border-left border-bottom border-right">Create new
+            bot</a>
     </div>
+</section>
 
 
+<!-- <div class="shadow p-5"> -->
+<div class="container">
     {% if messages %}
     {% for message in messages %}
     <div class="alert alert-light text-dark border-bottom border-left border-right shadow-sm mt-4">
@@ -23,59 +38,56 @@
     </div>
     {% endfor %}
     {% endif %}
-    <!-- <div class="custom-control custom-switch">
-        <input type="checkbox" class="custom-control-input" id="customSwitch1">
-        <label class="custom-control-label" for="customSwitch1">Toggle this switch element</label>
-    </div> -->
+</div>
 
-    <div class="mt-5">
-        {% for bot in all_bots %}
-        <div class="card mb-4 box-shadow mt-4 shadow">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-6">
-                        <h5>{{ bot.title }} {{ bot.username }}</h5>
-                    </div>
+{% for bot in all_bots %}
+<div class="shadow p-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                <h5>{{ bot.title }} {{ bot.username }}</h5>
+            </div>
 
-                    <div class="col-6">
-                        <div class="float-right">
+            <div class="col-6">
+                <div class="float-right">
 
-                            {% if bot.file_config|check_online == 'The bot is hosted' %}
-                            <a href="{% url 'stop_bot_url' token=bot.access_token %}">Stop hosting</a>
-                            {% else %}
-                            <a href="{% url 'start_bot_url' token=bot.access_token %}" class="mr-2">Start hosting</a>
-                            {% endif %}
+                    {% if bot.file_config|check_online == 'The bot is hosted' %}
+                    <a href="{% url 'stop_bot_url' token=bot.access_token %}">Stop hosting</a>
+                    {% else %}
+                    <a href="{% url 'start_bot_url' token=bot.access_token %}" class="mr-2">Start
+                        hosting</a>
+                    {% endif %}
 
-                        </div>
-                        <small class="text-muted float-right mr-2 mt-1">{{ bot.file_config|check_online }}</small>
-                    </div>
                 </div>
-
-                <p class="text-secondary">{{ bot.access_token }}</p>
-                <!-- <div class="d-flex justify-content-between align-items-center"> -->
-                <a href="{% url 'delete_bot_url' bot_id=bot.id %}"
-                    class="btn btn-sm btn-outline-light shadow-sm text-danger border-left border-bottom border-right"
-                    style="width: 100px;">󠁛󠁛󠁛Delete</a>
-                <a href="{% url 'create_bot_third_step_url' token=bot.access_token %}"
-                    class="btn btn-sm btn-outline-light shadow-sm ml-2 text-primary border-left border-bottom border-right"
-                    style="width: 100px;">Download</a>
-                <a href="{% url 'create_bot_second_step_text_url' token=bot.access_token %}"
-                    class="btn btn-sm btn-outline-light shadow-sm ml-2 text-dark border-left border-bottom border-right"
-                    style="width: 100px;">Edit</a>
-                <!-- </div> -->
-
-                <div class="row mt-3">
-                    <div class="col-6">
-                        <strong class="text-muted">{{ bot.owner.user.first_name }}
-                            {{ bot.owner.user.last_name }}</strong>
-                    </div>
-                    <div class="col-6">
-                        <small class="text-muted float-right">{{ bot.date_created }}</small>
-                    </div>
-                </div>
+                <small class="text-muted float-right mr-2 mt-1">{{ bot.file_config|check_online }}</small>
             </div>
         </div>
-        {% endfor %}
+
+        <p class="text-secondary">{{ bot.access_token }}</p>
+
+        <a href="{% url 'delete_bot_url' bot_id=bot.id %}"
+            class="btn btn-sm btn-outline-light shadow-sm text-danger border-left border-bottom border-right"
+            style="width: 100px;">󠁛󠁛󠁛Delete</a>
+        <a href="{% url 'create_bot_third_step_url' token=bot.access_token %}"
+            class="btn btn-sm btn-outline-light shadow-sm ml-2 text-primary border-left border-bottom border-right"
+            style="width: 100px;">Download</a>
+        <a href="{% url 'create_bot_second_step_text_url' token=bot.access_token %}"
+            class="btn btn-sm btn-outline-light shadow-sm ml-2 text-dark border-left border-bottom border-right"
+            style="width: 100px;">Edit</a>
+
+        <div class="row mt-3">
+            <div class="col-6">
+                <strong class="text-muted">{{ bot.owner.user.first_name }}
+                    {{ bot.owner.user.last_name }}</strong>
+            </div>
+            <div class="col-6">
+                <small class="text-muted float-right">{{ bot.date_created }}</small>
+            </div>
+        </div>
     </div>
 </div>
+{% endfor %}
+
+<!-- </div> -->
+<!-- </div> -->
 {% endblock main_section %}

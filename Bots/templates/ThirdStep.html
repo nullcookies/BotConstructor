@@ -1,19 +1,34 @@
 {% extends 'Base.html' %}
 {% load static %}
 
+
+{% block head %}
+<style>
+    #showcase6 {
+        background: url("{% static 'pictures/some7.png' %}") top center/cover no-repeat;
+        min-height: 350px;
+        max-height: 350px;
+        position: relative;
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+{% endblock head %}
+
+
 {% block main_section %}
 {% include 'Navbar.html' %}
-<div class="container">
-    <div class="image-with-text shadow" style="height: 200px;">
-        <img src="{% static 'pictures/some7.png' %}" class="max-width img-fluid">
-        <div class="text-on-img-2">
-            <h4 class="text-light mt-4 mb-3">Congratulations. You create your bot</h4>
-            <h5 class="text-light ml-0 mt-4">Here you can download script or config</h5>
-            <p class="text-light ml-0" style="line-height: 50%">It's final step. Now, you can download configuration or
-                script of your bot</p>
-        </div>
+<section id="showcase6" class="d-flex justify-content-center align-items-center shadow">
+    <div id="header" class="container text-white">
+        <h4 class="text-light mt-4 mb-3">Congratulations. You create your bot</h4>
+        <h5 class="text-light ml-0 mt-4">Here you can download script or config</h5>
+        <p class="text-light ml-0" style="line-height: 50%">It's final step. Now, you can download configuration or
+            script of your bot</p>
     </div>
+</section>
 
+
+<div class="container">
     <div class="form-row mt-4">
         <!-- <div class="col-md-4">
             <a href="{% url 'download_config_url' token=token %}"

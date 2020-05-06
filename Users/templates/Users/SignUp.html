@@ -1,93 +1,116 @@
 {% extends 'Base.html' %}
+{% load static %}
+
+
+{% block head %}
+<meta name="Description" content="Your profile, Profile, BotConstructor Profile">
+
+<style>
+    #showcase4 {
+        background: url("{% static 'pictures/some13.png' %}") center center/cover no-repeat;
+        min-height: 350px;
+        max-height: 350px;
+        position: relative;
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+{% endblock head %}
+
 
 {% block main_section %}
 {% include 'Navbar.html' %}
-<div class="container">
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
+<section id="showcase4" class="d-flex justify-content-center align-items-center shadow">
+    <div id="header" class="container text-white">
+        <h1 class="text-light">Sign Up</h1>
+    </div>
+</section>
 
-        {% for field in register_form %}
-        {% if field.errors %}
-        <div
-            class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
-            {{ field.errors }}
+<div class="shadow p-5">
+    <div class="container">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
 
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        {% endif %}
-        {% endfor %}
+            {% for field in register_form %}
+            {% if field.errors %}
+            <div
+                class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
+                {{ field.errors }}
 
-        {% if messages %}
-        {% for message in messages %}
-        <div
-            class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
-            {{ message }}
-
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        {% endfor %}
-        {% endif %}
-
-        <div class="card shadow mt-4">
-            <div class="card-body">
-                <h2 class="text-secondary mb-3 text-center">Sign Up</h2>
-                <div class="form-row">
-                    <div class="form-group col-md-6 mb-2">
-                        {{ register_form.first_name.label }}
-                        {{ register_form.first_name }}
-                    </div>
-                    <div class="form-group col-md-6 mb-2">
-                        {{ register_form.last_name.label }}
-                        {{ register_form.last_name }}
-                    </div>
-                </div>
-                <div class="mb-2">
-                    {{ register_form.email.label }}
-                    {{ register_form.email }}
-                </div>
-
-                {{ register_form.username.label }}
-                {{ register_form.username }}
-                <div class="form-row">
-                    <div class="col-md-6 mt-2">
-                        {{ register_form.password_some.label }}
-                        {{ register_form.password_some }}
-                    </div>
-                    <div class="col-md-6 mt-2">
-                        {{ register_form.password_confirm.label }}
-                        {{ register_form.password_confirm }}
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="col-md-12">
-                        <div class="mt-2">
-                            {{ profile_form.about.label }}
-                        </div>
-                        <div class="mb-3">
-                            {{ profile_form.about }}
-                        </div>
-                    </div>
-                </div>
-
-                <script src='https://www.google.com/recaptcha/api.js'></script>
-                <div class="g-recaptcha" data-sitekey="6Lel7dcUAAAAACNb9UpCPkKJj8450NHH2Q01rv7t" class="shadow-sm">
-                </div>
-
-                <button type="submit"
-                    class="btn btn-outline-light text-dark border-left border-bottom border-right shadow-sm mt-3">Sign
-                    Up</button>
-                <a href="{% url 'user_authentication_url' %}"
-                    class="btn btn-outline-light text-secondary border-left border-bottom border-right shadow-sm mt-3 ml-3">If you
-                    already
-                    have an
-                    account...</a>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-        </div>
-    </form>
+            {% endif %}
+            {% endfor %}
+
+            {% if messages %}
+            {% for message in messages %}
+            <div
+                class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
+                {{ message }}
+
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+
+            <div class="form-row">
+                <div class="form-group col-md-6 mb-2">
+                    {{ register_form.first_name.label }}
+                    {{ register_form.first_name }}
+                </div>
+                <div class="form-group col-md-6 mb-2">
+                    {{ register_form.last_name.label }}
+                    {{ register_form.last_name }}
+                </div>
+            </div>
+            <div class="mb-2">
+                {{ register_form.email.label }}
+                {{ register_form.email }}
+            </div>
+
+            {{ register_form.username.label }}
+            {{ register_form.username }}
+            <div class="form-row">
+                <div class="col-md-6 mt-2">
+                    {{ register_form.password_some.label }}
+                    {{ register_form.password_some }}
+                </div>
+                <div class="col-md-6 mt-2">
+                    {{ register_form.password_confirm.label }}
+                    {{ register_form.password_confirm }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="col-md-12">
+                    <div class="mt-2">
+                        {{ profile_form.about.label }}
+                    </div>
+                    <div class="mb-3">
+                        {{ profile_form.about }}
+                    </div>
+                </div>
+            </div>
+
+            <script src='https://www.google.com/recaptcha/api.js'></script>
+            <div class="g-recaptcha" data-sitekey="6Lel7dcUAAAAACNb9UpCPkKJj8450NHH2Q01rv7t" class="shadow-sm">
+            </div>
+
+            <button type="submit"
+                class="btn btn-outline-light text-dark border-left border-bottom border-right shadow-sm mt-3">Sign
+                Up</button>
+            <a href="{% url 'user_authentication_url' %}"
+                class="btn btn-outline-light text-secondary border-left border-bottom border-right shadow-sm mt-3 ml-3">If
+                you
+                already
+                have an
+                account...</a>
+        </form>
+    </div>
 </div>
 {% endblock main_section %}

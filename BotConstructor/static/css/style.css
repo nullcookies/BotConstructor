@@ -1,7 +1,7 @@
 #showcase {
     background: url("../pictures/some3.png") top center/cover no-repeat;
-    min-height: 700px;
-    max-height: 700px;
+    min-height: 800px;
+    max-height: 800px;
     position: relative;
     display: block;
     margin: 0 auto;
