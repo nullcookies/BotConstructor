@@ -31,7 +31,6 @@ from .tokens import account_activation_token
 def base_view(request):
     context = {'title': 'Main - BotConstructor'}
     response = render(request, "Wrapper.html", context)
-    response['Content-Encoding'] = 'gzip'
     return response
 
 
