@@ -24,7 +24,6 @@ class CreateTextField(LoginRequiredMixin, View):
             'token': token
         })
         response = render(request, 'SecondStep.html', self.context)
-        response['Content-Encoding'] = 'gzip'
         return response
 
     def post(self, request, token: str):
@@ -90,7 +89,6 @@ class CreateTextField(LoginRequiredMixin, View):
             'token': token
         })
         response = render(request, 'SecondStep.html', self.context)
-        response['Content-Encoding'] = 'gzip'
         return response
 
 
@@ -136,7 +134,6 @@ class UpdateTextField(LoginRequiredMixin, View):
             'token': token
         })
         response = render(request, 'SecondStep.html', self.context)
-        response['Content-Encoding'] = 'gzip'
         return response
 
 
@@ -169,5 +166,4 @@ class DeleteTextField(LoginRequiredMixin, View):
             'token': token
         })
         response = render(request, 'SecondStep.html', self.context)
-        response['Content-Encoding'] = 'gzip'
         return response
