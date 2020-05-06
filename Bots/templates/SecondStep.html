@@ -903,8 +903,7 @@
 {% url 'templates' token=token as templates_url %}
 {% url 'create_callback_url' token=token as callback_url %}
 
-<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
-    crossorigin="anonymous"></script>
+
 {% if request.path == text_url %}
 <script>
     $(document).on('submit', '#text-form', function (e) {

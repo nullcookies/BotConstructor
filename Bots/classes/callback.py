@@ -50,12 +50,15 @@ class CreateCallbackField(LoginRequiredMixin, View):
         # ! Get callbacks into a list
         if 'inline_markup' in some:
             for item in some['inline_markup']:
-                for button in item['buttons']:
-                    print(button['callback'])
-                    if button['callback'] is not False:
-                        FIELDS_CALLBACK.append(
-                            (f'{button["callback"]}_key', button['callback'])
-                        )
+                try:
+                    for button in item['buttons']:
+                        if button['callback'] is not False:
+                            FIELDS_CALLBACK.append(
+                                (f'{button["callback"]}_key',
+                                 button['callback'])
+                            )
+                except KeyError as k_error:
+                    print(k_error)
 
         self.context.update({
             'title': 'CallBack - BotConstructor',
