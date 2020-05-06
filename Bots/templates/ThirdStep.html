@@ -13,6 +13,7 @@
         margin: 0 auto;
     }
 </style>
+<meta name="description" content="Third step, BotConstructor">
 {% endblock head %}
 
 
@@ -42,7 +43,7 @@
         </div>
         <div class="col-md-6">
             <a href="{% url 'auto_deploy_url' token=token %}"
-                class="btn btn-outline-light border-bottom text-success border-left border-right shadow-sm btn-block">Deploy</a>
+                class="btn btn-outline-light border-bottom text-danger border-left border-right shadow-sm btn-block">Deploy</a>
         </div>
     </div>
 
@@ -71,12 +72,13 @@
 
         <input type="hidden" name="code_editor" id="code_hello_world" value="">
         <button type="submit" onclick="buttonClick()"
-            class="btn btn-outline-light text-success shadow border-bottom border-left border-right btn-block mt-5 mb-4">Edit</button>
+            class="btn btn-outline-light text-danger shadow border-bottom border-left border-right btn-block mt-5 mb-4">Edit</button>
     </form>
 </div>
 {% endblock main_section %}
 
 {% block javascript %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.7/ace.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/github");

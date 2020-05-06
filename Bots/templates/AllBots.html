@@ -14,6 +14,7 @@
         margin: 0 auto;
     }
 </style>
+<meta name="description" content="Your Bots, BotConstructor">
 {% endblock head %}
 
 
@@ -52,10 +53,11 @@
                 <div class="float-right">
 
                     {% if bot.file_config|check_online == 'The bot is hosted' %}
-                    <a href="{% url 'stop_bot_url' token=bot.access_token %}">Stop hosting</a>
+                    <p class="text-muted"><a href="{% url 'stop_bot_url' token=bot.access_token %}">Stop hosting</a>
+                    </p>
                     {% else %}
-                    <a href="{% url 'start_bot_url' token=bot.access_token %}" class="mr-2">Start
-                        hosting</a>
+                    <p class="text-danger"><a href="{% url 'start_bot_url' token=bot.access_token %}" class="mr-2">Start
+                            hosting</a></p>
                     {% endif %}
 
                 </div>

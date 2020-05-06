@@ -310,7 +310,8 @@ class StartBot(LoginRequiredMixin, View):
             if request.session['count_deploys'] <= 1:
                 try:
                     deploy = AutoDeploy(
-                        file_title=f'{request.user.username}_{token}_test_bot.py'
+                        file_title=f'{request.user.username}_{token}'
+                        '_test_bot.py'
                     )
                     deploy.run_bot(path)
                 except JSONDecodeError:

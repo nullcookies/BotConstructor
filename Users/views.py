@@ -30,7 +30,9 @@ from .tokens import account_activation_token
 
 def base_view(request):
     context = {'title': 'Main - BotConstructor'}
-    return render(request, 'Wrapper.html', context)
+    response = render(request, "Wrapper.html", context)
+    response['Content-Encoding'] = 'gzip'
+    return response
 
 
 class ProfileView(LoginRequiredMixin, View):

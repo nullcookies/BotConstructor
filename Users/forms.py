@@ -91,12 +91,14 @@ class ProfileForm(forms.ModelForm):
 
 class UserAuthenticationForm(forms.Form):
     username = forms.CharField(
+        label='Username',
         widget=forms.TextInput(attrs={
             'class': 'form-control shadow-sm',
             'placeholder': 'Username'
         })
     )
     password = forms.CharField(
+        label='Password',
         widget=forms.PasswordInput(attrs={
             'class': 'form-control shadow-sm',
             'placeholder': 'Password'
@@ -108,3 +110,6 @@ class UpdateImageForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('image',)
+        labels = {
+            'image': 'Your image.'
+        }

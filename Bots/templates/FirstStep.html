@@ -13,6 +13,7 @@
         margin: 0 auto;
     }
 </style>
+<meta name="description" content="First step, BotConstructor">
 {% endblock head %}
 
 
@@ -34,16 +35,16 @@
         <form method="POST">
             {% csrf_token %}
 
-            {{ first_form.access_token.label }}
+            <label for="id_access_token" class="mb-0">{{ first_form.access_token.label }}</label>
             {{ first_form.access_token }}
 
             <div class="form-row">
                 <div class="col-md-6 mt-1">
-                    {{ first_form.name.label }}
+                    <label for="id_name" class="mb-0">{{ first_form.name.label }}</label>
                     {{ first_form.name }}
                 </div>
                 <div class="col-md-6 mt-1">
-                    {{ first_form.username.label }}
+                    <label for="id_username" class="mb-0">{{ first_form.username.label }}</label>
                     <div class="input-group shadow-sm">
                         <div class="input-group-prepend">
                             <div class="input-group-text">@</div>

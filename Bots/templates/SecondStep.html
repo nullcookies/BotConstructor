@@ -13,6 +13,7 @@
         margin: 0 auto;
     }
 </style>
+<meta name="description" content="Second step, BotConstructor">
 {% endblock head %}
 
 
@@ -893,7 +894,7 @@
 
 
 {% block javascript %}
-
+<script src="{% static 'js/script.js' %}" defer></script>
 {% url 'create_bot_second_step_text_url' token=token as text_url %}
 {% url 'create_bot_second_step_reply_markup_url' token=token as reply_markup_url %}
 {% url 'create_bot_second_step_reply_buttons_url' token=token as reply_buttons_url %}
@@ -902,7 +903,7 @@
 {% url 'templates' token=token as templates_url %}
 {% url 'create_callback_url' token=token as callback_url %}
 
-<script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
     crossorigin="anonymous"></script>
 {% if request.path == text_url %}
 <script>
