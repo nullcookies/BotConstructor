@@ -37,16 +37,19 @@ class CreateBotForm(forms.ModelForm):
 class GetAccessToken(forms.Form):
     access_token = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control shadow-sm',
-        'placeholder': 'Access Token'
+        'placeholder': 'Access Token',
+        'onmouseover': "getCredentialsOfBot(this); return false;"
     }))
-    name = forms.CharField(widget=forms.TextInput(attrs={
+    title = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control shadow-sm',
-        'placeholder': 'Title'
-    }))
+        'placeholder': 'Title',
+        'disabled': 'disabled'
+    }), required=False)
     username = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control shadow-sm',
-        'placeholder': 'Telegram Nickname'
-    }))
+        'placeholder': 'Username',
+        'disabled': 'disabled'
+    }), required=False)
 
 
 class TextForm(forms.Form):

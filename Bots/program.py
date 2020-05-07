@@ -17,12 +17,14 @@ class BotFacade:
                  reply_markup_builder,
                  inline_markup_builder,
                  callback_builder,
-                 token: str, user_username: str, data: dict) -> None:
+                 token: str, user_username: str,
+                 data: dict, request) -> None:
         super().__init__()
         token = token.replace(':', '_')
 
         self.__token = token
         self.__username = user_username
+        self.__request = request
         self._data = data
 
         self._text_builder = text_builder
@@ -38,14 +40,18 @@ class BotFacade:
             pass
 
         try:
-            self._reply_markup_builder.create_option_dict(
+            reply_callback = self._reply_markup_builder.create_option_dict(
                 self._data['reply_markup'])
+            if reply_callback is not None:
+                return reply_callback, 'reply'
         except KeyError:
             pass
 
         try:
-            self._inline_markup_builder.create_option_dict(
+            inline_callback = self._inline_markup_builder.create_option_dict(
                 self._data['inline_markup'])
+            if inline_callback is not None:
+                return inline_callback, 'inline'
         except KeyError:
             pass
 
@@ -148,12 +154,11 @@ in text_dictionary_messages.keys())
 
 
 class ReplyMarkupBuilder:
-    def __init__(self, token: str, username: str, request) -> None:
+    def __init__(self, token: str, username: str) -> None:
         super().__init__()
         self.__token = token.replace(':', '_')
         self.__username = username
         self.__reply_markup_dictionary = None
-        self.__request = request
 
     def create_option_dict(self, data: dict) -> None:
         try:
@@ -196,15 +201,7 @@ class ReplyMarkupBuilder:
             message = ''
             if k_error == "'buttons'":
                 message += ' You have not added buttons to the reply keyboard.'
-
-                messages.error(
-                    self.__request,
-                    f'You have a problem: {k_error}.' + message
-                )
-                return redirect(
-                    'create_bot_second_step_reply_buttons_url',
-                    token=self.__token
-                )
+                return message
 
     def __generate_reply_code(self):
         object_text = """
@@ -241,49 +238,56 @@ in reply_markup_dictionary.keys())
 
 
 class InlineMarkupBuilder:
-    def __init__(self, token: str, username: str, request) -> None:
+    def __init__(self, token: str, username: str) -> None:
         super().__init__()
         self.__token = token.replace(':', '_')
         self.__username = username
         self.__inline_markup_dictionary = None
-        self.__request = request
 
     def create_option_dict(self, data: dict) -> None:
-        if data != []:
-            final_inline_markup_keyboard = {}
-            for inline_markup_element in data:
-                buttons = []
+        try:
+            if data != []:
+                final_inline_markup_keyboard = {}
+                for inline_markup_element in data:
+                    buttons = []
 
-                for button_element in inline_markup_element['buttons']:
-                    buttons.append(
-                        {
-                            'text': button_element['text'],
-                            'url': button_element['url'],
-                            'callback': button_element['callback'],
-                            'switch_inline': button_element[
-                                'switch_inline'
-                            ],
-                            'switch_inline_current': button_element[
-                                'switch_inline_current'
-                            ]
-                        }
-                    )
+                    for button_element in inline_markup_element['buttons']:
+                        buttons.append(
+                            {
+                                'text': button_element['text'],
+                                'url': button_element['url'],
+                                'callback': button_element['callback'],
+                                'switch_inline': button_element[
+                                    'switch_inline'
+                                ],
+                                'switch_inline_current': button_element[
+                                    'switch_inline_current'
+                                ]
+                            }
+                        )
 
-                final_inline_markup_keyboard[
-                    inline_markup_element['react_text']
-                ] = {
-                    'row_width': inline_markup_element['row_width'],
-                    'response_text': inline_markup_element[
-                        'response_text'
-                    ],
-                    'buttons': buttons
-                }
-            self.__inline_markup_dictionary = final_inline_markup_keyboard
-            self.__generate_inline_code()
+                    final_inline_markup_keyboard[
+                        inline_markup_element['react_text']
+                    ] = {
+                        'row_width': inline_markup_element['row_width'],
+                        'response_text': inline_markup_element[
+                            'response_text'
+                        ],
+                        'buttons': buttons
+                    }
+                self.__inline_markup_dictionary = final_inline_markup_keyboard
+                self.__generate_inline_code()
+        except KeyError as k_error:
+            k_error = str(k_error)
+
+            message = ''
+            if k_error == "'buttons'":
+                message += (' You have not added buttons '
+                            'to the inline keyboard.')
+                return message
 
     def __generate_inline_code(self):
-        try:
-            object_text = """
+        object_text = """
             inline_markup_dictionary = %s
             @bot.message_handler(func=lambda message: message.text \
     in inline_markup_dictionary.keys())
@@ -309,27 +313,11 @@ class InlineMarkupBuilder:
 
             """ % self.__inline_markup_dictionary
 
-            final_path = os.path.join(PATH, f'{self.__username}')
-            path = os.path.join(
-                final_path, f'{self.__username}_{self.__token}_test_bot.py')
-            with open(path, 'a', encoding='utf-8') as file:
-                file.write(textwrap.dedent(object_text))
-        except KeyError as k_error:
-            k_error = str(k_error)
-
-            message = ''
-            if k_error == "'buttons'":
-                message += (' You have not added buttons '
-                            'to the inline keyboard.')
-
-                messages.error(
-                    self.__request,
-                    f'You have a problem: {k_error}.' + message
-                )
-                return redirect(
-                    'create_bot_second_step_inline_buttons_url',
-                    token=self.__token
-                )
+        final_path = os.path.join(PATH, f'{self.__username}')
+        path = os.path.join(
+            final_path, f'{self.__username}_{self.__token}_test_bot.py')
+        with open(path, 'a', encoding='utf-8') as file:
+            file.write(textwrap.dedent(object_text))
 
 
 class CallbackBuilder:

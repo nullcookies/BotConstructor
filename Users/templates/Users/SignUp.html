@@ -97,15 +97,19 @@
                 </div>
             </div>
 
-            <script src='https://www.google.com/recaptcha/api.js'></script>
-            <div class="g-recaptcha" data-sitekey="6Lel7dcUAAAAACNb9UpCPkKJj8450NHH2Q01rv7t" class="shadow-sm">
+            <div class="row">
+                <div class="col-md-6">
+                    <script src='https://www.google.com/recaptcha/api.js'></script>
+                    <div class="g-recaptcha" data-sitekey="6Lel7dcUAAAAACNb9UpCPkKJj8450NHH2Q01rv7t" class="shadow-sm">
+                    </div>
+                </div>
             </div>
 
             <button type="submit"
                 class="btn btn-outline-light text-dark border-left border-bottom border-right shadow-sm mt-3">Sign
                 Up</button>
             <a href="{% url 'user_authentication_url' %}"
-                class="btn btn-outline-light text-secondary border-left border-bottom border-right shadow-sm mt-3 ml-3">If
+                class="btn btn-outline-light text-secondary border-left border-bottom border-right shadow-sm mt-3 ml-3 float-right">If
                 you
                 already
                 have an

@@ -3,6 +3,8 @@ import json
 
 from django.conf import settings
 from django.contrib import messages
+from .models import Bot
+from .pythonanywhere import AutoDeploy
 
 
 def open_configuration(request, token: str) -> str:
@@ -89,3 +91,22 @@ def form_final_dict(obligatory_fields: list, index: int,
     for value in obligatory_fields:
         final_data[value] = [index, False]
     return final_data
+
+
+def stop_hosting(obj):
+    file_name = str(obj.file_config).split('/')[1]
+    name = file_name.split('_')[0]
+    path = os.path.join(settings.BASE_DIR,
+                        'BotConstructor', 'media', 'ScriptsBots',
+                        name, file_name)
+
+    with open(path, 'r', encoding='utf-8') as file:
+        data = json.load(file)
+
+    if 'console_id' in data:
+        console_id = data['console_id']
+
+        deploy = AutoDeploy(
+            f'{obj.owner.user.username}_{obj.access_token}_test_bot.py'
+        )
+        deploy.stop_bot(console_id=console_id)

@@ -39,12 +39,8 @@
     {% if messages %}
     {% for message in messages %}
     <div
-        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
+        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm mt-5">
         {{ message }}
-
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
     </div>
     {% endfor %}
     {% endif %}
@@ -124,27 +120,27 @@
     <div class="form-row mt-5 mb-5">
         <div class="col-md-3">
             <a href="{% url 'create_bot_second_step_text_url' token=token %}"
-                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block {% if request.path == text_url %}active{% endif %}"
+                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-1 {% if request.path == text_url %}active{% endif %}"
                 id="text">Text</a>
         </div>
         <div class="col-md-3">
             <a href="{% url 'create_bot_second_step_reply_markup_url' token=token %}"
-                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block {% if request.path == reply_markup_url or request.path == reply_buttons_url %}active{% endif %}"
+                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-1 {% if request.path == reply_markup_url or request.path == reply_buttons_url %}active{% endif %}"
                 id="reply">Reply Buttons</a>
         </div>
         <div class="col-md-2">
             <a href="{% url 'create_bot_second_step_inline_markup_url' token=token %}"
-                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block {% if request.path == inline_markup_url or request.path == inline_buttons_url %}active{% endif %}"
+                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-1 {% if request.path == inline_markup_url or request.path == inline_buttons_url %}active{% endif %}"
                 id="inline">Inline Buttons</a>
         </div>
         <div class="col-md-2">
             <a href="{% url 'create_callback_url' token=token %}"
-                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block {% if request.path == callback_url %}active{% endif %}"
+                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-1 {% if request.path == callback_url %}active{% endif %}"
                 id="id_menu_callback">Callback</a>
         </div>
         <div class="col-md-2">
             <a href="{% url 'templates' token=token %}"
-                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block {% if request.path == templates_url %}active{% endif %}">Templates</a>
+                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-1 {% if request.path == templates_url %}active{% endif %}">Templates</a>
         </div>
     </div>
 
@@ -514,7 +510,7 @@
                         {{ reply_markup_form.react_text.label }}
                         {{ reply_markup_form.react_text }}
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-2 mb-2">
                         {{ reply_markup_form.row_width.label }}
                         {{ reply_markup_form.row_width }}
                     </div>
@@ -727,7 +723,7 @@
             {% csrf_token %}
 
             <div class="form-row">
-                <div class="col-md-10">
+                <div class="col-md-10 mb-2">
                     {{ inline_markup_form.react_text.label }}
                     {{ inline_markup_form.react_text }}
                 </div>
@@ -882,11 +878,11 @@
 
 
     <div class="mt-4">
-        <form action="{% url 'create_bot_second_step_next_step_url' token=token %}" class="mb-3" method="GET">
+        <form action="{% url 'create_bot_second_step_next_step_url' token=token %}" class="mb-3" method="POST">
             {% csrf_token %}
 
             <button type="submit"
-                class="btn btn-light text-dark border-bottom border-left border-right shadow btn-block">Next</button>
+                class="btn btn-light text-dark border-bottom border-left border-right shadow btn-block mt-5">Generate file</button>
         </form>
     </div>
 </div>
@@ -905,7 +901,7 @@
 
 
 {% if request.path == text_url %}
-<script>
+<script type="text/javascript" defer>
     $(document).on('submit', '#text-form', function (e) {
         e.preventDefault();
 
@@ -976,7 +972,7 @@
                     );
                 }
                 else {
-                    var error = '<div class="alert alert-light text-dark shadow alert-dismissible fade show mt-4">' +
+                    var error = '<div class="alert alert-light text-dark shadow-sm alert-dismissible fade show mt-4">' +
                         json.text_error.react_text[0] +
                         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
                         '<span aria-hidden="true">&times;</span>' +
@@ -1052,7 +1048,7 @@
     }
 </script>
 {% elif request.path == reply_markup_url or request.path == reply_buttons_url %}
-<script>
+<script type="text/javascript" defer>
     $(document).on('submit', '#id_reply_markup_create_form', function (e) {
         e.preventDefault();
         var checkboxes = $('#id_reply_checkboxes').find('input');
@@ -1168,7 +1164,7 @@
                     $('#id_add_button_reply').click();
                 }
                 else {
-                    var error = '<div class="alert alert-light text-dark shadow alert-dismissible fade show mt-4">' +
+                    var error = '<div class="alert alert-light text-dark shadow-sm alert-dismissible fade show mt-4">' +
                         json.reply_markup_error.react_text[0] +
                         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
                         '<span aria-hidden="true">&times;</span>' +
@@ -1398,7 +1394,7 @@
     }
 </script>
 {% elif request.path == callback_url %}
-<script>
+<script type="text/javascript" defer>
     $(document).on('submit', '#id_create_callback', function (e) {
         e.preventDefault();
         var callback_text = $('#id_callback_text').find(":selected").text();
@@ -1459,7 +1455,7 @@
                     }
                 }
                 else {
-                    var error = '<div class="alert alert-light text-dark shadow alert-dismissible fade show mt-4">' +
+                    var error = '<div class="alert alert-light text-dark shadow-sm alert-dismissible fade show mt-4">' +
                         json.callback_error.react_text[0] +
                         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
                         '<span aria-hidden="true">&times;</span>' +
@@ -1537,7 +1533,7 @@
     }
 </script>
 {% elif request.path == inline_markup_url or request.path == inline_buttons_url %}
-<script>
+<script type="text/javascript" defer>
     $(document).on('submit', '#id_inline_markup_create', function (e) {
         e.preventDefault();
 
@@ -1759,7 +1755,7 @@
                     $('#' + json.len_text + '_inline_element').find('div.col-md-7').append(object);
                 }
                 else {
-                    var error = '<div class="alert alert-light text-dark shadow alert-dismissible fade show mt-3">' +
+                    var error = '<div class="alert alert-light text-dark shadow-sm alert-dismissible fade show mt-3">' +
                         json.inline_button_error.react_text[0] +
 
                         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +

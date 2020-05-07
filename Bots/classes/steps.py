@@ -2,14 +2,17 @@ from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
+from django.http import JsonResponse
 
 from ..functions import *
 from ..forms import GetAccessToken
 from ..models import Bot
 from Users.models import Profile
+from sys import platform
 
 import autopep8
 import logging
+import telebot
 
 
 logger = logging.getLogger(__name__)
@@ -34,8 +37,14 @@ class CreateBotStepOne(LoginRequiredMixin, View):
 
         if first_form.is_valid():
             access_token = first_form.cleaned_data['access_token']
-            name = first_form.cleaned_data['name']
-            username = first_form.cleaned_data['username']
+
+            try:
+                bot = telebot.TeleBot(
+                    access_token
+                )
+            except Exception:
+                messages.error(
+                    request, 'Access token is not valid... Try another...')
 
             current_user_profile = Profile.objects.get(user=request.user)
             is_existed_bot = list(Bot.objects.filter(
@@ -49,8 +58,8 @@ class CreateBotStepOne(LoginRequiredMixin, View):
 
             data.update({
                 'access_token': access_token,
-                'name': name,
-                'username': username
+                'name': bot.get_me().first_name,
+                'username': bot.get_me().username
             })
 
             path = open_configuration(request, access_token)
@@ -68,6 +77,25 @@ class CreateBotStepOne(LoginRequiredMixin, View):
         return render(request, 'FirstStep.html', context)
 
 
+class UntilFirstStep(View):
+    def post(self, request):
+        data = dict(request.POST)
+        print(data)
+
+        try:
+            bot = telebot.TeleBot(data['token'][0])
+            title = bot.get_me().first_name
+            username = bot.get_me().username
+
+            return JsonResponse({
+                'title': title,
+                'username': username,
+                'csrfmiddlewaretoken': data['csrfmiddlewaretoken']
+            })
+        except Exception:
+            return JsonResponse({})
+
+
 class CreateBotStepThree(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_third_step_url'
@@ -81,7 +109,10 @@ class CreateBotStepThree(LoginRequiredMixin, View):
             messages.error(request, 'No such bot...')
             return redirect('show_bots_url')
 
-        config = open_configuration(request, token).split('\\')
+        if platform == 'linux' or platform == 'linux2':
+            config = open_configuration(request, token).split('/')
+        else:
+            config = open_configuration(request, token).split('\\')
         some = '/'.join([config[-2], config[-1]])
 
         context = {

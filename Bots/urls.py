@@ -147,5 +147,10 @@ urlpatterns = [
         'createBot/secondStep/<str:token>/callbackAnswer/delete/',
         DeleteCallbackField.as_view(),
         name='delete_callback_url'
+    ),
+    path(
+        'untilFirstStep/',
+        UntilFirstStep.as_view(),
+        name='until_first_step'
     )
 ]

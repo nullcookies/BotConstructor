@@ -65,6 +65,11 @@ class DeleteBot(View):
 
     def post(self, request, bot_id: int):
         current_bot = Bot.objects.get(id=bot_id)
+        stop_hosting(current_bot)
+
+        if 'count_deploys' in request.session.keys():
+            del request.session['count_deploys']
+
         current_bot.delete()
         return redirect('show_bots_url')
 
@@ -137,22 +142,49 @@ class GenerateFile(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'create_bot_second_step_next_step_url'
 
-    def get(self, request, token: str):
+    def post(self, request, token: str):
         path = open_configuration(request, token)
         with open(path, 'r', encoding='utf-8') as file:
             data = json.load(file)
 
-        username = str(request.user.username)
+        point = False
+        if 'text' in data and data['text'] != []:
+            point = True
+        elif 'reply_markup' in data and data['reply_markup'] != []:
+            point = True
+        elif 'inline_markup' in data and data['inline_markup'] != []:
+            point = True
+        elif 'callback' in data and data['callback'] != []:
+            point = True
 
+        if not point:
+            messages.error(
+                request,
+                'You having empty configuration... Create some config!')
+            return redirect('create_bot_second_step_text_url', token=token)
+
+        username = str(request.user.username)
         text_builder = TextBuilder(token, username)
-        reply_markup_builder = ReplyMarkupBuilder(token, username, request)
-        inline_markup_builder = InlineMarkupBuilder(token, username, request)
+        reply_markup_builder = ReplyMarkupBuilder(token, username)
+        inline_markup_builder = InlineMarkupBuilder(
+            token, username)
         callback_builder = CallbackBuilder(token, username)
 
         program = BotFacade(text_builder, reply_markup_builder,
                             inline_markup_builder, callback_builder,
-                            token, username, data)
-        program.operation()
+                            token, username, data, request)
+        callback = program.operation()
+        if callback is not None:
+            messages.error(
+                request,
+                f'You have a problem buttons.' + callback[0]
+            )
+            if callback[1] == 'reply':
+                return redirect('create_bot_second_step_reply_buttons_url',
+                                token)
+            else:
+                return redirect('create_bot_second_step_inline_buttons_url',
+                                token)
 
         some_path = open_test_bot(request=request, token=token)
         with open(some_path, 'r+', encoding='utf-8') as file:
@@ -165,8 +197,8 @@ class GenerateFile(LoginRequiredMixin, View):
         file_script_path = open_test_bot(request=request, token=token)
         file_config_path = open_configuration(request=request, token=token)
         current_user = Profile.objects.get(user=request.user)
-        access_token = data['access_token']
 
+        access_token = data['access_token']
         current_user_profile = Profile.objects.get(user=request.user)
         is_existed_bot = list(Bot.objects.filter(
             access_token=access_token,
@@ -188,7 +220,6 @@ class GenerateFile(LoginRequiredMixin, View):
                 File(open(file_config_path))
             )
             bot_object.save()
-
         return redirect('create_bot_third_step_url', token=token)
 
 

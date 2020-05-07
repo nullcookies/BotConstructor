@@ -30,34 +30,68 @@
     </div>
 </section>
 
+<div class="container">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-light text-dark border-bottom border-left border-right shadow-sm mt-4">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
 <div class="shadow p-5">
     <div class="container">
-        <form method="POST">
+        <form method="POST" onchange="getCredentialsOfBot(this); return false;">
             {% csrf_token %}
 
             <label for="id_access_token" class="mb-0">{{ first_form.access_token.label }}</label>
             {{ first_form.access_token }}
 
             <div class="form-row">
-                <div class="col-md-6 mt-1">
-                    <label for="id_name" class="mb-0">{{ first_form.name.label }}</label>
-                    {{ first_form.name }}
+                <div class="col-md-6">
+                    <label for="id_title" class="mb-0 mt-2">{{ first_form.title.label }}</label>
+                    {{ first_form.title }}
                 </div>
-                <div class="col-md-6 mt-1">
-                    <label for="id_username" class="mb-0">{{ first_form.username.label }}</label>
-                    <div class="input-group shadow-sm">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">@</div>
-                        </div>
-                        {{ first_form.username }}
-                    </div>
+
+                <div class="col-md-6">
+                    <label for="id_username" class="mb-0 mt-2">{{ first_form.username.label }}</label>
+                    {{ first_form.username }}
                 </div>
             </div>
 
             <button type="submit"
                 class="btn btn-outline-light text-dark border-left border-bottom border-right shadow-sm btn-sm mt-4"
                 style="width: 20%;">Next</button>
-        </form> 
+        </form>
     </div>
 </div>
 {% endblock main_section %}
+
+
+{% block javascript %}
+<script type="text/javascript" defer>
+    function getCredentialsOfBot(form) {
+        var token = $(form).find('#id_access_token').val();
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "until_first_step" %}',
+            data: {
+                token: token,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (json) {
+                console.log(json);
+                if ('title' in json && "username" in json) {
+                    document.getElementById('id_title').value = json.title;
+                    document.getElementById('id_username').value = json.username;
+                }
+            },
+            error: function (xhr, errmsg, err) {
+
+            }
+        });
+    }
+</script>
+{% endblock javascript %}
