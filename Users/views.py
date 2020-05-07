@@ -92,6 +92,9 @@ class UserRegistration(View):
                         ]
                         about = profile_form.cleaned_data['about']
 
+                        if about == '':
+                            about = 'Write a little about yourself here ...'
+
                         some_user = User.objects.create_user(
                             username=username, email=email, password=password,
                             first_name=first_name, last_name=last_name)
@@ -123,7 +126,6 @@ class UserRegistration(View):
                             to_emails=to_email,
                             subject=mail_subject,
                             html_content=message_content)
-                        print(message)
                         try:
                             sg = SendGridAPIClient(
                                 'SG.48GCbtEqQtuRsR-25DMAZw.'
@@ -171,6 +173,9 @@ class UserRegistration(View):
                         'password_confirm'
                     ]
                     about = profile_form.cleaned_data['about']
+
+                    if about == '':
+                        about = 'Write a little about yourself here ...'
 
                     some_user = User.objects.create_user(
                         username=username, email=email, password=password,
@@ -400,6 +405,9 @@ class UpdateProfile(LoginRequiredMixin, View):
             last_name = update_form.cleaned_data['last_name']
             email = update_form.cleaned_data['email']
             about = update_profile_form.cleaned_data['about']
+
+            if about == '':
+                about = 'Write a little about yourself here ...'
 
             current_user.username = username
             current_user.first_name = first_name

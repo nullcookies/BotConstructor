@@ -87,6 +87,9 @@ class ProfileForm(forms.ModelForm):
                 'style': 'height: 100px', 'placeholder': 'About'
             })
         }
+        labels = {
+            'about': 'About (Optional)'
+        }
 
 
 class UserAuthenticationForm(forms.Form):

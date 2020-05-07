@@ -1,11 +1,12 @@
 {% extends 'Base.html' %}
 {% load static %}
+{% load online %}
 
 
 {% block head %}
 <style>
     #showcase6 {
-        background: url("{% static 'pictures/some7.png' %}") top center/cover no-repeat;
+        background: url("{% static 'pictures/some7.png' %}") center center/cover no-repeat;
         min-height: 350px;
         max-height: 350px;
         position: relative;
@@ -42,8 +43,12 @@
                 Download script</a>
         </div>
         <div class="col-md-6">
+            {% if config|check_online == 'The bot is hosted' %}
+            <a class="btn btn-outline-light border-bottom text-muted border-left border-right shadow-sm btn-block">Deploy</a>
+            {% else %}
             <a href="{% url 'auto_deploy_url' token=token %}"
                 class="btn btn-outline-light border-bottom text-danger border-left border-right shadow-sm btn-block">Deploy</a>
+            {% endif %}
         </div>
     </div>
 
@@ -78,7 +83,7 @@
 {% endblock main_section %}
 
 {% block javascript %}
-<script src="{% static 'js/script.js' %}"></script>
+<script src="{% static 'js/script.js' %}" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.7/ace.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" defer>
     var editor = ace.edit("editor");

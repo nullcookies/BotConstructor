@@ -882,7 +882,7 @@
 
 
     <div class="mt-4">
-        <form action="{% url 'create_bot_second_step_next_step_url' token=token %}" class="mb-3">
+        <form action="{% url 'create_bot_second_step_next_step_url' token=token %}" class="mb-3" method="GET">
             {% csrf_token %}
 
             <button type="submit"

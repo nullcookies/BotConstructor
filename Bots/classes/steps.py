@@ -5,6 +5,8 @@ from django.views.generic import View
 
 from ..functions import *
 from ..forms import GetAccessToken
+from ..models import Bot
+from Users.models import Profile
 
 import autopep8
 import logging
@@ -35,6 +37,16 @@ class CreateBotStepOne(LoginRequiredMixin, View):
             name = first_form.cleaned_data['name']
             username = first_form.cleaned_data['username']
 
+            current_user_profile = Profile.objects.get(user=request.user)
+            is_existed_bot = list(Bot.objects.filter(
+                access_token=access_token,
+                owner=current_user_profile
+            ))
+            if is_existed_bot != []:
+                messages.error(
+                    request, 'You already had bot with this token...')
+                return redirect('show_bots_url')
+
             data.update({
                 'access_token': access_token,
                 'name': name,
@@ -61,15 +73,22 @@ class CreateBotStepThree(LoginRequiredMixin, View):
     redirect_field_name = 'create_bot_third_step_url'
 
     def get(self, request, token: str):
-        print(token)
-        path = open_test_bot(request, token)
-        with open(path, 'r', encoding='utf-8') as file:
-            content = file.read()
+        try:
+            path = open_test_bot(request, token)
+            with open(path, 'r', encoding='utf-8') as file:
+                content = file.read()
+        except FileNotFoundError as error:
+            messages.error(request, 'No such bot...')
+            return redirect('show_bots_url')
+
+        config = open_configuration(request, token).split('\\')
+        some = '/'.join([config[-2], config[-1]])
 
         context = {
             'title': 'Third Step - BotConstructor',
             'content': content,
-            'token': token
+            'token': token,
+            'config': some
         }
         return render(request, 'ThirdStep.html', context)
 

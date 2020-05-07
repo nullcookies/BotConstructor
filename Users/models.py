@@ -9,7 +9,7 @@ class Profile(models.Model):
     image = models.ImageField(
         upload_to='user_images/', blank=True,
         verbose_name='')
-    about = models.CharField(max_length=500)
+    about = models.CharField(max_length=500, blank=True)
 
     def __str__(self):
         return self.user.username

@@ -51,7 +51,6 @@
 
             <div class="col-6">
                 <div class="float-right">
-
                     {% if bot.file_config|check_online == 'The bot is hosted' %}
                     <p class="text-muted"><a href="{% url 'stop_bot_url' token=bot.access_token %}">Stop hosting</a>
                     </p>
@@ -59,7 +58,6 @@
                     <p class="text-danger"><a href="{% url 'start_bot_url' token=bot.access_token %}" class="mr-2">Start
                             hosting</a></p>
                     {% endif %}
-
                 </div>
                 <small class="text-muted float-right mr-2 mt-1">{{ bot.file_config|check_online }}</small>
             </div>

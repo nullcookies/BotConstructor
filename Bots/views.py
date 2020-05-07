@@ -189,15 +189,7 @@ class GenerateFile(LoginRequiredMixin, View):
             )
             bot_object.save()
 
-        path = open_test_bot(request, token)
-        with open(path, 'r', encoding='utf-8') as file:
-            content = file.read()
-        context = {
-            'title': 'Third Step - BotConstructor',
-            'content': content,
-            'token': token
-        }
-        return render(request, 'ThirdStep.html', context)
+        return redirect('create_bot_third_step_url', token=token)
 
 
 class RunBot(LoginRequiredMixin, View):
