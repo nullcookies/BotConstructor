@@ -207,7 +207,7 @@ class UserRegistration(View):
                         to_emails=to_email,
                         subject=mail_subject,
                         html_content=message_content)
-                    print(message)
+
                     try:
                         sg = SendGridAPIClient(
                             'SG.48GCbtEqQtuRsR-25DMAZw.'
@@ -217,7 +217,6 @@ class UserRegistration(View):
                         print(response.status_code)
                     except Exception as e:
                         print(e.message)
-
                     request.session['count_registration'] = 1
 
                     messages.error(
