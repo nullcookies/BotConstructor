@@ -7,7 +7,7 @@
 
 <style>
     #showcase3 {
-        background: url("{% static 'pictures/some13.jpg' %}") center center/cover no-repeat;
+        background: url("{% static 'pictures/some13.png' %}") center center/cover no-repeat;
         min-height: 350px;
         max-height: 350px;
         position: relative;
@@ -58,11 +58,10 @@
             {% endfor %}
             {% endif %}
 
-
-            {{ auth_form.username.label }}
+            <label for="id_username" class="mb-0">{{ auth_form.username.label }}</label>
             {{ auth_form.username }}
             <div class="mb-2 mt-2">
-                {{ auth_form.password.label }}
+                <label for="id_password" class="mb-0">{{ auth_form.password.label }}</label>
                 {{ auth_form.password }}
             </div>
 

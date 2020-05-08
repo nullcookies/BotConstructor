@@ -59,11 +59,3 @@ function onCheck() {
     document.getElementById('inline').className += ' disabled';
     document.getElementById('id_menu_callback').className += ' disabled';
 }
-
-
-function changeSome() {
-    var react = document.getElementById('react_text_text');
-    if (react.value.trim().startsWith('/')) {
-        react.outerHTML = '<div class="input-group"><div class="input-group-prepend"><div class="input-group-text">/</div></div>]' + react + '</div>';
-    }
-}

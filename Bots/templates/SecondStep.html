@@ -38,9 +38,12 @@
 <div class="container">
     {% if messages %}
     {% for message in messages %}
-    <div
-        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm mt-5">
+    <div class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-5">
         {{ message }}
+
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
     {% endfor %}
     {% endif %}
@@ -128,19 +131,15 @@
                 class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-1 {% if request.path == reply_markup_url or request.path == reply_buttons_url %}active{% endif %}"
                 id="reply">Reply Buttons</a>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-3">
             <a href="{% url 'create_bot_second_step_inline_markup_url' token=token %}"
                 class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-1 {% if request.path == inline_markup_url or request.path == inline_buttons_url %}active{% endif %}"
                 id="inline">Inline Buttons</a>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-3">
             <a href="{% url 'create_callback_url' token=token %}"
                 class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-1 {% if request.path == callback_url %}active{% endif %}"
                 id="id_menu_callback">Callback</a>
-        </div>
-        <div class="col-md-2">
-            <a href="{% url 'templates' token=token %}"
-                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-1 {% if request.path == templates_url %}active{% endif %}">Templates</a>
         </div>
     </div>
 
@@ -218,7 +217,7 @@
 
                     <div class="col-md-12">
                         <textarea class="form-control mt-2 shadow-sm" style="height: 100%;"
-                            aria-describedby="inputGroup-sizing-sm" name="response_text_{{ text_item.0 }}"
+                            name="response_text_{{ text_item.0 }}"
                             id="response_text_text">{{ text_item.1.response_text }}</textarea>
                     </div>
 
@@ -877,12 +876,13 @@
     {% endif %}
 
 
-    <div class="mt-4">
-        <form action="{% url 'create_bot_second_step_next_step_url' token=token %}" class="mb-3" method="POST">
+    <div class="mb-5">
+        <form action="{% url 'create_bot_second_step_next_step_url' token=token %}" class="" method="POST">
             {% csrf_token %}
 
             <button type="submit"
-                class="btn btn-light text-dark border-bottom border-left border-right shadow btn-block mt-5">Generate file</button>
+                class="btn btn-light text-dark border-bottom border-left border-right shadow btn-block mt-5">Generate
+                file</button>
         </form>
     </div>
 </div>
@@ -899,9 +899,8 @@
 {% url 'templates' token=token as templates_url %}
 {% url 'create_callback_url' token=token as callback_url %}
 
-
 {% if request.path == text_url %}
-<script type="text/javascript" defer>
+<script type="text/javascript" async>
     $(document).on('submit', '#text-form', function (e) {
         e.preventDefault();
 
@@ -1048,7 +1047,7 @@
     }
 </script>
 {% elif request.path == reply_markup_url or request.path == reply_buttons_url %}
-<script type="text/javascript" defer>
+<script type="text/javascript" async>
     $(document).on('submit', '#id_reply_markup_create_form', function (e) {
         e.preventDefault();
         var checkboxes = $('#id_reply_checkboxes').find('input');
@@ -1394,7 +1393,7 @@
     }
 </script>
 {% elif request.path == callback_url %}
-<script type="text/javascript" defer>
+<script type="text/javascript" async>
     $(document).on('submit', '#id_create_callback', function (e) {
         e.preventDefault();
         var callback_text = $('#id_callback_text').find(":selected").text();
@@ -1533,7 +1532,7 @@
     }
 </script>
 {% elif request.path == inline_markup_url or request.path == inline_buttons_url %}
-<script type="text/javascript" defer>
+<script type="text/javascript" async>
     $(document).on('submit', '#id_inline_markup_create', function (e) {
         e.preventDefault();
 

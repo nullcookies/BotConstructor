@@ -7,7 +7,7 @@
 
 <style>
     #showcase4 {
-        background: url("{% static 'pictures/some13.jpg' %}") center center/cover no-repeat;
+        background: url("{% static 'pictures/some13.png' %}") center center/cover no-repeat;
         min-height: 350px;
         max-height: 350px;
         position: relative;
@@ -60,38 +60,36 @@
 
             <div class="form-row">
                 <div class="form-group col-md-6 mb-2">
-                    {{ register_form.first_name.label }}
+                    <label for="id_first_name" class="mb-0">{{ register_form.first_name.label }}</label>
                     {{ register_form.first_name }}
                 </div>
                 <div class="form-group col-md-6 mb-2">
-                    {{ register_form.last_name.label }}
+                    <label for="id_last_name" class="mb-0">{{ register_form.last_name.label }}</label>
                     {{ register_form.last_name }}
                 </div>
             </div>
             <div class="mb-2">
-                {{ register_form.email.label }}
+                <label for="id_email" class="mb-0">{{ register_form.email.label }}</label>
                 {{ register_form.email }}
             </div>
 
-            {{ register_form.username.label }}
+            <label for="id_username" class="mb-0">{{ register_form.username.label }}</label>
             {{ register_form.username }}
             <div class="form-row">
                 <div class="col-md-6 mt-2">
-                    {{ register_form.password_some.label }}
+                    <label for="id_password_some" class="mb-0">{{ register_form.password_some.label }}</label>
                     {{ register_form.password_some }}
                 </div>
                 <div class="col-md-6 mt-2">
-                    {{ register_form.password_confirm.label }}
+                    <label for="id_password_confirm" class="mb-0">{{ register_form.password_confirm.label }}</label>
                     {{ register_form.password_confirm }}
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="col-md-12">
-                    <div class="mt-2">
-                        {{ profile_form.about.label }}
-                    </div>
-                    <div class="mb-3">
+                    <div class="mt-2 mb-3">
+                        <label for="id_about" class="mb-0">{{ profile_form.about.label }}</label>
                         {{ profile_form.about }}
                     </div>
                 </div>
