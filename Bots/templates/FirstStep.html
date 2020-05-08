@@ -27,6 +27,8 @@
             <li>There follow the instructions and generate the token</li>
             <li>Copy API token and input this in form</li>
         </ul>
+        <h5 class="text-light mt-4">Warning. If the token isn't valid, form below won't complete automatically and you
+            won't go on the next step...</h5>
     </div>
 </section>
 
@@ -73,7 +75,7 @@
 
 
 {% block javascript %}
-<script type="text/javascript" defer>
+<script type="text/javascript" async>
     function getCredentialsOfBot(form) {
         var token = $(form).find('#id_access_token').val();
 
