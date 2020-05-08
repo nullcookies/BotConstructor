@@ -44,7 +44,8 @@
 
 <div class="shadow p-5">
     <div class="container">
-        <form method="POST" onchange="getCredentialsOfBot(this); return false;">
+        <form method="POST" onchange="getCredentialsOfBot(this); return false;"
+            onmouseover="getCredentialsOfBot(this); return false;">
             {% csrf_token %}
 
             <label for="id_access_token" class="mb-0">{{ first_form.access_token.label }}</label>
@@ -84,6 +85,7 @@
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
             },
             success: function (json) {
+                console.log(json);
                 if ('title' in json && "username" in json) {
                     document.getElementById('id_title').value = json.title;
                     document.getElementById('id_username').value = json.username;

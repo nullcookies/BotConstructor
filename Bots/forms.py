@@ -37,8 +37,7 @@ class CreateBotForm(forms.ModelForm):
 class GetAccessToken(forms.Form):
     access_token = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control shadow-sm',
-        'placeholder': 'Access Token',
-        'onmouseover': "getCredentialsOfBot(this); return false;"
+        'placeholder': 'Access Token'
     }))
     title = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control shadow-sm',
