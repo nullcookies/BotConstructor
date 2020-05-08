@@ -37,38 +37,40 @@ class CreateBotStepOne(LoginRequiredMixin, View):
 
         if first_form.is_valid():
             access_token = first_form.cleaned_data['access_token']
+            title = first_form.cleaned_data['title']
+            username = first_form.cleaned_data['username']
 
             try:
                 bot = telebot.TeleBot(
                     access_token
                 )
+                current_user_profile = Profile.objects.get(user=request.user)
+                is_existed_bot = list(Bot.objects.filter(
+                    access_token=access_token,
+                    owner=current_user_profile
+                ))
+                if is_existed_bot != []:
+                    messages.error(
+                        request, 'You already had bot with this token...')
+                    return redirect('show_bots_url')
+
+                data.update({
+                    'access_token': access_token,
+                    'name': bot.get_me().first_name,
+                    'username': bot.get_me().username
+                })
+
+                path = open_configuration(request, access_token)
+                with open(path, 'w', encoding='utf-8') as file:
+                    json.dump(data, file, indent=4, ensure_ascii=False)
+                return redirect(
+                    'create_bot_second_step_text_url',
+                    token=access_token
+                )
             except Exception:
                 messages.error(
-                    request, 'Access token is not valid... Try another...')
-
-            current_user_profile = Profile.objects.get(user=request.user)
-            is_existed_bot = list(Bot.objects.filter(
-                access_token=access_token,
-                owner=current_user_profile
-            ))
-            if is_existed_bot != []:
-                messages.error(
-                    request, 'You already had bot with this token...')
-                return redirect('show_bots_url')
-
-            data.update({
-                'access_token': access_token,
-                'name': bot.get_me().first_name,
-                'username': bot.get_me().username
-            })
-
-            path = open_configuration(request, access_token)
-            with open(path, 'w', encoding='utf-8') as file:
-                json.dump(data, file, indent=4, ensure_ascii=False)
-            return redirect(
-                'create_bot_second_step_text_url',
-                token=access_token
-            )
+                    request, 'Access token is not valid... '
+                    'Try another... or wait for 3 minutes')
 
         context = {
             'title': 'First Step - BotConstructor',
@@ -90,10 +92,13 @@ class UntilFirstStep(View):
             return JsonResponse({
                 'title': title,
                 'username': username,
-                'csrfmiddlewaretoken': data['csrfmiddlewaretoken']
+                'csrfmiddlewaretoken': data['csrfmiddlewaretoken'],
+                'button': True
             })
         except Exception:
-            return JsonResponse({})
+            return JsonResponse({
+                'button': False
+            })
 
 
 class CreateBotStepThree(LoginRequiredMixin, View):

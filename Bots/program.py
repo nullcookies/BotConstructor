@@ -346,16 +346,17 @@ class CallbackBuilder:
     def __generate_callback_code(self):
         object_text = ''
         for key, value in self.__callback_dictionary.items():
-            object_text += """
-                @bot.callback_query_handler(func=lambda call: call.data == '%s' % '{0}')
+            object_text += textwrap.dedent(f"""
+                @bot.callback_query_handler(
+                    func=lambda call: call.data == '%s' % '{key}')
                 def get_callback(call):
                     try:
                         bot.send_message(chat_id=call.from_user.id,
-                                        text="%s" % '{1}')
+                                        text={repr(value['response_text'])})
                     except Exception as error:
                         pass
 
-            """.format(key, value['response_text'])
+            """)
 
         final_path = os.path.join(PATH, f'{self.__username}')
         path = os.path.join(
