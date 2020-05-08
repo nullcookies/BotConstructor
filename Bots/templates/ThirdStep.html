@@ -30,6 +30,17 @@
 </section>
 
 
+{% if messages %}
+{% for message in messages %}
+<div class="shadow p-5">
+    <div class="container">
+        <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+
 <div class="container">
     <div class="form-row mt-5">
         <!-- <div class="col-md-4">
@@ -44,7 +55,8 @@
         </div>
         <div class="col-md-6">
             {% if config|check_online == 'The bot is hosted' %}
-            <a class="btn btn-outline-light border-bottom text-muted border-left border-right shadow-sm btn-block">Deploy</a>
+            <a
+                class="btn btn-outline-light border-bottom text-muted border-left border-right shadow-sm btn-block">Deploy</a>
             {% else %}
             <a href="{% url 'auto_deploy_url' token=token %}"
                 class="btn btn-outline-light border-bottom text-danger border-left border-right shadow-sm btn-block">Deploy</a>

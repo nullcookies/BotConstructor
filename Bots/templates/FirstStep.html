@@ -35,15 +35,15 @@
 
 <div id="error"></div>
 
-<div class="container">
-    {% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-light text-dark border-bottom border-left border-right shadow-sm mt-4">
-        {{ message }}
+{% if messages %}
+{% for message in messages %}
+<div class="shadow p-5">
+    <div class="container">
+        <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
     </div>
-    {% endfor %}
-    {% endif %}
 </div>
+{% endfor %}
+{% endif %}
 
 <div class="shadow p-5">
     <div class="container">

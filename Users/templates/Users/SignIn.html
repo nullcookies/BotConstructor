@@ -26,37 +26,30 @@
     </div>
 </section>
 
+{% if messages %}
+{% for message in messages %}
+<div class="shadow p-5">
+    <div class="container">
+        <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+{% for field in auth_form %}
+{% if field.errors %}
+<div class="shadow p-5">
+    <div class="container">
+        <p style="font-size: 18px;" class="mb-0">{{ field.errors }}</p>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
 
 <div class="shadow p-5">
     <div class="container">
         <form method="POST">
             {% csrf_token %}
-
-            {% for field in auth_form %}
-            {% if field.errors %}
-            <div
-                class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
-                {{ field.errors }}
-
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            {% endif %}
-            {% endfor %}
-
-            {% if messages %}
-            {% for message in messages %}
-            <div
-                class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
-                {{ message }}
-
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            {% endfor %}
-            {% endif %}
 
             <label for="id_username" class="mb-0">{{ auth_form.username.label }}</label>
             {{ auth_form.username }}

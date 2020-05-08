@@ -29,18 +29,20 @@
     </div>
 </section>
 
+{% if messages %}
+{% for message in messages %}
+<div class="shadow p-5">
+    <div class="container">
+        <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+
 {% for bot in all_bots %}
 <div class="shadow p-5">
     <div class="container">
-
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-light text-dark border-bottom border-left border-right shadow-sm mb-5">
-            {{ message }}
-        </div>
-        {% endfor %}
-        {% endif %}
-
         <div class="row">
             <div class="col-md-7">
                 <h5>Title - {{ bot.title }} | Username - {{ bot.username }}</h5>

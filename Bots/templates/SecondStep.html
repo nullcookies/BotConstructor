@@ -34,20 +34,17 @@
     </div>
 </section>
 
+{% if messages %}
+{% for message in messages %}
+<div class="shadow p-5">
+    <div class="container">
+        <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
 
 <div class="container">
-    {% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-5">
-        {{ message }}
-
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    {% endfor %}
-    {% endif %}
-
     {% for field in text_form %}
     {% if field.errors %}
     <div

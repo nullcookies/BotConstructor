@@ -26,34 +26,25 @@
     </div>
 </section>
 
-
-<div class="container">
-    {% for field in update_form %}
-    {% if field.errors %}
-    <div
-        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
-        {{ field.errors }}
-
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
+{% for field in update_form %}
+{% if field.errors %}
+<div class="shadow p-5">
+    <div class="container">
+        <p style="font-size: 18px;" class="mb-0">{{ field.errors }}</p>
     </div>
-    {% endif %}
-    {% endfor %}
-
-    {% if messages %}
-    {% for message in messages %}
-    <div
-        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
-        {{ message }}
-
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    {% endfor %}
-    {% endif %}
 </div>
+{% endif %}
+{% endfor %}
+
+{% if messages %}
+{% for message in messages %}
+<div class="shadow p-5">
+    <div class="container">
+        <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
 
 <form method="POST" action="{% url 'update_profile_url' %}" enctype="multipart/form-data">
     {% csrf_token %}
