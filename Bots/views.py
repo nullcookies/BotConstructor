@@ -189,10 +189,10 @@ class GenerateFile(LoginRequiredMixin, View):
         some_path = open_test_bot(request=request, token=token)
         with open(some_path, 'r+', encoding='utf-8') as file:
             content_code = file.read()
-            fixed_code = autopep8.fix_code(content_code)
+            # fixed_code = autopep8.fix_code(content_code)
             file.seek(0)
             file.truncate()
-            file.write(fixed_code)
+            file.write(content_code)
 
         file_script_path = open_test_bot(request=request, token=token)
         file_config_path = open_configuration(request=request, token=token)

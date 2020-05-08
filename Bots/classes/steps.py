@@ -131,7 +131,7 @@ class CreateBotStepThree(LoginRequiredMixin, View):
         fixed_code = autopep8.fix_code(code)
         try:
             is_right_sliced = autopep8.check_syntax(code[:-30])
-            exec(is_right_sliced)
+            exec(code[:-30])
 
             with open(path, 'w', encoding='utf-8') as file:
                 file.write(fixed_code)
@@ -139,7 +139,8 @@ class CreateBotStepThree(LoginRequiredMixin, View):
                 'create_bot_third_step_url',
                 token=token
             )
-        except (NameError, ValueError, TypeError, AttributeError) as error:
+        except (NameError, ValueError, TypeError, AttributeError,
+                IndentationError) as error:
             messages.error(
                 request,
                 'You made a mistake in changing the program. '
