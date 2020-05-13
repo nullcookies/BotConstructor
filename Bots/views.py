@@ -32,6 +32,11 @@ from json import JSONDecodeError
 data = {}
 
 
+# Loading page
+def loading_page(request):
+    return render(request, 'PreloadingPage.html')
+
+
 class ShowBots(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'show_bots_url'

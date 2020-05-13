@@ -8,6 +8,7 @@ DBScriptsBots/
 user_images/
 media/
 *.exe
+bot.py
 
 # C extensions
 *.so

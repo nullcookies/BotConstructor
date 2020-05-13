@@ -29,7 +29,6 @@
     </div>
 </section>
 
-
 {% if messages %}
 {% for message in messages %}
 <div class="shadow p-5">
@@ -55,11 +54,12 @@
         </div>
         <div class="col-md-6">
             {% if config|check_online == 'The bot is hosted' %}
-            <a
-                class="btn btn-outline-light border-bottom text-muted border-left border-right shadow-sm btn-block">Deploy</a>
+            <a class="btn btn-outline-light border-bottom text-muted border-left border-right shadow-sm btn-block"
+                disabled="disabled">Deploy</a>
             {% else %}
             <a href="{% url 'auto_deploy_url' token=token %}"
-                class="btn btn-outline-light border-bottom text-danger border-left border-right shadow-sm btn-block">Deploy</a>
+                class="btn btn-outline-light border-bottom text-danger border-left border-right shadow-sm btn-block"
+                onclick="postload();">Deploy</a>
             {% endif %}
         </div>
     </div>
@@ -102,5 +102,9 @@
     editor.setTheme("ace/theme/github");
     editor.session.setMode("ace/mode/python");
     editor.setFontSize(15);
+
+    function postload() {
+        $('body').load("{% url 'loading' %}");
+    }
 </script>
 {% endblock javascript %}

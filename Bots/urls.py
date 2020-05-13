@@ -152,5 +152,10 @@ urlpatterns = [
         'untilFirstStep/',
         UntilFirstStep.as_view(),
         name='until_first_step'
+    ),
+    path(
+        'preloadingPage',
+        loading_page,
+        name='loading'
     )
 ]

@@ -54,7 +54,8 @@
                     <p class="text-muted"><a href="{% url 'stop_bot_url' token=bot.access_token %}">Stop hosting</a>
                     </p>
                     {% else %}
-                    <p class="text-danger"><a href="{% url 'start_bot_url' token=bot.access_token %}" class="mr-2">Start
+                    <p class="text-danger"><a href="{% url 'start_bot_url' token=bot.access_token %}" class="mr-2"
+                            onclick="postload();">Start
                             hosting</a></p>
                     {% endif %}
                 </div>
@@ -86,7 +87,12 @@
     </div>
 </div>
 {% endfor %}
-
-<!-- </div> -->
-<!-- </div> -->
 {% endblock main_section %}
+
+{% block javascript %}
+<script type="text/javascript" defer>
+    function postload() {
+        $('body').load("{% url 'loading' %}");
+    }
+</script>
+{% endblock javascript %}
