@@ -88,8 +88,17 @@
 <script type="text/javascript" async>
     var countHover = 0;
     var params = {};
+    var currentToken = '';
+
     function getCredentialsOfBot(form) {
         var token = $(form).find('#id_access_token').val();
+
+        if (token !== currentToken) {
+            currentToken = token;
+            params = {};
+            countHover = 0;
+        }
+
         if (token !== '') {
             if (countHover === 0) {
                 document.getElementById('input_access').innerHTML = `<div class="input-group">
@@ -114,7 +123,6 @@
                         csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                     },
                     success: function (json) {
-                        console.log(json);
                         if ('title' in json && "username" in json) {
                             document.getElementById('id_title').value = json.title;
                             document.getElementById('id_username').value = json.username;
@@ -125,6 +133,7 @@
                                 document.getElementById('id_button_nxt').removeAttribute('disabled');
                                 document.getElementById('input_access').innerHTML = `<input type="text" name="access_token" class="form-control shadow-sm" placeholder="Access Token" required="" id="id_access_token" value="` + token + `">`;
                                 params = json;
+                                currentToken = token;
                             }
                         }
                         else {

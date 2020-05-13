@@ -21,7 +21,7 @@ class Profile(models.Model):
         if self.id and self.image:
             image = Image.open(self.image)
             width, height = image.size
-            print(width, height)
+
             if width > 600 or height > 600:
                 image = image.resize((width//2, height//2), Image.ANTIALIAS)
             image.save(self.image.path)
