@@ -21,14 +21,14 @@
 {% include 'Navbar.html' %}
 <section id="showcase7" class="d-flex justify-content-center align-items-center shadow">
     <div id="header" class="container text-white">
-        <h4 class="text-light">Configure your bot here</h4>
+        <h4 class="text-light">Here you need to configure your bot</h4>
         <ul class="text-light">
             {% if request.path == templates_url %}
             <li>Select one of the proposed options here to continue editing it</li>
             <li>After the election you will be missing the rest of the editing settings.</li>
             {% else %}
-            <li>Click on one of the submenu items to start</li>
-            <li>Correctly fill out all of the form data</li>
+            <li>Click on one of the submenu items to start the configuration.</li>
+            <li>Correctly fill in all form data</li>
             {% endif %}
         </ul>
     </div>

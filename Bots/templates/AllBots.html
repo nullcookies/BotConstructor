@@ -43,7 +43,7 @@
 {% for bot in all_bots %}
 <div class="shadow p-5">
     <div class="container">
-        <div class="row">
+        <div class="row mt-4">
             <div class="col-md-7">
                 <h5 class="text-dark">Title: {{ bot.title }}</h5>
                 <h5 class="text-dark mb-3">Username: {{ bot.username }}</h5>
@@ -51,7 +51,7 @@
 
             <div class="col-md-5">
                 <div class="float-right">
-                    {% if bot.file_config|check_online == 'The bot is hosted' %}
+                    {% if bot.file_config|check_online == 'The bot is now running' %}
                     <p class="text-muted"><a href="{% url 'stop_bot_url' token=bot.access_token %}">Stop hosting</a>
                     </p>
                     {% else %}

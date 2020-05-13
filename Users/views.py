@@ -93,7 +93,7 @@ class UserRegistration(View):
                         about = profile_form.cleaned_data['about']
 
                         if about == '':
-                            about = 'Write a little about yourself here ...'
+                            about = 'Write a little about yourself here...'
 
                         some_user = User.objects.create_user(
                             username=username, email=email, password=password,
@@ -175,7 +175,7 @@ class UserRegistration(View):
                     about = profile_form.cleaned_data['about']
 
                     if about == '':
-                        about = 'Write a little about yourself here ...'
+                        about = 'Write a little about yourself here...'
 
                     some_user = User.objects.create_user(
                         username=username, email=email, password=password,

@@ -26,8 +26,8 @@ def check_online(value: str):
         some_data = get_status_of_console(console_id)
 
         if some_data:
-            return 'The bot is hosted'
+            return 'The bot is now running'
         else:
-            return 'The bot is not hosted'
+            return 'The bot was not launched'
     else:
-        return 'The bot is not hosted'
+        return 'The bot was not launched'

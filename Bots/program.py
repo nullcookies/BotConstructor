@@ -124,7 +124,7 @@ class TextBuilder:
             if key in self.__text_dictionary.keys():
                 del self.__text_dictionary[key]
 
-        object_text = """
+        object_text = textwrap.dedent("""
         text_dictionary_messages = %s
         @bot.message_handler(func=lambda message: message.text \
 in text_dictionary_messages.keys())
@@ -132,7 +132,7 @@ in text_dictionary_messages.keys())
             bot.send_message(chat_id=message.chat.id,
                             text=f'{text_dictionary_messages[message.text][0]}')
 
-        """ % self.__text_dictionary
+        """) % self.__text_dictionary
 
         for key, value in new_dict.items():
             object_text += textwrap.dedent(f"""

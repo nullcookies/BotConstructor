@@ -14,15 +14,16 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
-    # def save(self, *args, **kwargs):
-    #     print(self.image)
-    #     super(Profile, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        print(self.image)
+        super(Profile, self).save(*args, **kwargs)
 
-    #     if self.id and self.image:
-    #         image = Image.open(self.image)
-    #         width, height = image.size
-
-    #         image = image.resize((width//2, height//2), Image.ANTIALIAS)
-    #         image.save(self.image.path)
-    #     else:
-    #         return
+        if self.id and self.image:
+            image = Image.open(self.image)
+            width, height = image.size
+            print(width, height)
+            if width > 600 or height > 600:
+                image = image.resize((width//2, height//2), Image.ANTIALIAS)
+            image.save(self.image.path)
+        else:
+            return
