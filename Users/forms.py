@@ -24,7 +24,8 @@ class UserRegistrationForm(forms.ModelForm):
         widgets = {
             'username': forms.TextInput(attrs={
                 'class': 'form-control shadow-sm',
-                'placeholder': 'Username'
+                'placeholder': 'Username',
+                'required': True
             }),
             'email': forms.EmailInput(attrs={
                 'class': 'form-control shadow-sm',
@@ -33,11 +34,13 @@ class UserRegistrationForm(forms.ModelForm):
             }),
             'first_name': forms.TextInput(attrs={
                 'class': 'form-control shadow-sm',
-                'placeholder': 'First name'
+                'placeholder': 'First name',
+                'required': True
             }),
             'last_name': forms.TextInput(attrs={
                 'class': 'form-control shadow-sm',
-                'placeholder': 'Last name'
+                'placeholder': 'Last name',
+                'required': True
             })
         }
 
@@ -97,14 +100,16 @@ class UserAuthenticationForm(forms.Form):
         label='Username',
         widget=forms.TextInput(attrs={
             'class': 'form-control shadow-sm',
-            'placeholder': 'Username'
+            'placeholder': 'Username',
+            'required': True
         })
     )
     password = forms.CharField(
         label='Password',
         widget=forms.PasswordInput(attrs={
             'class': 'form-control shadow-sm',
-            'placeholder': 'Password'
+            'placeholder': 'Password',
+            'required': True
         })
     )
 

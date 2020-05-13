@@ -45,7 +45,8 @@
     <div class="container">
         <div class="row">
             <div class="col-md-7">
-                <h5>Title - {{ bot.title }} | Username - {{ bot.username }}</h5>
+                <h5 class="text-dark">Title: {{ bot.title }}</h5>
+                <h5 class="text-dark mb-3">Username: {{ bot.username }}</h5>
             </div>
 
             <div class="col-md-5">
@@ -59,7 +60,6 @@
                             hosting</a></p>
                     {% endif %}
                 </div>
-                <small class="text-muted float-right mr-2 mt-1">{{ bot.file_config|check_online }}</small>
             </div>
         </div>
 
@@ -76,11 +76,10 @@
             style="width: 100px;">󠁛󠁛󠁛Delete</a>
 
         <div class="row mt-3">
-            <div class="col-6">
-                <strong class="text-muted">{{ bot.owner.user.first_name }}
-                    {{ bot.owner.user.last_name }}</strong>
+            <div class="col-md-6">
+                <p class="text-muted">{{ bot.file_config|check_online }}</p>
             </div>
-            <div class="col-6">
+            <div class="col-md-6">
                 <small class="text-muted float-right">{{ bot.date_created }}</small>
             </div>
         </div>
