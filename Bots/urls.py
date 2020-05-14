@@ -154,8 +154,18 @@ urlpatterns = [
         name='until_first_step'
     ),
     path(
-        'preloadingPage',
+        'preloadingPage/',
         loading_page,
         name='loading'
+    ),
+    path(
+        'botLogs/<str:token>/',
+        BotLogs.as_view(),
+        name='logs'
+    ),
+    path(
+        'downloadLogs/<str:token>/',
+        download_log,
+        name='download_log_url'
     )
 ]

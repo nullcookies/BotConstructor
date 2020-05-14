@@ -42,11 +42,6 @@
 
 <div class="container">
     <div class="form-row mt-5">
-        <!-- <div class="col-md-4">
-            <a href="{% url 'download_config_url' token=token %}"
-                class="btn btn-outline-light text-primary border-bottom border-left border-right shadow-sm btn-block">
-                Download config</a>
-        </div> -->
         <div class="col-md-6">
             <a href="{% url 'download_script_url' token=token %}"
                 class="btn btn-outline-light text-dark border-bottom border-left border-right shadow-sm btn-block mb-2">
@@ -96,10 +91,10 @@
 
 {% block javascript %}
 <script src="{% static 'js/script.js' %}" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.7/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ace.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" defer>
     var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/github");
+    editor.setTheme("ace/theme/dawn");
     editor.session.setMode("ace/mode/python");
     editor.setFontSize(15);
 

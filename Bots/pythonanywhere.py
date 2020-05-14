@@ -1,6 +1,8 @@
 import requests
 import os
 import json
+import string
+import re
 
 from pprint import pprint
 from time import sleep
@@ -138,6 +140,39 @@ class AutoDeploy:
         self.open_console()
         self.send_input(console_id)
 
+    def _write_to_log_file(self, request, token: str,
+                           data: dict, username: str, console_id: int):
+        path = os.path.join(
+            BASE_DIR, 'BotConstructor', 'media',
+            'ScriptsBots', username,
+            "{}_{}_output.log".format(username, token.replace(':', '_'))
+        )
+        response = requests.get(
+            self.BASE_URL +
+            '/api/v0/user/{username}/consoles/{id}/get_latest_output/'.format(
+                username=self.USERNAME,
+                id=str(console_id)
+            ),
+            headers={
+                'Authorization': 'Token {token}'.format(token=self.TOKEN)
+            }
+        )
+        if response.status_code == 200:
+            output = response.json()["output"]
+
+            ansi_escape = re.compile(
+                r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])", re.VERBOSE)
+            result = ansi_escape.sub('', output)
+
+            printable = set(string.printable)
+            new_output = ''.join(filter(lambda x: x in printable, result))
+
+            with open(path, 'w') as file:
+                file.write("{output}\n".format(output=new_output.strip()))
+        else:
+            print('Got unexpected status code {}: {!r}'.format(
+                response.status_code, response.content))
+
 
 def get_status_of_console(console_id: int) -> bool:
     TOKEN = '54be38d4e853d62835b2c970d6b6fc23a653b901'
@@ -159,32 +194,12 @@ def get_status_of_console(console_id: int) -> bool:
     if 'detail' in data.keys():
         return False
     else:
-        # latest_output = get_latest_output_of_current_console(console_id)
-        # if latest_output == 'bot.py' or 'bot.py' in latest_output:
-        #     return True
-        # else:
-        #     return False
         return True
 
 
-# def get_latest_output_of_current_console(console_id: int) -> str:
-#     TOKEN = '54be38d4e853d62835b2c970d6b6fc23a653b901'
-#     HEADERS = {
-#         'Authorization': f'Token {TOKEN}'
-#     }
-#     USERNAME = 'AlexanderIvanov20'
-#     BASE_URL = 'https://www.pythonanywhere.com'
-
-#     current_console_url = (
-#         f'{BASE_URL}/api/v0/user/'
-#         f'{USERNAME}/consoles/{console_id}/get_latest_output/'
-#     )
-#     latest_output = requests.get(
-#         current_console_url, headers=HEADERS)
-#     print(latest_output)
-#     data = latest_output.json()['output'].strip().split('_')[-1]
-#     return data
-
-
 if __name__ == '__main__':
-    print(get_status_of_console(console_id=15220236))
+    deploy = AutoDeploy(
+        "AlexanderIvanov_"
+        "1023044822_AAFFTiQYlALBh7kydHwpSGtTT_q9xV9Vens_test_bot.py"
+    )
+    deploy._write_to_log_file()

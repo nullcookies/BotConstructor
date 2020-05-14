@@ -48,7 +48,8 @@ class ShowBots(LoginRequiredMixin, View):
 
         try:
             current_user_profile = Profile.objects.get(user=request.user)
-            all_bots = Bot.objects.filter(owner=current_user_profile)[::-1]
+            all_bots = Bot.objects.filter(
+                owner=current_user_profile).order_by('-date_created')
             if not all_bots:
                 messages.error(request, 'No bots here')
 
@@ -61,7 +62,49 @@ class ShowBots(LoginRequiredMixin, View):
         return render(request, 'AllBots.html', context)
 
 
-class DeleteBot(View):
+class BotLogs(LoginRequiredMixin, View):
+    login_url = '/signIn/'
+    redirect_field_name = 'logs'
+
+    def get(self, request, token):
+        path = open_configuration(request, token)
+        with open(path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+
+        if 'console_id' in data.keys():
+            log_path = os.path.join(
+                settings.BASE_DIR, 'BotConstructor', 'media',
+                'ScriptsBots', request.user.username,
+                "{}_{}_output.log".format(
+                    request.user.username, token.replace(':', '_'))
+            )
+
+            deploy = AutoDeploy(
+                file_title=f'{request.user.username}_{token}_test_bot.py'
+            )
+            deploy._write_to_log_file(
+                request, token, data, request.user.username,
+                data['console_id']
+            )
+
+            with open(log_path, 'r', encoding='utf-8') as file:
+                content = file.read()
+        else:
+            messages.error(request, 'Your bot is not hosting now')
+            return redirect('show_bots_url')
+
+        context = {
+            'title': 'Logs - BotConstructor',
+            'content': content,
+            'token': token
+        }
+        return render(request, 'Logs.html', context)
+
+
+class DeleteBot(LoginRequiredMixin, View):
+    login_url = '/signIn/'
+    redirect_field_name = 'delete_bot_url'
+
     def get(self, request, bot_id: int):
         context = {
             'title': 'Delete Bot - BotConstructor'
@@ -404,9 +447,28 @@ class Download:
         if os.path.exists(file_path):
             with open(file_path, 'rb') as file:
                 response = HttpResponse(
-                    file.read(), content_type='application/test_bot.py')
+                    file.read(), content_type='application/bot_script.py')
                 response[
                     'Content-Disposition'
                 ] = f'inline; filename={os.path.basename(file_path)}'
                 return response
         return Http404
+
+
+@login_required
+def download_log(request, token: str):
+    log_path = os.path.join(
+        settings.BASE_DIR, 'BotConstructor', 'media',
+        'ScriptsBots', request.user.username,
+        "{}_{}_output.log".format(
+            request.user.username, token.replace(':', '_'))
+    )
+    if os.path.exists(log_path):
+        with open(log_path, 'rb') as file:
+            response = HttpResponse(
+                file.read(), content_type='application/bot_output.log')
+            response[
+                'Content-Disposition'
+            ] = f'inline; filename={os.path.basename(log_path)}'
+            return response
+    return Http404

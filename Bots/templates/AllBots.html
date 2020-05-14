@@ -43,7 +43,7 @@
 {% for bot in all_bots %}
 <div class="shadow p-5">
     <div class="container">
-        <div class="row mt-4">
+        <div class="row mt-2">
             <div class="col-md-7">
                 <h5 class="text-dark">Title: {{ bot.title }}</h5>
                 <h5 class="text-dark mb-3">Username: {{ bot.username }}</h5>
@@ -52,12 +52,18 @@
             <div class="col-md-5">
                 <div class="float-right">
                     {% if bot.file_config|check_online == 'The bot is now running' %}
-                    <p class="text-muted"><a href="{% url 'stop_bot_url' token=bot.access_token %}">Stop hosting</a>
-                    </p>
+                    <div class="form-row">
+                        <a href="{% url 'stop_bot_url' token=bot.access_token %}" id="stop_{{ forloop.counter0 }}"
+                            class="mr-1" onclick="stopSpinner(`stop_{{ forloop.counter0 }}`);">Stop
+                            hosting</a>
+                    </div>
+                    <a href="{% url 'logs' token=bot.access_token %}" class="float-right">Logs</a>
                     {% else %}
-                    <p class="text-danger"><a href="{% url 'start_bot_url' token=bot.access_token %}" class="mr-2"
-                            onclick="postload();">Start
-                            hosting</a></p>
+                    <div class="form-row">
+                        <a href="{% url 'start_bot_url' token=bot.access_token %}" class="mr-1"
+                            id="start_{{ forloop.counter0 }}"
+                            onclick="stopSpinner(`start_{{ forloop.counter0 }}`);">Start hosting</a>
+                    </div>
                     {% endif %}
                 </div>
             </div>
@@ -90,8 +96,9 @@
 
 {% block javascript %}
 <script type="text/javascript" defer>
-    function postload() {
-        $('body').load("{% url 'loading' %}");
+    function stopSpinner(button) {
+        document.getElementById(button).innerHTML +=
+            `<div class="spinner-border text-primary mt-1 mr-1 ml-1" role="status"><span class="sr-only">Loading...</span></div>`;
     }
 </script>
 {% endblock javascript %}

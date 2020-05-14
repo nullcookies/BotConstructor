@@ -9,6 +9,7 @@ user_images/
 media/
 *.exe
 bot.py
+test.py
 
 # C extensions
 *.so

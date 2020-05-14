@@ -79,11 +79,12 @@ class CreateBotStepOne(LoginRequiredMixin, View):
         return render(request, 'FirstStep.html', context)
 
 
-class UntilFirstStep(View):
+class UntilFirstStep(LoginRequiredMixin, View):
+    login_url = '/signIn/'
+    redirect_field_name = 'until_first_step'
+
     def post(self, request):
         data = dict(request.POST)
-        print(data)
-
         try:
             bot = telebot.TeleBot(data['token'][0])
             title = bot.get_me().first_name
