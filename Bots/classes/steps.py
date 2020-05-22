@@ -40,20 +40,20 @@ class CreateBotStepOne(LoginRequiredMixin, View):
             title = first_form.cleaned_data['title']
             username = first_form.cleaned_data['username']
 
+            current_user_profile = Profile.objects.get(user=request.user)
+            is_existed_bot = list(Bot.objects.filter(
+                access_token=access_token,
+                owner=current_user_profile
+            ))
+            if is_existed_bot != []:
+                messages.error(
+                    request, 'You already had bot with this token...')
+                return redirect('show_bots_url')
+
             try:
                 bot = telebot.TeleBot(
                     access_token
                 )
-                current_user_profile = Profile.objects.get(user=request.user)
-                is_existed_bot = list(Bot.objects.filter(
-                    access_token=access_token,
-                    owner=current_user_profile
-                ))
-                if is_existed_bot != []:
-                    messages.error(
-                        request, 'You already had bot with this token...')
-                    return redirect('show_bots_url')
-
                 data.update({
                     'access_token': access_token,
                     'name': bot.get_me().first_name,
