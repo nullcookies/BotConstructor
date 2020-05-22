@@ -56,19 +56,29 @@ class TextForm(forms.Form):
         'class': 'form-control shadow-sm',
         'placeholder': 'Response Text',
         'style': 'height: 80px'
-    }))
+    }), required=True)
     react_text = forms.CharField(
         widget=forms.TextInput(
             attrs={
                 'class': 'form-control shadow-sm',
-                'placeholder': 'React Text'
+                'placeholder': 'React Text',
+                'onchange': "languageDetect(this);"
             }
         ),
-        required=False
+        required=True
     )
     remove_reply_markup = forms.MultipleChoiceField(
         required=False, choices=(
             ('remove_reply', 'Remove Reply Markup'),
+        ), widget=forms.CheckboxSelectMultiple(
+            attrs={
+                'class': 'custom-control-input'
+            }
+        )
+    )
+    smart = forms.MultipleChoiceField(
+        required=False, choices=(
+            ('smart', 'Smart recognition'),
         ), widget=forms.CheckboxSelectMultiple(
             attrs={
                 'class': 'custom-control-input'
@@ -113,10 +123,14 @@ class ReplyMarkup(forms.Form):
             }
         )
     )
-    react_text = forms.CharField(widget=forms.TextInput(
-        attrs={
-            'class': 'form-control mb-2 shadow-sm', 'placeholder': 'React Text'
-        })
+    react_text = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control mb-2 shadow-sm',
+                'placeholder': 'React Text',
+                'onchange': "languageDetect(this);"
+            }
+        )
     )
     row_width = forms.IntegerField(max_value=5, min_value=1,
                                    widget=forms.NumberInput(attrs={
@@ -127,6 +141,15 @@ class ReplyMarkup(forms.Form):
         attrs={
             'class': 'form-control shadow-sm', 'placeholder': 'Response Text'
         })
+    )
+    smart = forms.MultipleChoiceField(
+        required=False, choices=(
+            ('smart', 'Smart recognition'),
+        ), widget=forms.CheckboxSelectMultiple(
+            attrs={
+                'class': 'custom-control-input'
+            }
+        )
     )
 
     def __init__(self, *args, **kwargs):
@@ -184,6 +207,15 @@ class InlineMarkup(forms.Form):
         'class': 'form-control shadow-sm',
         'placeholder': 'React Text'
     }))
+    smart = forms.MultipleChoiceField(
+        required=False, choices=(
+            ('smart', 'Smart recognition'),
+        ), widget=forms.CheckboxSelectMultiple(
+            attrs={
+                'class': 'custom-control-input'
+            }
+        )
+    )
 
 
 class InlineButton(forms.Form):

@@ -228,11 +228,15 @@ class GenerateFile(LoginRequiredMixin, View):
                 f'You have a problem buttons.' + callback[0]
             )
             if callback[1] == 'reply':
-                return redirect('create_bot_second_step_reply_buttons_url',
-                                token)
+                return redirect(
+                    'create_bot_second_step_reply_buttons_url',
+                    token
+                )
             else:
-                return redirect('create_bot_second_step_inline_buttons_url',
-                                token)
+                return redirect(
+                    'create_bot_second_step_inline_buttons_url',
+                    token
+                )
 
         some_path = open_test_bot(request=request, token=token)
         with open(some_path, 'r+', encoding='utf-8') as file:
@@ -454,21 +458,21 @@ class Download:
                 return response
         return Http404
 
-
-@login_required
-def download_log(request, token: str):
-    log_path = os.path.join(
-        settings.BASE_DIR, 'BotConstructor', 'media',
-        'ScriptsBots', request.user.username,
-        "{}_{}_output.log".format(
-            request.user.username, token.replace(':', '_'))
-    )
-    if os.path.exists(log_path):
-        with open(log_path, 'rb') as file:
-            response = HttpResponse(
-                file.read(), content_type='application/bot_output.log')
-            response[
-                'Content-Disposition'
-            ] = f'inline; filename={os.path.basename(log_path)}'
-            return response
-    return Http404
+    @staticmethod
+    @login_required
+    def download_log(request, token: str):
+        log_path = os.path.join(
+            settings.BASE_DIR, 'BotConstructor', 'media',
+            'ScriptsBots', request.user.username,
+            "{}_{}_output.log".format(
+                request.user.username, token.replace(':', '_'))
+        )
+        if os.path.exists(log_path):
+            with open(log_path, 'rb') as file:
+                response = HttpResponse(
+                    file.read(), content_type='application/bot_output.log')
+                response[
+                    'Content-Disposition'
+                ] = f'inline; filename={os.path.basename(log_path)}'
+                return response
+        return Http404

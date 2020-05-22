@@ -123,3 +123,12 @@
     transition: all 1s;
     box-shadow: 0 1rem 3rem #0000002d !important;
 }
+
+.shadow-effects {
+    transition: all 1s;
+}
+
+.shadow-effects:hover {
+    transition: all 1s;
+    box-shadow: 0 1rem 3rem #0000002d !important;
+}

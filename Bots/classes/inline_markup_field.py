@@ -13,9 +13,11 @@ class CreateInlineMarkupField(LoginRequiredMixin, View):
     redirect_field_name = 'create_bot_second_step_inline_markup_url'
 
     def get(self, request, token: str):
-        inline_markup_elements = enumerate_elements(request,
-                                                    token=token,
-                                                    get_object='inline_markup')
+        inline_markup_elements = enumerate_elements(
+            request,
+            token=token,
+            get_object='inline_markup'
+        )
         inline_markup_form = InlineMarkup()
         self.context.update({
             'title': 'Second Step - BotConstructor',
@@ -26,50 +28,58 @@ class CreateInlineMarkupField(LoginRequiredMixin, View):
         return render(request, 'SecondStep.html', self.context)
 
     def post(self, request, token: str):
-        inline_markup_elements = enumerate_elements(request,
-                                                    token=token,
-                                                    get_object='inline_markup')
-        inline_markup_form = InlineMarkup(request.POST)
+        inline_markup_elements = enumerate_elements(
+            request,
+            token=token,
+            get_object='inline_markup'
+        )
+        smart = request.POST.get("smart")
+        smart = True if smart == "true" else False
 
-        print(request.POST)
-        if request.POST.get('action') == 'create_inline_markup':
-            if inline_markup_form.is_valid():
-                print(inline_markup_form.cleaned_data)
-                row_width = int(inline_markup_form.cleaned_data['row_width'])
-                response_text = inline_markup_form.cleaned_data[
-                    'response_text'
-                ]
-                react_text = inline_markup_form.cleaned_data['react_text']
+        copied_request = request.POST.copy()
+        copied_request.pop('smart')
 
-                path = open_configuration(request, token)
-                with open(path, 'r+', encoding='utf-8') as file:
-                    object_config = json.load(file)
+        inline_markup_form = InlineMarkup(copied_request)
 
-                    try:
-                        object_config['inline_markup'].append({
-                            'row_width': row_width,
-                            'response_text': response_text,
-                            'react_text': react_text
-                        })
-                    except KeyError:
-                        object_config['inline_markup'] = [{
-                            'row_width': row_width,
-                            'react_text': react_text,
-                            'response_text': response_text
-                        }]
-                    file.seek(0)
-                    json.dump(object_config, file,
-                              indent=4, ensure_ascii=False)
-                    len_text = len(object_config['inline_markup']) - 1
+        if inline_markup_form.is_valid():
+            row_width = inline_markup_form.cleaned_data['row_width']
+            response_text = inline_markup_form.cleaned_data[
+                'response_text'
+            ]
+            react_text = inline_markup_form.cleaned_data['react_text']
 
-                    return JsonResponse({
+            path = open_configuration(request, token)
+            with open(path, 'r+', encoding='utf-8') as file:
+                object_config = json.load(file)
+
+                try:
+                    object_config['inline_markup'].append({
+                        'row_width': row_width,
+                        'response_text': response_text,
+                        'react_text': react_text,
+                        'smart': smart
+                    })
+                except KeyError:
+                    object_config['inline_markup'] = [{
+                        'row_width': row_width,
                         'react_text': react_text,
                         'response_text': response_text,
-                        'row_width': row_width,
-                        'token': token,
-                        'csrf': request.POST.get('csrfmiddlewaretoken'),
-                        'len_text': len_text
-                    })
+                        'smart': smart
+                    }]
+                file.seek(0)
+                json.dump(object_config, file,
+                          indent=4, ensure_ascii=False)
+                len_text = len(object_config['inline_markup']) - 1
+
+                return JsonResponse({
+                    'react_text': react_text,
+                    'response_text': response_text,
+                    'row_width': row_width,
+                    'token': token,
+                    'csrf': request.POST.get('csrfmiddlewaretoken'),
+                    'len_text': len_text,
+                    'smart': smart
+                })
 
         self.context.update({
             'title': 'Second Step - BotConstructor',
@@ -94,6 +104,8 @@ class UpdateInlineMarkupField(LoginRequiredMixin, View):
             react_text = request.POST.get('react_text')
             row_width = int(request.POST.get('row_width'))
             index = int(request.POST.get('markup_id'))
+            smart = request.POST.get('smart')
+            smart = True if smart == "true" else False
 
             path = open_configuration(request, token)
             with open(path, 'r', encoding='utf-8') as file:
@@ -103,6 +115,7 @@ class UpdateInlineMarkupField(LoginRequiredMixin, View):
             inline_markup_object[index]['react_text'] = react_text
             inline_markup_object[index]['response_text'] = response_text
             inline_markup_object[index]['row_width'] = row_width
+            inline_markup_object[index]['smart'] = smart
             object_config['inline_markup'] = inline_markup_object
 
             with open(path, 'w', encoding='utf-8') as file:

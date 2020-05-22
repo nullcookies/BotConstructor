@@ -5,17 +5,17 @@ function getInlineValues(form) {
     var callback = form.callback;
 
     var change_list = [
-        '<input type="url" name="url" class="form-control" placeholder="Url" id="id_url" readonly>',
-        '<input type="text" name="switch_inline" class="form-control" placeholder="Switch Inline Query" maxlength="50" id="id_switch_inline" readonly>',
-        '<input type="text" name="switch_inline_current" class="form-control" placeholder="Switch Inline Current Chat" maxlength="50" id="id_switch_inline_current" readonly>',
-        '<input type="text" name="callback" class="form-control" placeholder="Callback Data" maxlength="64" id="id_callback" readonly>'
+        '<input type="url" name="url" class="form-control shadow-sm" placeholder="Url" id="id_url" readonly>',
+        '<input type="text" name="switch_inline" class="form-control shadow-sm" placeholder="Switch Inline Query" maxlength="50" id="id_switch_inline" readonly>',
+        '<input type="text" name="switch_inline_current" class="form-control shadow-sm" placeholder="Switch Inline Current Chat" maxlength="50" id="id_switch_inline_current" readonly>',
+        '<input type="text" name="callback" class="form-control shadow-sm" placeholder="Callback Data" maxlength="64" id="id_callback" readonly>'
     ]
 
     var initial_list = [
-        '<input type="url" name="url" class="form-control" placeholder="Url" id="id_url">',
-        '<input type="text" name="switch_inline" class="form-control" placeholder="Switch Inline Query" maxlength="50" id="id_switch_inline">',
-        '<input type="text" name="switch_inline_current" class="form-control" placeholder="Switch Inline Current Chat" maxlength="50" id="id_switch_inline_current">',
-        '<input type="text" name="callback" class="form-control" placeholder="Callback Data" maxlength="64" id="id_callback">'
+        '<input type="url" name="url" class="form-control shadow-sm" placeholder="Url" id="id_url">',
+        '<input type="text" name="switch_inline" class="form-control shadow-sm" placeholder="Switch Inline Query" maxlength="50" id="id_switch_inline">',
+        '<input type="text" name="switch_inline_current" class="form-control shadow-sm" placeholder="Switch Inline Current Chat" maxlength="50" id="id_switch_inline_current">',
+        '<input type="text" name="callback" class="form-control shadow-sm" placeholder="Callback Data" maxlength="64" id="id_callback">'
     ]
 
     if (url.value.trim() != "") {
@@ -58,4 +58,19 @@ function onCheck() {
     document.getElementById('reply').className += ' disabled';
     document.getElementById('inline').className += ' disabled';
     document.getElementById('id_menu_callback').className += ' disabled';
+}
+
+
+function languageDetect(input) {
+    var text = input.value;
+    var checkbox = document.getElementById("id_smart_0");
+    if (!(/^[a-zA-Z]+$/.test(text))) {
+        if (checkbox.checked) {
+            checkbox.checked = false;
+        }
+        checkbox.disabled = true;
+    }
+    else {
+        if (checkbox.hasAttribute("disabled")) checkbox.disabled = false;
+    }
 }

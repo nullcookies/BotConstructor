@@ -36,7 +36,7 @@
 
 {% if messages %}
 {% for message in messages %}
-<div class="shadow p-5">
+<div class="shadow-effects shadow p-5">
     <div class="container">
         <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
     </div>
@@ -218,13 +218,19 @@
                             id="response_text_text">{{ text_item.1.response_text }}</textarea>
                     </div>
 
-                    <div class="col-md-12 mt-2">
+                    <div class="col-md-12 mt-3">
                         <div class="custom-control custom-checkbox custom-control-inline">
                             <input type="checkbox" name="remove_reply_markup_{{ text_item.0 }}"
                                 class="custom-control-input" {% if text_item.1.remove_reply_markup %}checked{% endif %}
                                 id="remove_reply_markup_{{ text_item.0 }}">
                             <label for="remove_reply_markup_{{ text_item.0 }}" class="custom-control-label">Remove Reply
                                 Markup</label>
+                        </div>
+
+                        <div class="custom-control custom-checkbox custom-control-inline">
+                            <input type="checkbox" name="smart_{{ text_item.0 }}" class="custom-control-input"
+                                {% if text_item.1.smart %}checked{% endif %} id="smart_{{ text_item.0 }}">
+                            <label for="smart_{{ text_item.0 }}" class="custom-control-label">Smart recognition</label>
                         </div>
                     </div>
                 </div>
@@ -253,7 +259,7 @@
 
             <div class="form-row">
                 <div class="col-md-10 mt-0">
-                    {{ text_form.react_text.label }}
+                    <label for="id_react_text" class="mb-0">{{ text_form.react_text.label }}</label>
                     {{ text_form.react_text }}
                 </div>
 
@@ -263,11 +269,11 @@
                 </div>
             </div>
             <div class="mt-2">
-                {{ text_form.response_text.label }}
+                <label for="id_response_text" class="mb-0">{{ text_form.response_text.label }}</label>
                 {{ text_form.response_text }}
             </div>
 
-            <div class="form-row ml-0 mt-1">
+            <div class="form-row ml-0 mt-2">
                 {% for pk, choice in text_form.remove_reply_markup.field.widget.choices %}
                 <div class="custom-control custom-checkbox custom-control-inline">
                     <input id="id_{{ text_form.remove_reply_markup.name }}_{{ forloop.counter0 }}"
@@ -276,6 +282,16 @@
                         class="custom-control-input"
                         {% ifequal text_form.remove_reply_markup.data pk.0 %}checked="checked" {% endifequal %}>
                     <label for="id_{{ text_form.remove_reply_markup.name }}_{{ forloop.counter0 }}"
+                        class="custom-control-label">{{ choice }}</label>
+                </div>
+                {% endfor %}
+                {% for pk, choice in text_form.smart.field.widget.choices %}
+                <div class="custom-control custom-checkbox custom-control-inline">
+                    <input id="id_{{ text_form.smart.name }}_{{ forloop.counter0 }}" name="{{ text_form.smart.name }}"
+                        type="{{ text_form.smart.field.widget.input_type }}" value="{{ pk }}"
+                        class="custom-control-input" {% ifequal text_form.smart.data pk.0 %}checked="checked"
+                        {% endifequal %}>
+                    <label for="id_{{ text_form.smart.name }}_{{ forloop.counter0 }}"
                         class="custom-control-label">{{ choice }}</label>
                 </div>
                 {% endfor %}
@@ -359,6 +375,17 @@
                                         id="s_{{ reply_markup_element.0 }}">
                                     <label for="s_{{ reply_markup_element.0 }}"
                                         class="custom-control-label">Selective</label>
+                                </div>
+                            </div>
+
+                            <div class="ml-1">
+                                <div class="custom-control custom-checkbox custom-control-inline">
+                                    <input type="checkbox" name="smart_{{ reply_markup_element.0 }}"
+                                        class="custom-control-input"
+                                        {% if reply_markup_element.1.smart %}checked{% endif %}
+                                        id="smart_{{ reply_markup_element.0 }}">
+                                    <label for="smart_{{ reply_markup_element.0 }}" class="custom-control-label">Smart
+                                        recognition</label>
                                 </div>
                             </div>
                         </div>
@@ -466,7 +493,7 @@
 
             <div class="form-row">
                 <div class="col-md-10">
-                    {{ reply_button_form.response_text.label }}
+                    <label for="id_response_text" class="mb-0">{{ reply_button_form.response_text.label }}</label>
                     {{ reply_button_form.response_text }}
                 </div>
                 <div class="col-md-2">
@@ -503,11 +530,11 @@
 
                 <div class="form-row">
                     <div class="col-md-10">
-                        {{ reply_markup_form.react_text.label }}
+                        <label for="id_react_text" class="mb-0">{{ reply_markup_form.react_text.label }}</label>
                         {{ reply_markup_form.react_text }}
                     </div>
                     <div class="col-md-2 mb-2">
-                        {{ reply_markup_form.row_width.label }}
+                        <label for="id_row_width" class="mb-0">{{ reply_markup_form.row_width.label }}</label>
                         {{ reply_markup_form.row_width }}
                     </div>
                 </div>
@@ -515,7 +542,8 @@
                 <div class="mb-2">
                     <div class="form-row">
                         <div class="col-md-10">
-                            {{ reply_markup_form.response_text_markup.label }}
+                            <label for="id_response_text_markup"
+                                class="mb-0">{{ reply_markup_form.response_text_markup.label }}</label>
                             {{ reply_markup_form.response_text_markup }}
                         </div>
                         <div class="col-md-2">
@@ -526,7 +554,7 @@
                 </div>
 
                 <div class="form-row">
-                    <div class="col-md-5">
+                    <div class="col-md-12">
                         <div class="form-row ml-0" id="id_reply_checkboxes">
                             {% for pk, choice in reply_markup_form.checkboxes.field.widget.choices %}
                             <div class="custom-control custom-checkbox custom-control-inline">
@@ -537,6 +565,17 @@
                                     {% ifequal reply_markup_form.checkboxes.data pk.0 %}checked="checked"
                                     {% endifequal %}>
                                 <label for="id_{{ reply_markup_form.checkboxes.name }}_{{ forloop.counter0 }}"
+                                    class="custom-control-label">{{ choice }}</label>
+                            </div>
+                            {% endfor %}
+                            {% for pk, choice in reply_markup_form.smart.field.widget.choices %}
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input id="id_{{ reply_markup_form.smart.name }}_{{ forloop.counter0 }}"
+                                    name="{{ reply_markup_form.smart.name }}"
+                                    type="{{ reply_markup_form.smart.field.widget.input_type }}" value="{{ pk }}"
+                                    class="custom-control-input"
+                                    {% ifequal reply_markup_form.smart.data pk.0 %}checked="checked" {% endifequal %}>
+                                <label for="id_{{ reply_markup_form.smart.name }}_{{ forloop.counter0 }}"
                                     class="custom-control-label">{{ choice }}</label>
                             </div>
                             {% endfor %}
@@ -591,6 +630,17 @@
                                 <input class="form-control mt-2 shadow-sm" type="number" min="1" max="5"
                                     name="row_width_inline_{{ inline_markup_element.0 }}"
                                     value="{{ inline_markup_element.1.row_width }}">
+                            </div>
+                        </div>
+
+                        <div class="mt-2">
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                                <input type="checkbox" name="smart_{{ inline_markup_element.0 }}"
+                                    class="custom-control-input"
+                                    {% if inline_markup_element.1.smart %}checked{% endif %}
+                                    id="smart_{{ inline_markup_element.0 }}">
+                                <label for="smart_{{ inline_markup_element.0 }}" class="custom-control-label">Smart
+                                    recognition</label>
                             </div>
                         </div>
 
@@ -720,21 +770,32 @@
 
             <div class="form-row">
                 <div class="col-md-10 mb-2">
-                    {{ inline_markup_form.react_text.label }}
+                    <label for="id_react_text" class="mb-0">{{ inline_markup_form.react_text.label }}</label>
                     {{ inline_markup_form.react_text }}
                 </div>
                 <div class="col-md-2">
-                    {{ inline_markup_form.row_width.label }}
+                    <label for="id_row_width" class="mb-0">{{ inline_markup_form.row_width.label }}</label>
                     {{ inline_markup_form.row_width }}
                 </div>
-                <div class="col-md-10 mt-2">
-                    {{ inline_markup_form.response_text.label }}
+                <div class="col-md-10">
+                    <label for="id_response_text" class="mb-0">{{ inline_markup_form.response_text.label }}</label>
                     {{ inline_markup_form.response_text }}
                 </div>
-                <div class="col-md-2 mt-2">
+                <div class="col-md-2">
                     <button type="submit"
                         class="btn btn-outline-light text-dark border-right border-left border-bottom shadow-sm btn-block mt-4">Create</button>
                 </div>
+                {% for pk, choice in inline_markup_form.smart.field.widget.choices %}
+                <div class="custom-control custom-checkbox custom-control-inline ml-1 mt-2">
+                    <input id="id_{{ inline_markup_form.smart.name }}_{{ forloop.counter0 }}"
+                        name="{{ inline_markup_form.smart.name }}"
+                        type="{{ inline_markup_form.smart.field.widget.input_type }}" value="{{ pk }}"
+                        class="custom-control-input" {% ifequal inline_markup_form.smart.data pk.0 %}checked="checked"
+                        {% endifequal %}>
+                    <label for="id_{{ inline_markup_form.smart.name }}_{{ forloop.counter0 }}"
+                        class="custom-control-label">{{ choice }}</label>
+                </div>
+                {% endfor %}
             </div>
         </form>
     </div>
@@ -750,23 +811,24 @@
 
             <div class="form-row">
                 <div class="col-md-6">
-                    {{ inline_button_form.text.label }}
+                    <label for="id_text" class="mb-0">{{ inline_button_form.text.label }}</label>
                     {{ inline_button_form.text }}
                 </div>
                 <div class="col-md-6">
-                    {{ inline_button_form.url.label }}
+                    <label for="id_url" class="mb-0">{{ inline_button_form.url.label }}</label>
                     {{ inline_button_form.url }}
                 </div>
                 <div class="col-md-12 mt-2">
-                    {{ inline_button_form.switch_inline.label }}
+                    <label for="id_switch_inline" class="mb-0">{{ inline_button_form.switch_inline.label }}</label>
                     {{ inline_button_form.switch_inline }}
                 </div>
                 <div class="col-md-12 mt-2">
-                    {{ inline_button_form.switch_inline_current.label }}
+                    <label for="id_switch_inline_current"
+                        class="mb-0">{{ inline_button_form.switch_inline_current.label }}</label>
                     {{ inline_button_form.switch_inline_current }}
                 </div>
                 <div class="col-md-10 mt-2">
-                    {{ inline_button_form.callback.label }}
+                    <label for="id_callback" class="mb-0">{{ inline_button_form.callback.label }}</label>
                     {{ inline_button_form.callback }}
                 </div>
                 <div class="col-md-2 mt-2">
@@ -897,24 +959,17 @@
 {% url 'create_callback_url' token=token as callback_url %}
 
 {% if request.path == text_url %}
-<script type="text/javascript" async>
+<script type="text/javascript" defer>
     $(document).on('submit', '#text-form', function (e) {
         e.preventDefault();
-
-        if ($('#id_remove_reply_markup_0').is(':checked')) {
-            var some = 'true';
-        }
-        else {
-            var some = 'false';
-        }
-
         $.ajax({
             type: 'POST',
             url: '{% url "create_bot_second_step_text_url" token=token %}',
             data: {
                 react_text: $('#id_react_text').val(),
                 response_text: $('#id_response_text').val(),
-                remove_reply_markup: some,
+                smart: $('#id_smart_0').is(':checked'),
+                remove_reply_markup: $('#id_remove_reply_markup_0').is(':checked'),
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                 action: 'post'
             },
@@ -947,19 +1002,27 @@
                     if (json.remove_reply_markup) {
                         object += '<input type="checkbox" name="remove_reply_markup_' + json.len_text + '" class="custom-control-input" id="remove_reply_markup_' + json.len_text + '" checked>' +
                             '<label for="remove_reply_markup_' + json.len_text + '" class="custom-control-label">Remove Reply Markup</label>' +
-                            '</div>' +
-                            '</div>' +
-                            '</div>' +
-                            '</form></div>';
+                            '</div>';
                     }
                     else {
                         object += '<input type="checkbox" name="remove_reply_markup_' + json.len_text + '" class="custom-control-input" id="remove_reply_markup_' + json.len_text + '">' +
                             '<label for="remove_reply_markup_' + json.len_text + '" class="custom-control-label">Remove Reply Markup</label>' +
-                            '</div>' +
-                            '</div>' +
-                            '</div>' +
-                            '</form></div>';
+                            '</div>';
                     }
+
+                    if (json.smart) {
+                        object += '<div class="custom-control custom-checkbox custom-control-inline">' +
+                            '<input type="checkbox" name="smart_' + json.len_text + '" class="custom-control-input" id="smart_' + json.len_text + '" checked>' +
+                            '<label for="smart_' + json.len_text + '" class="custom-control-label">Smart recognition</label>' +
+                            '</div>';
+                    }
+                    else {
+                        object += '<div class="custom-control custom-checkbox custom-control-inline">' +
+                            '<input type="checkbox" name="smart_' + json.len_text + '" class="custom-control-input" id="smart_' + json.len_text + '">' +
+                            '<label for="smart_' + json.len_text + '" class="custom-control-label">Smart recognition</label>' +
+                            '</div>';
+                    }
+                    object += `</div></div></form></div>`;
 
                     document.getElementById("text-form").reset();
                     $("#id_no_element").remove();
@@ -1023,6 +1086,7 @@
         var react_text = $(form).find('input')[1];
         var remove_reply_markup = $(form).find('input')[2];
         var response_text = $(form).find('textarea')[0];
+        var smart = $(form).find('input')[3];
 
         $.ajax({
             type: 'POST',
@@ -1031,6 +1095,7 @@
                 react_text: [react_text.name, react_text.value],
                 response_text: [response_text.name, response_text.value],
                 remove_reply_markup: [remove_reply_markup.name, remove_reply_markup.checked],
+                smart: [smart.name, smart.checked],
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                 action: 'update_text'
             },
@@ -1044,7 +1109,7 @@
     }
 </script>
 {% elif request.path == reply_markup_url or request.path == reply_buttons_url %}
-<script type="text/javascript" async>
+<script type="text/javascript" defer>
     $(document).on('submit', '#id_reply_markup_create_form', function (e) {
         e.preventDefault();
         var checkboxes = $('#id_reply_checkboxes').find('input');
@@ -1062,6 +1127,7 @@
                 resize_keyboard: resize_keyboard,
                 one_time_keyboard: one_time_keyboard,
                 selective_keyboard: selective_keyboard,
+                smart: $('#id_smart_0').is(':checked'),
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                 action: 'create_reply_markup'
             },
@@ -1070,6 +1136,7 @@
                     var resize = json.resize_keyboard;
                     var one_time = json.one_time_keyboard;
                     var selective = json.selective;
+                    var smart = json.smart;
 
                     if (resize == true) {
                         resize = 'checked';
@@ -1090,6 +1157,13 @@
                     }
                     else {
                         selective = '';
+                    }
+
+                    if (smart == true) {
+                        smart = 'checked';
+                    }
+                    else {
+                        smart = '';
                     }
 
                     var object = '<div class="alert alert-light text-dark border-right border-left border-bottom shadow-sm mt-4">' +
@@ -1133,6 +1207,12 @@
                         '<div class="custom-control custom-checkbox custom-control-inline">' +
                         '<input type="checkbox" name="selective_' + json.len_text + '" class="custom-control-input" ' + selective + ' id="s_' + json.len_text + '">' +
                         '<label for="s_' + json.len_text + '" class="custom-control-label">Selective</label>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="ml-1">' +
+                        '<div class="custom-control custom-checkbox custom-control-inline">' +
+                        '<input type="checkbox" name="smart_' + json.len_text + '" class="custom-control-input" ' + smart + ' id="smart_' + json.len_text + '">' +
+                        '<label for="smart_' + json.len_text + '" class="custom-control-label">Smart recognition</label>' +
                         '</div>' +
                         '</div>' +
                         '</div>' +
@@ -1182,7 +1262,7 @@
         var resize_keyboard = $(form)[0][4];
         var one_time_keyboard = $(form)[0][5];
         var selective = $(form)[0][6];
-
+        var smart = $(form)[0][7];
 
         $.ajax({
             type: 'POST',
@@ -1194,6 +1274,7 @@
                 resize_keyboard: resize_keyboard.checked,
                 one_time_keyboard: one_time_keyboard.checked,
                 selective: selective.checked,
+                smart: smart.checked,
                 index: react_text.name.split('_')[2],
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                 action: 'update_reply_markup'
@@ -1381,7 +1462,7 @@
     }
 </script>
 {% elif request.path == callback_url %}
-<script type="text/javascript" async>
+<script type="text/javascript" defer>
     $(document).on('submit', '#id_create_callback', function (e) {
         e.preventDefault();
         var callback_text = $('#id_callback_text').find(":selected").text();
@@ -1518,13 +1599,14 @@
     }
 </script>
 {% elif request.path == inline_markup_url or request.path == inline_buttons_url %}
-<script type="text/javascript" async>
+<script type="text/javascript" defer>
     $(document).on('submit', '#id_inline_markup_create', function (e) {
         e.preventDefault();
 
         var react_text = $('#id_react_text').val();
         var row_width = $('#id_row_width').val();
         var response_text = $('#id_response_text').val();
+        var smart = $('#id_smart_0').is(":checked");
 
         $.ajax({
             type: 'POST',
@@ -1533,10 +1615,13 @@
                 react_text: react_text,
                 row_width: row_width,
                 response_text: response_text,
+                smart: smart,
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                 action: 'create_inline_markup'
             },
             success: function (json) {
+                var smart = (json.smart == true) ? 'checked' : ''
+
                 var object = '<div class="alert alert-light text-dark border-right border-left border-bottom shadow-sm mt-4">' +
                     '<div class="form-row mt-2 mb-2" id="' + json.len_text + '_inline_element">' +
                     '<div class="col-md-5">' +
@@ -1559,6 +1644,12 @@
                     '</div>' +
                     '<div class="col-md-2">' +
                     '<input class="form-control shadow-sm mt-2" type="number" min="1" max="5" name="row_width_inline_' + json.len_text + '" value="' + json.row_width + '">' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="mt-2">' +
+                    '<div class="custom-control custom-checkbox custom-control-inline">' +
+                    '<input type="checkbox" name="smart_' + json.len_text + '" class="custom-control-input" ' + smart + ' id="smart_' + json.len_text + '">' +
+                    '<label for="smart_' + json.len_text + '" class="custom-control-label">Smart recognition</label>' +
                     '</div>' +
                     '</div>' +
                     '<div class="form-row">' +
@@ -1592,6 +1683,7 @@
         var react_text = form[2].value;
         var row_width = form[3].value;
         var index = form[1].name.split('_')[3];
+        var smart = form[4].checked;
 
         $.ajax({
             type: 'POST',
@@ -1601,6 +1693,7 @@
                 react_text: react_text,
                 row_width: row_width,
                 markup_id: index,
+                smart: smart,
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                 action: 'update_inline_markup'
             },

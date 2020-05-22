@@ -31,7 +31,7 @@
 
 {% if messages %}
 {% for message in messages %}
-<div class="shadow p-5">
+<div class="shadow-effects shadow p-5">
     <div class="container">
         <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
     </div>
@@ -64,19 +64,6 @@
         <hr class="mb-2 mt-2">
         <p class="mb-1">All changes will be applied at your own risk</p>
     </div>
-
-    {% if messages %}
-    {% for message in messages %}
-    <div
-        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
-        {{ message }}
-
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    {% endfor %}
-    {% endif %}
 
     <div id="editor" class="code-editor shadow mt-5">{{ content }}</div>
     <form action="{% url 'create_bot_third_step_url' token=token %}" method="POST">

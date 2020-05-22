@@ -165,7 +165,7 @@ urlpatterns = [
     ),
     path(
         'downloadLogs/<str:token>/',
-        download_log,
+        Download.download_log,
         name='download_log_url'
     )
 ]

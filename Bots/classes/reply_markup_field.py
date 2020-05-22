@@ -30,8 +30,13 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
         reply_markup_elements = enumerate_elements(request,
                                                    token=token,
                                                    get_object='reply_markup')
+        smart = request.POST.get('smart')
+
+        post = request.POST.copy()
+        post.pop("smart")
+
         reply_markup_form = ReplyMarkup(
-            request.POST, request=request, token=token
+            post, request=request, token=token
         )
         resize_keyboard = request.POST.get('resize_keyboard')
         one_time_keyboard = request.POST.get('one_time_keyboard')
@@ -53,7 +58,8 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
         else:
             selective_keyboard = False
 
-        print(request.POST)
+        smart = True if smart == 'true' else False
+
         if reply_markup_form.is_valid():
             react_text = reply_markup_form.cleaned_data['react_text']
             row_width = reply_markup_form.cleaned_data['row_width']
@@ -72,7 +78,8 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
                         'selective': selective_keyboard,
                         'react_text': react_text,
                         'row_width': row_width,
-                        'response_text': response_text
+                        'response_text': response_text,
+                        'smart': smart
                     })
                 except KeyError:
                     object_config['reply_markup'] = [{
@@ -81,7 +88,8 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
                         'selective': selective_keyboard,
                         'react_text': react_text,
                         'row_width': row_width,
-                        'response_text': response_text
+                        'response_text': response_text,
+                        'smart': smart
                     }]
                 file_name.seek(0)
                 json.dump(object_config, file_name,
@@ -97,7 +105,8 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
                 'response_text': response_text,
                 'csrf': csrf,
                 'token': token,
-                'len_text': len_text
+                'len_text': len_text,
+                'smart': smart
             })
         else:
             return JsonResponse({
@@ -129,6 +138,7 @@ class UpdateReplyMarkupField(LoginRequiredMixin, View):
             response_text = request.POST.get('response_text')
             resize_keyboard = request.POST.get('resize_keyboard')
             one_time_keyboard = request.POST.get('one_time_keyboard')
+            smart = request.POST.get('smart')
             selective = request.POST.get('selective')
 
             index = int(request.POST.get('index'))
@@ -147,6 +157,7 @@ class UpdateReplyMarkupField(LoginRequiredMixin, View):
                 selective = True
             else:
                 selective = False
+            smart = True if smart == 'true' else False
 
             reply_markup_object = object_config['reply_markup']
 
@@ -156,6 +167,7 @@ class UpdateReplyMarkupField(LoginRequiredMixin, View):
             reply_markup_object[index]['resize_keyboard'] = resize_keyboard
             reply_markup_object[index]['one_time_keyboard'] = one_time_keyboard
             reply_markup_object[index]['selective'] = selective
+            reply_markup_object[index]['smart'] = smart
 
             object_config['reply_markup'] = reply_markup_object
             with open(path, 'w', encoding='utf-8') as file:

@@ -28,7 +28,7 @@
 
 {% if messages %}
 {% for message in messages %}
-<div class="shadow p-5">
+<div class="shadow-effects shadow p-5">
     <div class="container">
         <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
     </div>
@@ -38,7 +38,7 @@
 
 {% for field in auth_form %}
 {% if field.errors %}
-<div class="shadow p-5">
+<div class="shadow-effects shadow p-5">
     <div class="container">
         <p style="font-size: 18px;" class="mb-0">{{ field.errors }}</p>
     </div>
@@ -46,7 +46,7 @@
 {% endif %}
 {% endfor %}
 
-<div class="shadow p-5">
+<div class="shadow-effects shadow p-5">
     <div class="container">
         <form method="POST">
             {% csrf_token %}

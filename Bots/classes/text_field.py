@@ -31,8 +31,11 @@ class CreateTextField(LoginRequiredMixin, View):
                                            token=token, get_object='text')
 
         remove_reply = request.POST.get('remove_reply_markup')
+        smart = request.POST.get('smart')
+
         some_post = request.POST.copy()
         some_post.pop('remove_reply_markup')
+        some_post.pop('smart')
 
         text_form = TextForm(some_post, request=request, token=token)
 
@@ -43,10 +46,8 @@ class CreateTextField(LoginRequiredMixin, View):
 
                 csrf = request.POST.get('csrfmiddlewaretoken')
 
-                if remove_reply == 'true':
-                    remove_reply_markup = True
-                else:
-                    remove_reply_markup = False
+                remove_reply_markup = True if remove_reply == 'true' else False
+                smart = True if smart == 'true' else False
 
                 path = open_configuration(request, token)
                 with open(path, 'r+', encoding='utf-8') as file_name:
@@ -56,13 +57,15 @@ class CreateTextField(LoginRequiredMixin, View):
                         object_config['text'].append({
                             'response_text': response_text,
                             'react_text': react_text,
-                            'remove_reply_markup': remove_reply_markup
+                            'remove_reply_markup': remove_reply_markup,
+                            'smart': smart
                         })
                     except KeyError:
                         object_config['text'] = [{
                             'response_text': response_text,
                             'react_text': react_text,
-                            'remove_reply_markup': remove_reply_markup
+                            'remove_reply_markup': remove_reply_markup,
+                            'smart': smart
                         }]
                     file_name.seek(0)
                     json.dump(object_config, file_name,
@@ -75,7 +78,8 @@ class CreateTextField(LoginRequiredMixin, View):
                     'remove_reply_markup': remove_reply_markup,
                     'len_text': len_text,
                     'csrf': csrf,
-                    'token': token
+                    'token': token,
+                    'smart': smart
                 })
             else:
                 return JsonResponse({
@@ -103,6 +107,7 @@ class UpdateTextField(LoginRequiredMixin, View):
             react_text = dict(request.POST)['react_text[]']
             response_text = dict(request.POST)['response_text[]']
             remove_reply_markup = dict(request.POST)['remove_reply_markup[]']
+            smart = request.POST.get('smart[]')
 
             index = int(react_text[0][-1])
             print(react_text, response_text, remove_reply_markup, index)
@@ -114,6 +119,7 @@ class UpdateTextField(LoginRequiredMixin, View):
             text_object = object_config['text']
             text_object[index]['react_text'] = react_text[1]
             text_object[index]['response_text'] = response_text[1]
+            text_object[index]['smart'] = True if smart == 'true' else False
 
             if remove_reply_markup[1] == 'true':
                 text_object[index][

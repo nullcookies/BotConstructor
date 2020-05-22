@@ -63,13 +63,35 @@ class BotFacade:
 
     def __start(self) -> None:
         some_token = self.__token.replace('_', ':')
-        init_object = f"""\
+        init_object = """\
         import telebot
+        import requests
         from telebot.types import *
+        from fuzzywuzzy import fuzz
 
-        bot = telebot.TeleBot(token='{some_token}')
+        bot = telebot.TeleBot(token='%s')
 
-        """
+
+        def generate_synonyms(word: str) -> None:
+            url = f'https://api.datamuse.com/words?rel_syn={word}'
+            phrase = {}
+
+            response = requests.get(url)
+            if response.status_code <= 200:
+                synonyms = response.json()
+
+                for element in synonyms:
+                    if word not in phrase:
+                        phrase[word] = [element['word']]
+                    else:
+                        phrase[word].append(element['word'])
+                try:
+                    phrase[word].append(word)
+                except KeyError:
+                    phrase[word] = [word]
+            return phrase
+
+        """ % some_token
         final_path = os.path.join(PATH, f'{self.__username}')
         path = os.path.join(
             final_path,
@@ -107,7 +129,8 @@ class TextBuilder:
                         text_element['react_text']
                     ] = [
                         text_element['response_text'],
-                        text_element['remove_reply_markup']
+                        text_element['remove_reply_markup'],
+                        text_element['smart']
                     ]
                 self.__text_dictionary = final_text_dictionary
                 self.__generate_text_code()
@@ -116,23 +139,37 @@ class TextBuilder:
 
     def __generate_text_code(self) -> None:
         new_dict = {}
+        smart_texts = {}
+        object_text = ""
+
         for key, value in self.__text_dictionary.items():
             if self.__text_dictionary[key][1] is True:
                 new_dict[key] = value
+
+            if self.__text_dictionary[key][2] is True:
+                smart_texts[key] = value
 
         for key in new_dict.keys():
             if key in self.__text_dictionary.keys():
                 del self.__text_dictionary[key]
 
-        object_text = textwrap.dedent("""
-        text_dictionary_messages = %s
-        @bot.message_handler(func=lambda message: message.text \
-in text_dictionary_messages.keys())
-        def response_message(message):
-            bot.send_message(chat_id=message.chat.id,
-                            text=f'{text_dictionary_messages[message.text][0]}')
+        for key in smart_texts.keys():
+            if key in self.__text_dictionary.keys():
+                del self.__text_dictionary[key]
 
-        """) % self.__text_dictionary
+            if key in new_dict.keys():
+                del new_dict[key]
+
+        if self.__text_dictionary:
+            object_text += textwrap.dedent("""
+            text_dictionary = %s
+            @bot.message_handler(
+                func=lambda message: message.text in text_dictionary.keys())
+            def response_message(message):
+                bot.send_message(chat_id=message.chat.id,
+                                text=f'{text_dictionary[message.text][0]}')
+
+            """) % self.__text_dictionary
 
         for key, value in new_dict.items():
             object_text += textwrap.dedent(f"""
@@ -145,6 +182,36 @@ in text_dictionary_messages.keys())
                         reply_markup=ReplyKeyboardRemove())
 
             """)
+
+        for key, value in smart_texts.items():
+            object_text += textwrap.dedent("""
+            def check_similarity_%s(word: Message) -> dict:
+                generated_phrases = generate_synonyms('%s'.lower())
+
+                word = word.text
+                params = {'word': '', 'percent': 0}
+
+                for value in generated_phrases["%s".lower()]:
+                    similarity = fuzz.ratio(word, value)
+                    if similarity >= params[
+                            'percent'] and similarity >= 60:
+                        params['word'] = value
+                        params['percent'] = similarity
+                return True if params['percent'] != 0 else False
+
+
+            @bot.message_handler(func=check_similarity_%s)
+            def handler(message: Message) -> None:
+                if %s:
+                    bot.send_message(chat_id=message.chat.id,
+                                    text='%s',
+                                    reply_markup=ReplyKeyboardRemove())
+                else:
+                    bot.send_message(chat_id=message.chat.id,
+                                    text='%s')
+
+            """) % (key, key, key, key, value[1],
+                    value[0], value[0])
 
         final_path = os.path.join(PATH, f'{self.__username}')
         path = os.path.join(
@@ -191,12 +258,14 @@ class ReplyMarkupBuilder:
                         'selective': reply_markup_element['selective'],
                         'row_width': reply_markup_element['row_width'],
                         'response_text': reply_markup_element['response_text'],
+                        'smart': reply_markup_element['smart'],
                         'buttons': buttons
                     }
                 self.__reply_markup_dictionary = final_reply_markup_keyboard
                 self.__generate_reply_code()
         except KeyError as k_error:
             k_error = str(k_error)
+            print(k_error)
 
             message = ''
             if k_error == "'buttons'":
@@ -204,31 +273,101 @@ class ReplyMarkupBuilder:
                 return message
 
     def __generate_reply_code(self):
-        object_text = """
-        reply_markup_dictionary = %s
-        @bot.message_handler(func=lambda message: message.text \
-in reply_markup_dictionary.keys())
-        def response_markup(message):
-            keyboard = ReplyKeyboardMarkup(
-                resize_keyboard=reply_markup_dictionary[message.text]['resize_keyboard'],
-                one_time_keyboard=reply_markup_dictionary[message.text]['one_time_keyboard'],
-                selective=reply_markup_dictionary[message.text]['selective'],
-                row_width=reply_markup_dictionary[message.text]['row_width']
+        smart_dict = {}
+        object_text = ""
+
+        for key, value in self.__reply_markup_dictionary.items():
+            if self.__reply_markup_dictionary[key]['smart'] is True:
+                smart_dict[key] = value
+
+        for key in smart_dict.keys():
+            if key in self.__reply_markup_dictionary:
+                del self.__reply_markup_dictionary[key]
+
+        for key, value in smart_dict.items():
+            object_text += textwrap.dedent("""
+                def check_similarity_%s(word: Message) -> dict:
+                    generated_phrases = generate_synonyms("%s".lower())
+
+                    word = word.text
+                    params = {'word': '', 'percent': 0}
+
+                    for value in generated_phrases["%s".lower()]:
+                        similarity = fuzz.ratio(word, value)
+                        if similarity >= params[
+                                'percent'] and similarity >= 60:
+                            params['word'] = value
+                            params['percent'] = similarity
+                    return True if params['percent'] != 0 else False
+
+
+                @bot.message_handler(func=check_similarity_%s)
+                def handler(message: Message) -> None:
+                    keyboard = ReplyKeyboardMarkup(
+                        resize_keyboard=%s,
+                        one_time_keyboard=%s,
+                        selective=%s,
+                        row_width=%s
+                    )
+                    some_list = []
+
+                    for item in %s:
+                        button = KeyboardButton(
+                            text=f"{item['response']}",
+                            request_contact=item['request_contact'],
+                            request_location=item['request_location']
+                        )
+                        some_list.append(button)
+                    keyboard.add(*some_list)
+
+                    bot.send_message(
+                        chat_id=message.chat.id,
+                        text="%s",
+                        reply_markup=keyboard
+                    )
+
+                """ % (
+                key, key, key, key,
+                value['resize_keyboard'],
+                value['one_time_keyboard'],
+                value['selective'],
+                value['row_width'],
+                value['buttons'],
+                value['response_text']
+            ))
+
+        if self.__reply_markup_dictionary:
+            object_text += textwrap.dedent("""
+            reply_markup_dictionary = %s
+            @bot.message_handler(
+                func=lambda message: message.text in \
+reply_markup_dictionary.keys()
             )
-            some_list = []
+            def response_markup(message):
+                keyboard = ReplyKeyboardMarkup(
+                    resize_keyboard=reply_markup_dictionary[message.text]['resize_keyboard'],
+                    one_time_keyboard=reply_markup_dictionary[message.text]['one_time_keyboard'],
+                    selective=reply_markup_dictionary[message.text]['selective'],
+                    row_width=reply_markup_dictionary[message.text]['row_width']
+                )
+                some_list = []
 
-            for item in reply_markup_dictionary[message.text]['buttons']:
-                button = KeyboardButton(text=f"{item['response']}",
-                                        request_contact=item['request_contact'],
-                                        request_location=item['request_location'])
-                some_list.append(button)
-            keyboard.add(*some_list)
+                for item in reply_markup_dictionary[message.text]['buttons']:
+                    button = KeyboardButton(
+                        text=f"{item['response']}",
+                        request_contact=item['request_contact'],
+                        request_location=item['request_location']
+                    )
+                    some_list.append(button)
+                keyboard.add(*some_list)
 
-            bot.send_message(chat_id=message.chat.id,
-                             text=f"{reply_markup_dictionary[message.text]['response_text']}",
-                             reply_markup=keyboard)
+                bot.send_message(
+                    chat_id=message.chat.id,
+                    text=f"{reply_markup_dictionary[message.text]['response_text']}",
+                    reply_markup=keyboard
+                )
 
-        """ % self.__reply_markup_dictionary
+            """ % self.__reply_markup_dictionary)
 
         final_path = os.path.join(PATH, f'{self.__username}')
         path = os.path.join(
@@ -273,6 +412,7 @@ class InlineMarkupBuilder:
                         'response_text': inline_markup_element[
                             'response_text'
                         ],
+                        'smart': inline_markup_element['smart'],
                         'buttons': buttons
                     }
                 self.__inline_markup_dictionary = final_inline_markup_keyboard
@@ -287,31 +427,95 @@ class InlineMarkupBuilder:
                 return message
 
     def __generate_inline_code(self):
-        object_text = """
-            inline_markup_dictionary = %s
-            @bot.message_handler(func=lambda message: message.text \
-    in inline_markup_dictionary.keys())
-            def response_inline(message):
-                keyboard = InlineKeyboardMarkup(
-                    row_width=inline_markup_dictionary[
-                    message.text
-                ]['row_width'])
-                some_list = []
+        smart_dict = {}
+        object_text = ""
 
-                for item in inline_markup_dictionary[message.text]['buttons']:
-                    generator_value = [
-                        item[value] for value in item.keys()
-                    ]
+        for key, value in self.__inline_markup_dictionary.items():
+            if self.__inline_markup_dictionary[key]['smart'] is True:
+                smart_dict[key] = value
 
-                    button = InlineKeyboardButton(*generator_value)
-                    some_list.append(button)
-                keyboard.add(*some_list)
+        for key in smart_dict.keys():
+            if key in self.__inline_markup_dictionary:
+                del self.__inline_markup_dictionary[key]
 
-                bot.send_message(chat_id=message.chat.id,
-                                text=f"{inline_markup_dictionary[message.text]['response_text']}",
-                                reply_markup=keyboard)
+        for key, value in smart_dict.items():
+            object_text += textwrap.dedent("""
+                def check_similarity_%s(word: Message) -> dict:
+                    generated_phrases = generate_synonyms("%s".lower())
 
-            """ % self.__inline_markup_dictionary
+                    word = word.text
+                    params = {'word': '', 'percent': 0}
+
+                    for value in generated_phrases["%s".lower()]:
+                        similarity = fuzz.ratio(word, value)
+                        if similarity >= params[
+                                'percent'] and similarity >= 60:
+                            params['word'] = value
+                            params['percent'] = similarity
+                    return True if params['percent'] != 0 else False
+
+
+                @bot.message_handler(func=check_similarity_%s)
+                def handler(message: Message) -> None:
+                    keyboard = InlineKeyboardMarkup(
+                        row_width=%s
+                    )
+                    some_list = []
+
+                    for item in %s:
+                        generator_value = [
+                            item[value] for value in item.keys()
+                        ]
+
+                        button = InlineKeyboardButton(*generator_value)
+                        some_list.append(button)
+                    keyboard.add(*some_list)
+
+
+                    bot.send_message(
+                        chat_id=message.chat.id,
+                        text="%s",
+                        reply_markup=keyboard
+                    )
+
+                """ % (
+                key, key, key, key,
+                value['row_width'],
+                value['buttons'],
+                value['response_text']
+            ))
+
+        if self.__inline_markup_dictionary:
+            object_text += textwrap.dedent("""
+                inline_markup_dictionary = %s
+                @bot.message_handler(
+                    func=lambda message: message.text in \
+inline_markup_dictionary.keys()
+                )
+                def response_inline(message):
+                    keyboard = InlineKeyboardMarkup(
+                        row_width=inline_markup_dictionary[
+                        message.text
+                    ]['row_width'])
+                    some_list = []
+
+                    for item in inline_markup_dictionary[
+                            message.text]['buttons']:
+                        generator_value = [
+                            item[value] for value in item.keys()
+                        ]
+
+                        button = InlineKeyboardButton(*generator_value)
+                        some_list.append(button)
+                    keyboard.add(*some_list)
+
+                    bot.send_message(
+                        chat_id=message.chat.id,
+                        text=f"{inline_markup_dictionary[message.text]['response_text']}",
+                        reply_markup=keyboard
+                    )
+
+                """ % self.__inline_markup_dictionary)
 
         final_path = os.path.join(PATH, f'{self.__username}')
         path = os.path.join(

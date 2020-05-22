@@ -28,7 +28,7 @@
 
 {% for field in update_form %}
 {% if field.errors %}
-<div class="shadow p-5">
+<div class="shadow-effects shadow p-5">
     <div class="container">
         <p style="font-size: 18px;" class="mb-0">{{ field.errors }}</p>
     </div>
@@ -38,7 +38,7 @@
 
 {% if messages %}
 {% for message in messages %}
-<div class="shadow p-5">
+<div class="shadow-effects shadow p-5">
     <div class="container">
         <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
     </div>
@@ -49,7 +49,7 @@
 <form method="POST" action="{% url 'update_profile_url' %}" enctype="multipart/form-data">
     {% csrf_token %}
 
-    <div class="shadow p-5">
+    <div class="shadow-effects shadow p-5">
         <div class="container">
             <div class="form-row">
                 <div class="form-group col-md-6 mt-2 mb-2">
