@@ -127,8 +127,6 @@ class DeleteBot(LoginRequiredMixin, View):
         except FileNotFoundError:
             pass
 
-        os.rmdir(os.path.dirname(file_config_path))
-
         if 'count_deploys' in request.session.keys():
             del request.session['count_deploys']
 
