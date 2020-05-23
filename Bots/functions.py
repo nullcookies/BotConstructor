@@ -39,6 +39,25 @@ def open_test_bot(request, token: str) -> str:
     return path
 
 
+# Fucntion that return path to current bot logs.
+def open_logs(request, token: str) -> str:
+    token = token.replace(':', '_')
+    path = os.path.join(
+        settings.BASE_DIR, 'BotConstructor',
+        'media', 'ScriptsBots', f'{request.user.username}',
+        f'{request.user.username}_{token}_output.log'
+    )
+    if not os.path.exists(path):
+        local_path = os.path.join(
+            settings.BASE_DIR, 'BotConstructor', 'media', 'ScriptsBots',
+            f'{request.user.username}')
+        if not os.path.exists(local_path):
+            os.makedirs(local_path)
+        path = os.path.join(
+            local_path, f'{request.user.username}_{token}_output.log')
+    return path
+
+
 def check_text_on_unique(request, text_element_1: str, text_element_2: str,
                          index: int, token: str) -> bool:
     path = open_configuration(request, token)

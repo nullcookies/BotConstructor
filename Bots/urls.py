@@ -109,7 +109,7 @@ urlpatterns = [
         name='download_script_url'
     ),
     path(
-        'deleteBot/<int:bot_id>/',
+        'deleteBot/<int:bot_id>/<str:token>/',
         DeleteBot.as_view(),
         name='delete_bot_url'
     ),

@@ -8,6 +8,7 @@ from django.http import HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.core.files import File
 from django.utils import timezone
+from json import JSONDecodeError
 
 import json
 import os
@@ -26,7 +27,6 @@ from .classes.inline_buttons_field import *
 from .functions import *
 from .classes.steps import *
 from .classes.callback import *
-from json import JSONDecodeError
 
 
 data = {}
@@ -105,15 +105,29 @@ class DeleteBot(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'delete_bot_url'
 
-    def get(self, request, bot_id: int):
+    def get(self, request, bot_id: int, token: str):
         context = {
             'title': 'Delete Bot - BotConstructor'
         }
         return render(request, 'DeleteBot.html', context)
 
-    def post(self, request, bot_id: int):
+    def post(self, request, bot_id: int, token: str):
         current_bot = Bot.objects.get(id=bot_id)
         stop_hosting(current_bot)
+
+        file_script_path = open_test_bot(request=request, token=token)
+        file_config_path = open_configuration(request=request, token=token)
+
+        os.remove(file_config_path)
+        os.remove(file_script_path)
+
+        try:
+            file_logs_path = open_logs(request=request, token=token)
+            os.remove(file_logs_path)
+        except FileNotFoundError:
+            pass
+
+        os.rmdir(os.path.dirname(file_config_path))
 
         if 'count_deploys' in request.session.keys():
             del request.session['count_deploys']
@@ -350,7 +364,6 @@ class RunBot(LoginRequiredMixin, View):
 class StopBot(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'stop_bot_url'
-    context = {}
 
     def get(self, request, token):
         path = open_configuration(request, token=token)
@@ -385,8 +398,7 @@ class StartBot(LoginRequiredMixin, View):
             if request.session['count_deploys'] <= 1:
                 try:
                     deploy = AutoDeploy(
-                        file_title=f'{request.user.username}_{token}'
-                        '_test_bot.py'
+                        f'{request.user.username}_{token}_test_bot.py'
                     )
                     deploy.run_bot(path)
                 except JSONDecodeError:
