@@ -325,6 +325,8 @@ class RunBot(LoginRequiredMixin, View):
                         'create_bot_third_step_url',
                         token=token
                     )
+                finally:
+                    del deploy
             else:
                 messages.error(request, 'You have already deployed your bot')
                 return redirect(
@@ -358,6 +360,8 @@ class RunBot(LoginRequiredMixin, View):
                     'create_bot_third_step_url',
                     token=token
                 )
+            finally:
+                del deploy
             return redirect('show_bots_url')
 
 
@@ -375,6 +379,7 @@ class StopBot(LoginRequiredMixin, View):
             file_title=f'{request.user.username}_{token}_test_bot.py'
         )
         deploy.stop_bot(console_id=console_id)
+        del deploy
 
         if 'count_deploys' in request.session.keys():
             del request.session['count_deploys']
@@ -410,6 +415,8 @@ class StartBot(LoginRequiredMixin, View):
                         'create_bot_third_step_url',
                         token=token
                     )
+                finally:
+                    del deploy
                 request.session['count_deploys'] = 1
             else:
                 messages.error(
@@ -432,11 +439,54 @@ class StartBot(LoginRequiredMixin, View):
                     'create_bot_third_step_url',
                     token=token
                 )
+            finally:
+                del deploy
             request.session['count_deploys'] = 1
 
         messages.error(
             request,
             f'Bot, with token: {token} is running now'
+        )
+        return redirect('show_bots_url')
+
+
+class RestartBot(LoginRequiredMixin, View):
+    login_url = '/signIn/'
+    redirect_field_name = "restart_bot"
+    context = {}
+
+    def get(self, request, token: str):
+        path = open_configuration(request, token=token)
+        with open(path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+
+        console_id = data['console_id']
+        deploy = AutoDeploy(
+            file_title=f'{request.user.username}_{token}_test_bot.py'
+        )
+        deploy.stop_bot(console_id=console_id)
+
+        if 'count_deploys' in request.session.keys():
+            del request.session['count_deploys']
+
+        try:
+            deploy.run_bot(path)
+        except JSONDecodeError:
+            messages.error(
+                request,
+                'Oooops... There is not consoles for hosting your bot'
+            )
+            return redirect(
+                'create_bot_third_step_url',
+                token=token
+            )
+        finally:
+            del deploy
+        request.session['count_deploys'] = 1
+
+        messages.error(
+            request,
+            f'Bot, with token: {token} was restarted.'
         )
         return redirect('show_bots_url')
 

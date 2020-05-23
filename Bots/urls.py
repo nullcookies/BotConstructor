@@ -167,5 +167,10 @@ urlpatterns = [
         'downloadLogs/<str:token>/',
         Download.download_log,
         name='download_log_url'
+    ),
+    path(
+        'restartBot/<str:token>/',
+        RestartBot.as_view(),
+        name="restart_bot"
     )
 ]

@@ -125,7 +125,6 @@ class AutoDeploy:
             f'consoles/{console_id}/',
             headers=self.HEADERS
         )
-        print(response.status_code)
 
     def run_bot(self, path) -> None:
         console_id = self.create_console()
@@ -141,7 +140,7 @@ class AutoDeploy:
         self.send_input(console_id)
 
     def _write_to_log_file(self, request, token: str,
-                           data: dict, username: str, console_id: int):
+                           data: dict, username: str, console_id: int) -> None:
         path = os.path.join(
             BASE_DIR, 'BotConstructor', 'media',
             'ScriptsBots', username,

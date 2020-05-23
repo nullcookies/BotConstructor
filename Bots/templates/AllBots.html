@@ -52,10 +52,19 @@
             <div class="col-md-5">
                 <div class="float-right">
                     {% if bot.file_config|check_online == 'The bot is now running' %}
-                    <div class="form-row">
-                        <a href="{% url 'stop_bot_url' token=bot.access_token %}" id="stop_{{ forloop.counter0 }}"
-                            class="mr-1" onclick="stopSpinner(`stop_{{ forloop.counter0 }}`);">Stop
-                            hosting</a>
+                    <div class="form-row mb-2 ml-2">
+                        <div class="col-md-12">
+                            <a href="{% url 'stop_bot_url' token=bot.access_token %}" id="stop_{{ forloop.counter0 }}"
+                                onclick="stopSpinner(`stop_{{ forloop.counter0 }}`);">Stop
+                                hosting</a>
+                        </div>
+                    </div>
+                    <div class="form-row mb-2">
+                        <div class="col-md-12">
+                            <a href="{% url 'restart_bot' token=bot.access_token %}" id="restart_{{ forloop.counter0 }}"
+                                onclick="stopSpinner(`restart_{{ forloop.counter0 }}`);" class="float-right">Restart
+                                bot</a>
+                        </div>
                     </div>
                     <a href="{% url 'logs' token=bot.access_token %}" class="float-right">Logs</a>
                     {% else %}
@@ -98,7 +107,7 @@
 <script type="text/javascript" defer>
     function stopSpinner(button) {
         document.getElementById(button).innerHTML +=
-            `<div class="spinner-border text-primary mt-1 mr-1 ml-1" role="status"><span class="sr-only">Loading...</span></div>`;
+            `<div class="spinner-border text-primary mt-1 mr-1 ml-1" role="status"></div>`;
     }
 </script>
 {% endblock javascript %}
