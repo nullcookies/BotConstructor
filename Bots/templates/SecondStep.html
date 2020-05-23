@@ -120,22 +120,22 @@
     <div class="form-row mt-5 mb-5">
         <div class="col-md-3">
             <a href="{% url 'create_bot_second_step_text_url' token=token %}"
-                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-1 {% if request.path == text_url %}active{% endif %}"
+                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-2 {% if request.path == text_url %}active{% endif %}"
                 id="text">Text</a>
         </div>
         <div class="col-md-3">
             <a href="{% url 'create_bot_second_step_reply_markup_url' token=token %}"
-                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-1 {% if request.path == reply_markup_url or request.path == reply_buttons_url %}active{% endif %}"
+                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-2 {% if request.path == reply_markup_url or request.path == reply_buttons_url %}active{% endif %}"
                 id="reply">Reply Buttons</a>
         </div>
         <div class="col-md-3">
             <a href="{% url 'create_bot_second_step_inline_markup_url' token=token %}"
-                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-1 {% if request.path == inline_markup_url or request.path == inline_buttons_url %}active{% endif %}"
+                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-2 {% if request.path == inline_markup_url or request.path == inline_buttons_url %}active{% endif %}"
                 id="inline">Inline Buttons</a>
         </div>
         <div class="col-md-3">
             <a href="{% url 'create_callback_url' token=token %}"
-                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-1 {% if request.path == callback_url %}active{% endif %}"
+                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-2 {% if request.path == callback_url %}active{% endif %}"
                 id="id_menu_callback">Callback</a>
         </div>
     </div>
@@ -181,7 +181,7 @@
                 <div class="form-row mb-3 mt-2">
                     <div class="col-md-9">
                         {% if text_item.1.react_text|first == '/' %}
-                        <div class="input-group">
+                        <div class="input-group mb-2">
                             <div class="input-group-prepend">
                                 <div class="input-group-text shadow-sm">/</div>
                             </div>
@@ -189,7 +189,7 @@
                                 value="{{ text_item.1.react_text }}">
                         </div>
                         {% else %}
-                        <div class="input-group">
+                        <div class="input-group mb-2">
                             <div class="input-group-prepend">
                                 <div class="input-group-text shadow-sm">React</div>
                             </div>
@@ -202,7 +202,7 @@
                         <div class="form-row">
                             <div class="col-md-6">
                                 <button type="submit"
-                                    class="btn btn-outline-light text-success border-bottom border-left border-right shadow-sm btn-block">Update</button>
+                                    class="btn btn-outline-light text-success border-bottom border-left border-right shadow-sm btn-block mb-2">Update</button>
                             </div>
                             <div class="col-md-6">
                                 <button type="button" id="id_delete_text_{{ text_item.0 }}"
@@ -233,6 +233,7 @@
                             <label for="smart_{{ text_item.0 }}" class="custom-control-label">Smart recognition</label>
                         </div>
                     </div>
+
                 </div>
             </form>
         </div>
@@ -309,7 +310,7 @@
                         {% csrf_token %}
 
                         <div class="form-row row">
-                            <div class="col-md-10">
+                            <div class="col-md-10 mb-2">
                                 <div class="input-group">
                                     {% if reply_markup_element.1.react_text|first == '/' %}
                                     <div class="input-group-prepend">
@@ -391,18 +392,18 @@
                         </div>
 
                         <div class="form-row">
-                            <div class="col-md-4">
+                            <div class="col-md-4 mt-2">
                                 <button type="submit"
                                     class="btn btn-outline-light text-primary shadow-sm border-bottom border-left border-right btn-sm btn-block">Update</button>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-4 mt-2">
                                 <button type="button" id="reply_markup_{{ reply_markup_element.0 }}"
                                     onclick="sendAjaxDeleteReply(this);"
                                     class="btn btn-outline-light text-danger shadow-sm border-bottom border-left border-right btn-sm btn-block">Delete</button>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-4 mt-2">
                                 {% if request.path == reply_buttons_url %}
                                 <a href="{% url 'create_bot_second_step_reply_markup_url' token=token %}"
                                     class="btn btn-outline-light text-success btn-sm btn-block shadow-sm border-bottom border-left border-right">New
@@ -457,7 +458,7 @@
                         <div class="form-row">
                             <div class="col-md-6">
                                 <button type="submit"
-                                    class="btn btn-outline-light text-dark shadow-sm border-bottom border-left border-right btn-sm btn-block">Update</button>
+                                    class="btn btn-outline-light text-dark shadow-sm border-bottom border-left border-right btn-sm btn-block mb-2">Update</button>
                             </div>
                             <div class="col-md-6">
                                 <button type="button"
@@ -592,8 +593,8 @@
         {% if inline_markup_elements %}
         {% for inline_markup_element in inline_markup_elements %}
         <div class="alert alert-light text-dark border-right border-left border-bottom shadow-sm mt-4">
-            <div class="form-row mt-2 mb-2" id="{{ inline_markup_element.0 }}_inline_element">
-                <div class="col-md-5">
+            <div class="form-row mt-2" id="{{ inline_markup_element.0 }}_inline_element">
+                <div class="col-md-5 mb-3">
                     <form onsubmit="sendAjaxInlineMarkupUpdate(this); return false;" method="POST">
                         {% csrf_token %}
 
@@ -733,7 +734,7 @@
                         <div class="form-row mt-2">
                             <div class="col-md-6">
                                 <button type="submit"
-                                    class="btn btn-outline-light text-dark shadow-sm border-bottom border-left border-right btn-sm btn-block">Update</button>
+                                    class="btn btn-outline-light text-dark shadow-sm border-bottom border-left border-right btn-sm btn-block mb-2">Update</button>
                             </div>
                             <div class="col-md-6">
                                 <button type="button"
@@ -860,7 +861,7 @@
 
                     <div class="col-md-12 mt-2">
                         <div class="form-row">
-                            <div class="col-md-8">
+                            <div class="col-md-8 mb-2">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <div class="input-group-text shadow-sm">React</div>
@@ -873,7 +874,7 @@
 
                             <div class="col-md-2">
                                 <button type="submit"
-                                    class="btn btn-outline-light text-primary shadow-sm border-bottom border-left border-right btn-block">Update</button>
+                                    class="btn btn-outline-light text-primary shadow-sm border-bottom border-left border-right btn-block mb-2">Update</button>
                             </div>
 
                             <div class="col-md-2">
@@ -981,12 +982,12 @@
                         '<input type="hidden" name="csrfmiddlewaretoken" value="' + json.csrf + '">' +
                         '<div class="form-row mb-3 mt-2">' +
                         '<div class="col-md-9">' +
-                        '<div class="input-group"><div class="input-group-prepend"><div class="input-group-text shadow-sm">React</div></div><input class="form-control shadow-sm" name="react_text_' + json.len_text + '" value="' + json.react_text + '"></div>' +
+                        '<div class="input-group mb-2"><div class="input-group-prepend"><div class="input-group-text shadow-sm">React</div></div><input class="form-control shadow-sm" name="react_text_' + json.len_text + '" value="' + json.react_text + '"></div>' +
                         '</div>' +
                         '<div class="col-md-3">' +
                         '<div class="form-row">' +
                         '<div class="col-md-6">' +
-                        '<button type="submit" class="btn btn-outline-light text-success shadow-sm border-bottom border-left border-right btn-block">Update</button>' +
+                        '<button type="submit" class="btn btn-outline-light text-success shadow-sm border-bottom border-left border-right btn-block mb-2">Update</button>' +
                         '</div>' +
                         '<div class="col-md-6">' +
                         '<button type="button" id="id_delete_text_' + json.len_text + '" class="btn btn-outline-light text-danger shadow-sm border-bottom border-left border-right btn-block" onclick="sendAjaxDelete(this);">Delete</button>' +
@@ -996,7 +997,7 @@
                         '<div class="col-md-12">' +
                         `<textarea class="form-control mt-2 shadow-sm" style="height: 100%;" name="response_text_` + json.len_text + `" id="response_text_text">` + json.response_text + `</textarea>` +
                         '</div>' +
-                        '<div class="col-md-12 mt-2">' +
+                        '<div class="col-md-12 mt-3">' +
                         '<div class="custom-control custom-checkbox custom-control-inline">';
 
                     if (json.remove_reply_markup) {
@@ -1011,13 +1012,13 @@
                     }
 
                     if (json.smart) {
-                        object += '<div class="custom-control custom-checkbox custom-control-inline">' +
+                        object += '<div class="custom-control custom-checkbox custom-control-inline ml-1">' +
                             '<input type="checkbox" name="smart_' + json.len_text + '" class="custom-control-input" id="smart_' + json.len_text + '" checked>' +
                             '<label for="smart_' + json.len_text + '" class="custom-control-label">Smart recognition</label>' +
                             '</div>';
                     }
                     else {
-                        object += '<div class="custom-control custom-checkbox custom-control-inline">' +
+                        object += '<div class="custom-control custom-checkbox custom-control-inline ml-1">' +
                             '<input type="checkbox" name="smart_' + json.len_text + '" class="custom-control-input" id="smart_' + json.len_text + '">' +
                             '<label for="smart_' + json.len_text + '" class="custom-control-label">Smart recognition</label>' +
                             '</div>';
@@ -1172,7 +1173,7 @@
                         '<form onsubmit="sendAjaxUpdateReply(this); return false;" method="POST" class="mb-3">' +
                         '<input type="hidden" name="csrfmiddlewaretoken" value="' + json.csrf + '">' +
                         '<div class="form-row row">' +
-                        '<div class="col-md-10">' +
+                        '<div class="col-md-10 mb-2">' +
                         '<div class="input-group">' +
                         '<div class="input-group-prepend">' +
                         '<div class="input-group-text shadow-sm">React</div>' +
@@ -1188,7 +1189,7 @@
                         '<div class="input-group-prepend">' +
                         '<div class="input-group-text shadow-sm mt-2">Response</div>' +
                         '</div>' +
-                        '<input class="form-control shadow-sm mt-2" name="response_text_markup_' + json.len_text + '" value="asdasd">' +
+                        '<input class="form-control shadow-sm mt-2" name="response_text_markup_' + json.len_text + '" value="' + json.response_text + '">' +
                         '</div>' +
                         '<div class="form-row mt-2 mb-2">' +
                         '<div class="ml-1">' +
@@ -1217,13 +1218,13 @@
                         '</div>' +
                         '</div>' +
                         '<div class="form-row">' +
-                        '<div class="col-md-4">' +
+                        '<div class="col-md-4 mt-2">' +
                         '<button type="submit" class="btn btn-outline-light text-primary shadow-sm border-bottom border-left border-right btn-sm btn-block">Update</button>' +
                         '</div>' +
-                        '<div class="col-md-4">' +
+                        '<div class="col-md-4 mt-2">' +
                         '<button type="button" id="reply_markup_' + json.len_text + '" onclick="sendAjaxDeleteReply(this); " class="btn btn-outline-light text-danger shadow-sm border-bottom border-left border-right btn-sm btn-block">Delete</button>' +
                         '</div>' +
-                        '<div class="col-md-4">' +
+                        '<div class="col-md-4 mt-2">' +
                         '<a href="/createBot/secondStep/' + json.token + '/replyMarkup/replyButtons/" class="btn btn-outline-light text-dark shadow-sm border-bottom border-left border-right btn-sm btn-block" id="id_add_button_reply">Add button</a>' +
                         '</div>' +
                         '</div>' +
@@ -1381,7 +1382,7 @@
                     '</div>' +
                     '<div class="form-row">' +
                     '<div class="col-md-6">' +
-                    '<button type="submit" class="btn btn-outline-light text-dark shadow-sm border-bottom border-left border-right btn-sm btn-block">Update</button>' +
+                    '<button type="submit" class="btn btn-outline-light text-dark shadow-sm border-bottom border-left border-right btn-sm btn-block mb-2">Update</button>' +
                     '</div>' +
                     '<div class="col-md-6">' +
                     '<button type="button" class="btn btn-outline-light text-danger shadow-sm border-bottom border-left border-right btn-sm btn-block" id="id_delete_reply_button_' + json.len_text + '_' + json.len_button + '" onclick="sendAjaxDeleteReplyButton(this);">Delete</button>' +
@@ -1493,7 +1494,7 @@
                         '</div>' +
                         '<div class="col-md-12 mt-2">' +
                         '<div class="form-row">' +
-                        '<div class="col-md-8">' +
+                        '<div class="col-md-8 mb-2">' +
                         '<div class="input-group">' +
                         '<div class="input-group-prepend">' +
                         '<div class="input-group-text shadow-sm">React</div>' +
@@ -1502,7 +1503,7 @@
                         '</div>' +
                         '</div>' +
                         '<div class="col-md-2">' +
-                        '<button type="submit" class="btn btn-outline-light text-primary shadow-sm border-bottom border-left border-right btn-block">Update</button>' +
+                        '<button type="submit" class="btn btn-outline-light text-primary shadow-sm border-bottom border-left border-right btn-block mb-2">Update</button>' +
                         '</div>' +
                         '<div class="col-md-2">' +
                         '<button id="callback_element_for_' + json.len_text + '" onclick="sendAjaxDeleteCallback(this);" type="button" class="btn btn-outline-light text-danger shadow-sm border-bottom border-left border-right btn-block">Delete</button>' +
@@ -1810,7 +1811,7 @@
                         some_object +
                         '<div class="form-row mt-2">' +
                         '<div class="col-md-6">' +
-                        '<button type="submit" class="btn btn-outline-light text-dark shadow-sm border-bottom border-right border-left btn-sm btn-block">Update</button>' +
+                        '<button type="submit" class="btn btn-outline-light text-dark shadow-sm border-bottom border-right border-left btn-sm btn-block mb-2">Update</button>' +
                         '</div>' +
                         '<div class="col-md-6">' +
                         '<button type="button" class="btn btn-outline-light text-danger shadow-sm border-bottom border-right border-left btn-sm btn-block" id="id_delete_inline_button_' + json.len_text + '_' + json.len_button + '" onclick="sendAjaxInlineButtonDelete(this);">Delete</button>' +
