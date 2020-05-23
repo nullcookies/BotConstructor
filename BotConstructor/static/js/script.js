@@ -62,7 +62,7 @@ function onCheck() {
 
 
 function languageDetect(input) {
-    var text = input.value;
+    var text = input.value.replace(/ +/g, "");
     var checkbox = document.getElementById("id_smart_0");
     if (!(/^[a-zA-Z]+$/.test(text))) {
         if (checkbox.checked) {
