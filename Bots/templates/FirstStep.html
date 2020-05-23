@@ -1,43 +1,89 @@
 {% extends 'Base.html' %}
 {% load static %}
 
+
+{% block head %}
+<style>
+    #showcase8 {
+        background: url("{% static 'pictures/some10.png' %}") center center/cover no-repeat;
+        min-height: 350px;
+        max-height: 350px;
+        position: relative;
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+<meta name="description" content="First step, BotConstructor">
+{% endblock head %}
+
+
 {% block main_section %}
 {% include 'Navbar.html' %}
-<div class="container">
-    <div style="position: relative; overflow: hidden; height: 150px; border-radius: 3px;">
-        <img src="{% static 'pictures/14961556102_13f1b039b4_o.png' %}" class="img-fluid" style="width: 100%; top: -90%;">
-        <div style="position: absolute; top: 10px; left: 10px; color: white; padding-left: 20px; padding-right: 20px;">
-            <h4 class="text-light mt-2">Here you can see your profile</h4>
-            <ul class="text-light">
-                <li>Go to the Telegram and find @BotFather</li>
-                <li>There follow the instructions and generate the token</li>
-                <li>Copy API token and input it in form</li>
-            </ul>
-        </div>
+<section id="showcase8" class="d-flex justify-content-center align-items-center shadow">
+    <div id="header" class="container text-white">
+        <h4 class="text-light">Here you must input your token</h4>
+        <ul class="text-light">
+            <li>Go to the Telegram and find <a href="https://t.me/BotFather" style="font-size: 20px;"
+                    class="text-warning" target="_blank">@BotFather</a></li>
+            <li>Follow the instructions there and generate the token</li>
+            <li>Copy the token and enter it into the form</li>
+        </ul>
+        <h5 class="text-light mt-4">Warning. If the token is invalid, the form below will not be filled out
+            automatically, and you will not proceed to the next step...</h5>
+        <ul>
+            <li class="text-light">If your token is real and the form will not be completed, just wait 3 minutes before
+                creating it.
+            </li>
+        </ul>
     </div>
-    <hr>
-    <h5 class="text-secondary mt-2">You must to enter API token</h5>
+</section>
 
-    <form method="POST">
-        {% csrf_token %}
+<div id="error"></div>
 
-        {{ first_form.access_token }}
-        
-        <div class="form-row">
-            <div class="col-md-6 mt-2">
-                {{ first_form.name }}
+{% if messages %}
+{% for message in messages %}
+<div class="shadow-effects shadow p-5">
+    <div class="container">
+        <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="shadow-effects shadow p-5">
+    <div class="container">
+        <form method="POST" onchange="getCredentialsOfBot(this); return false;"
+            onmouseover="getCredentialsOfBot(this); return false;">
+            {% csrf_token %}
+
+            <label for="id_access_token" class="mb-0">{{ first_form.access_token.label }}</label>
+            <div id="input_access">
+                {{ first_form.access_token }}
             </div>
-            <div class="col-md-6 mt-2">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text">@</div>
-                    </div>
+
+
+            <div class="form-row">
+                <div class="col-md-6">
+                    <label for="id_title" class="mb-0 mt-2">{{ first_form.title.label }}</label>
+                    {{ first_form.title }}
+                </div>
+
+                <div class="col-md-6">
+                    <label for="id_username" class="mb-0 mt-2">{{ first_form.username.label }}</label>
                     {{ first_form.username }}
                 </div>
             </div>
-        </div>
 
-        <button type="submit" class="btn btn-outline-success btn-sm mt-2" style="width: 20%;">Next</button>
-    </form>
+            <button type="submit"
+                class="btn btn-outline-light text-dark border-left border-bottom border-right shadow-sm mt-4"
+                style="width: 20%;" id="id_button_nxt" disabled="disabled">
+                Next
+            </button>
+        </form>
+    </div>
 </div>
 {% endblock main_section %}
+
+{% block javascript %}
+<script type="text/javascript" src="{% static 'js/access_token_loader.js' %}" async></script>
+{% endblock javascript %}

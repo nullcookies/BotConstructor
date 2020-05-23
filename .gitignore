@@ -4,6 +4,12 @@ __pycache__/
 *$py.class
 .vscode/
 ScriptsBots/
+DBScriptsBots/
+user_images/
+media/
+*.exe
+bot.py
+test.py
 
 # C extensions
 *.so
@@ -104,3 +110,4 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+BotConstructor/media/default.png

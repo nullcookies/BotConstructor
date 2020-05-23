@@ -6,63 +6,118 @@ from .models import *
 
 
 class UserRegistrationForm(forms.ModelForm):
-    image = forms.FileField(required=False)
     password_some = forms.CharField(label='Password',
                                     widget=forms.PasswordInput(attrs={
-                                        'class': 'form-control',
+                                        'class': 'form-control shadow-sm',
                                         'placeholder': 'Password'
                                     }))
     password_confirm = forms.CharField(label='Confirm password',
                                        widget=forms.PasswordInput(attrs={
-                                           'class': 'form-control',
+                                           'class': 'form-control shadow-sm',
                                            'placeholder': 'Confirm password'
                                        }))
-    about = forms.CharField(max_length=500, widget=forms.Textarea(attrs={
-        'class': 'form-control mb-2 mt-2',
-        'style': 'height: 100px', 'placeholder': 'About'
-    }))
 
     class Meta:
         model = User
-        fields = ('image', 'username', 'email', 'first_name', 'last_name',
+        fields = ('username', 'email', 'first_name', 'last_name',
                   'password_some', 'password_confirm')
         widgets = {
-            'image': forms.FileInput(attrs={'class': 'form-control'}),
             'username': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'form-control shadow-sm',
+                'placeholder': 'Username',
+                'required': True
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control shadow-sm',
+                'placeholder': 'E-Mail',
+                'required': True
+            }),
+            'first_name': forms.TextInput(attrs={
+                'class': 'form-control shadow-sm',
+                'placeholder': 'First name',
+                'required': True
+            }),
+            'last_name': forms.TextInput(attrs={
+                'class': 'form-control shadow-sm',
+                'placeholder': 'Last name',
+                'required': True
+            })
+        }
+
+    def clean(self):
+        cleaned_data = super(UserRegistrationForm, self).clean()
+        password = cleaned_data.get("password_some")
+        password_confirm = cleaned_data.get("password_confirm")
+
+        if password != password_confirm:
+            raise forms.ValidationError("Passwords does not match")
+
+        return cleaned_data
+
+
+class UpdatingForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name')
+        widgets = {
+            'username': forms.TextInput(attrs={
+                'class': 'form-control shadow-sm',
                 'placeholder': 'Username'
             }),
             'email': forms.EmailInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'E-Mail'
+                'class': 'form-control shadow-sm',
+                'placeholder': 'E-Mail',
+                'required': True
             }),
             'first_name': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'form-control shadow-sm',
                 'placeholder': 'First name'
             }),
             'last_name': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'form-control shadow-sm',
                 'placeholder': 'Last name'
             })
         }
 
-    def clean_password_some(self):
-        new_password_some = self.cleaned_data['password_some']
-        new_password_confirm = self.cleaned_data['password_confirm']
 
-        if new_password_some != new_password_confirm:
-            raise forms.ValidationError('Passwords do not match')
-        return new_password_some
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ('about',)
+        widgets = {
+            'about': forms.Textarea(attrs={
+                'class': 'form-control shadow-sm',
+                'style': 'height: 100px', 'placeholder': 'About'
+            })
+        }
+        labels = {
+            'about': 'About (Optional)'
+        }
 
 
 class UserAuthenticationForm(forms.Form):
     username = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'form-control'}))
+        label='Username',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control shadow-sm',
+            'placeholder': 'Username',
+            'required': True
+        })
+    )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+        label='Password',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control shadow-sm',
+            'placeholder': 'Password',
+            'required': True
+        })
+    )
 
 
 class UpdateImageForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('image',)
+        labels = {
+            'image': 'Your image.'
+        }

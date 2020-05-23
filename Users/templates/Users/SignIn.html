@@ -1,41 +1,74 @@
 {% extends 'Base.html' %}
+{% load static %}
+
+
+{% block head %}
+<meta name="Description" content="Your profile, Profile, BotConstructor Profile">
+
+<style>
+    #showcase3 {
+        background: url("{% static 'pictures/some13.png' %}") center center/cover no-repeat;
+        min-height: 350px;
+        max-height: 350px;
+        position: relative;
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+{% endblock head %}
+
 
 {% block main_section %}
 {% include 'Navbar.html' %}
-<div class="container">
-    <h5 class="text-secondary mt-2">Here you can register in our site</h5>
+<section id="showcase3" class="d-flex justify-content-center align-items-center shadow">
+    <div id="header" class="container text-white">
+        <h1 class="text-light">Sign In</h1>
+    </div>
+</section>
 
-    <form method="POST">
-        {% csrf_token %}
-        
-        {% for field in auth_form %}
-            {% if field.errors %}
-                <div class="alert alert-warning">
-                    {{ field.errors }}
-                </div>
-            {% endif %}
-        {% endfor %}
+{% if messages %}
+{% for message in messages %}
+<div class="shadow-effects shadow p-5">
+    <div class="container">
+        <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-warning">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+{% for field in auth_form %}
+{% if field.errors %}
+<div class="shadow-effects shadow p-5">
+    <div class="container">
+        <p style="font-size: 18px;" class="mb-0">{{ field.errors }}</p>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
 
-        <div class="form-row">
-            <div class="form-group col-md-6 mt-2 mb-2">
-                {{ auth_form.username.label }}
-                {{ auth_form.username }}
-            </div>
-            <div class="form-group col-md-6 mt-2 mb-2">
-                {{ auth_form.password.label }}
+<div class="shadow-effects shadow p-5">
+    <div class="container">
+        <form method="POST">
+            {% csrf_token %}
+
+            <label for="id_username" class="mb-0">{{ auth_form.username.label }}</label>
+            {{ auth_form.username }}
+            <div class="mb-2 mt-2">
+                <label for="id_password" class="mb-0">{{ auth_form.password.label }}</label>
                 {{ auth_form.password }}
             </div>
-        </div>
 
-        <button type="submit" class="btn btn-outline-warning mt-0">SignIn</button>
-    </form>
+            {% if is_captcha %}
+            <div class="mb-2">
+                <script src='https://www.google.com/recaptcha/api.js'></script>
+                <div class="g-recaptcha" data-sitekey="6Lel7dcUAAAAACNb9UpCPkKJj8450NHH2Q01rv7t"></div>
+            </div>
+            {% endif %}
+
+            <button type="submit"
+                class="btn btn-outline-light text-dark border-left border-bottom border-right shadow-sm mt-2">Sign
+                In</button>
+        </form>
+    </div>
 </div>
 {% endblock main_section %}

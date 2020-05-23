@@ -1,0 +1,75 @@
+{% extends 'Base.html' %}
+{% load static %}
+
+
+{% block head %}
+<style>
+    #showcase6 {
+        background: url("{% static 'pictures/some7.png' %}") center center/cover no-repeat;
+        min-height: 350px;
+        max-height: 350px;
+        position: relative;
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+<meta name="description" content="Logs, BotConstructor">
+{% endblock head %}
+
+
+{% block main_section %}
+{% include 'Navbar.html' %}
+<section id="showcase6" class="d-flex justify-content-center align-items-center shadow">
+    <div id="header" class="container text-white">
+        <h4 class="text-light mt-4 mb-3">On this page you can watch the latest bot responses</h4>
+        <h5 class="text-light ml-0 mt-4">Unfortunately or fortunately, our service can only display the last 500
+            characters</h5>
+        <ul>
+            <li>
+                <p class="text-light ml-0" style="line-height: 50%">Also, you can download logs on your computer</p>
+            </li>
+        </ul>
+    </div>
+</section>
+
+{% if messages %}
+{% for message in messages %}
+<div class="shadow-effects shadow p-5">
+    <div class="container">
+        <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+
+<div class="container">
+    {% if messages %}
+    {% for message in messages %}
+    <div
+        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
+        {{ message }}
+
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    <a href="{% url 'download_log_url' token=token %}"
+        class="btn btn-outline-light text-dark border-bottom border-left border-right shadow-sm mt-5 btn-block">
+        Download logs</a>
+
+    <div id="editor" class="code-editor shadow mt-5 mb-5" style="height: 753px;">{{ content }}</div>
+</div>
+{% endblock main_section %}
+
+{% block javascript %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ace.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" defer>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/dawn");
+    editor.session.setMode("ace/mode/css");
+    editor.setFontSize(15);
+</script>
+{% endblock javascript %}

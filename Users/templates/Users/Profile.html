@@ -1,81 +1,86 @@
 {% extends 'Base.html' %}
 {% load static %}
 
+{% block head %}
+<meta name="Description" content="Your profile, Profile, BotConstructor Profile">
+
+<style>
+    #showcase2 {
+        background: url("{% static 'pictures/some3.png' %}") top center/cover no-repeat;
+        min-height: 350px;
+        max-height: 350px;
+        position: relative;
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+{% endblock head %}
+
 {% block main_section %}
 {% include 'Navbar.html' %}
-<div class="container">
-    <div class="image-with-text" style="height: 200px;">
-        <img src="{% static 'pictures/apple_mac_os_x_el_capitan-2560x1440.png' %}" class="img-fluid cur-img">
-        <h3 class="text-on-img-2">Here you can see your profile</h3>
+<section id="showcase2" class="d-flex justify-content-center align-items-center shadow">
+    <div id="header" class="container text-white">
+        <h1 class="text-light">Your profile</h1>
+        <a href="{% url 'update_profile_url' %}" style="width: 210px;"
+            class="btn btn-light text-dark border-left border-bottom border-right shadow-sm">
+            Edit profile</a>
     </div>
+</section>
 
-    {% for field in update_image_form %}
-        {% if field.errors %}
-            <div class="alert alert-warning">
-                {{ field.errors }}
+{% if messages %}
+{% for message in messages %}
+<div class="shadow-effects shadow p-5">
+    <div class="container">
+        <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+{% for field in update_image_form %}
+{% if field.errors %}
+<div class="shadow-effects shadow p-5">
+    <div class="container">
+        <p style="font-size: 18px;" class="mb-0">{{ field.errors }}</p>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
+<div class="shadow-effects shadow p-5">
+    <div class="container">
+        <div class="row mt-1">
+            <div class="col-md-4">
+                {% if current_user.image %}
+                <img src="{{ current_user.image.url }}" class="img-fluid border-class mb-4" alt="Profile image">
+                {% else %}
+                <img src="{% static 'pictures/images.png' %}" class="img-fluid profile profile-img-class"
+                    alt="Default profile image">
+                {% endif %}
             </div>
-        {% endif %}
-    {% endfor %}
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-warning">
-                {{ message }}
+            <div class="col-md-8">
+                <div class="alert alert-light border-left border-bottom border-right shadow-sm text-dark p-4">
+                    <h2 class="ml-0">@{{ current_user.user.username }}</h2>
+
+                    <h5 class="text-dark mb-1 mt-4"><i class="far fa-user-circle"></i>
+                        {{ current_user.user.first_name }} {{ current_user.user.last_name }}
+                    </h5>
+                    <h5 class="text-dark mb-1"><i class="far fa-envelope"></i> {{ current_user.user.email }}</h5>
+                    <h5 class="text-dark mb-1"><i class="fas fa-sign-in-alt"></i> Last login:
+                        {{ current_user.user.last_login }}</h5>
+                </div>
             </div>
-        {% endfor %}
-    {% endif %}
-
-
-    <div class="row mt-2">
-        <div class="col-md-3">
-            {% if current_user.image %}
-                <img src="{{ current_user.image.url }}" class="img-fluid w-100 border-class">
-            {% else %}
-                <img src="{% static 'pictures/default.png' %}" class="img-fluid profile profile-img-class">
-            {% endif %}
-
-            <form action="{% url 'profile_url' %}" method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-
-                {{ update_image_form.image.label }}
-                {{ update_image_form.image }}
-                <button type="submit" class="btn btn-outline-success mt-2">📷 Update image</button>
-            </form>
         </div>
 
-        <div class="col-md-9">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-row">
-                        <div class="col-md-8">
-                            <h2 class="mt-1">{{ current_user.user.first_name }} {{ current_user.user.last_name }}</h2>
-                        </div>
-                        <div class="col-md-4 mt-3">
-                            <p>{{ current_user.user.username }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-row float-right">
-                        <!-- <div class="col-md-6"> -->
-                            <a href="{% url 'user_delete_url' %}" class="btn btn-outline-danger float-right mr-2">🧹 󠁛󠁛󠁛Delete user</a>
-                        <!-- </div>
-
-                        <div class="col-md-6"> -->
-                            <a href="{% url 'update_profile_url' %}" class="btn btn-outline-primary float-right mr-1">🖊️ Edit profile</a>
-                        <!-- </div> -->
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <li class="ml-3 mt-1"></li>
-                <h4 class="mt-0">{{ current_user.about }}</h4>
-            </div>
-            <hr>
-
-            <h5>📧 E-Mail: {{ current_user.user.email }}</h5>
-            <p class="text-secondary"> ⚠️ Last login: {{ current_user.user.last_login }}</p>
+        <div class="alert alert-light border-left border-bottom border-right shadow-sm mt-4">
+            <h6 class="text-dark mt-1"><i class="far fa-file-word mr-1"></i> {{ current_user.about }}</h6>
         </div>
     </div>
 </div>
 {% endblock main_section %}
+
+
+{% block javascript %}
+<script src="https://kit.fontawesome.com/3119ee3c0b.js" crossorigin="anonymous" defer></script>
+{% endblock javascript %}

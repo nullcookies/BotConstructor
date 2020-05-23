@@ -1,0 +1,125 @@
+{% extends 'Base.html' %}
+
+{% block head %}
+<meta name="Description" content="BotConstructor, Main page, Start page">
+{% endblock head %}
+
+{% block main_section %}
+{% include 'Navbar.html' %}
+<section id="showcase" loading="lazy" class="d-flex justify-content-center align-items-center shadow-lg">
+    <div id="header" class="container text-white">
+        <h3 class="display-5 mb-0">Onward to the starts</h3>
+        <h1 class="main-title display-3 mt-2">BotConstructor</h1>
+        <p class="lead s-sm-block">Chat bot design service for Telegram platform</p>
+        <a href="{% url 'create_bot_first_step_url' %}" id="where_i_am"
+            class="btn btn-light text-dark shadow-lg border-bottom border-left border-right btn-lg"
+            href="{% url 'base_view_url' %}">Create your own bot</a>
+    </div>
+</section>
+
+<section>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="shadow p-5">
+        <div class="container">
+            <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+</section>
+
+<section class="shadow-effects">
+    <div class="shadow p-5">
+        <div class="container">
+            <h1 class="text-dark d-flex justify-content-center">How to make your own bot?</h1>
+
+            <div class="row mt-5">
+                <div class="col-md-3 text-center">
+                    <p class="text-muted">First step</p>
+                    <h3 class="text-dark">Sign up</h3>
+                    <p class="text-secondary">Register and get access to all the features and capabilities of this
+                        service</p>
+                </div>
+
+                <div class="col-md-1 text-center">
+                    <i class="fas fa-long-arrow-alt-right mt-5"></i>
+                </div>
+
+                <div class="col-md-4 text-center">
+                    <p class="text-secondary">Second step</p>
+                    <h3 class="text-dark">Configure the bot</h3>
+                    <p class="text-secondary">Start collecting bots by entering a token before filling out certain forms
+                        to expand the capabilities of your bot.
+                    </p>
+                </div>
+
+                <div class="col-md-1 text-center">
+                    <i class="fas fa-long-arrow-alt-right mt-5"></i>
+                </div>
+
+                <div class="col-md-3 text-center">
+                    <p class="text-secondary">Third step</p>
+                    <h3 class="text-dark">Upload</h3>
+                    <p class="text-secondary">At the end of the build and configure the bot, click the “Deploy” button
+                        to automatically launch it on the Pythonanywhere hosting</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="shadow-effects">
+    <div class="shadow">
+        <div class="container p-5">
+            <h1 class="text-dark d-flex justify-content-center">What can you do with the chat bot?</h1>
+            <div class="mt-5">
+                <div class="row">
+                    <p class="col-md-8 text-dark">Chatbots are a trending tool used in various commercial projects.
+                        in small
+                        and medium-sized businesses and international corporations. Most popular chat bots in
+                        The service sector as a way to unload call centers and staff.
+                    </p>
+                </div>
+
+                <div class="row text-right">
+                    <div class="col-md-4"></div>
+                    <p class="col-md-8 mt-4 text-dark">
+                        Chatbots vary significantly depending on the tasks they need to solve. Easiest option
+                        is an
+                        the most complex interactive form is an artificial intelligence program that mimics
+                        An interlocutor who knows how to conduct a conversation on any topic.
+                    </p>
+                </div>
+
+                <div class="row">
+                    <p class="col-md-6 mt-4 text-dark">
+                        Chatbots also vary in place of use - they are used on sites, on social networks and instantly
+                        instant messengers.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="shadow-effects">
+    <div class="shadow">
+        <div class="container p-5">
+            <h5>bot.constructor.service@gmail.com</h5>
+
+            <div class="row mt-4">
+                <div class="col-md-7">
+                    <small class="float-right"><i class="far fa-copyright"></i> The purpose of this service is to create
+                        across
+                        intuitive interface for customization
+                        specific options for creating a working
+                        bot programs and further loading of this script into
+                        cloud platform on which the generated
+                        bot.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock main_section %}

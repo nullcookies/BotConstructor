@@ -1,43 +1,113 @@
 {% extends 'Base.html' %}
+{% load online %}
+{% load static %}
+
+
+{% block head %}
+<style>
+    #showcase1 {
+        background: url("{% static 'pictures/some6.png' %}") center center/cover no-repeat;
+        min-height: 350px;
+        max-height: 350px;
+        position: relative;
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+<meta name="description" content="Your Bots, BotConstructor">
+{% endblock head %}
+
 
 {% block main_section %}
 {% include 'Navbar.html' %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <h5 class="text-secondary mt-2">Your Telegram Bots</h5> 
-        </div>  
-
-        <div class="col-md-6">
-            <div class="row float-right mr-0">
-                <a href="{% url 'create_bot_first_step_url' %}" class="btn btn-outline-success btn-sm ml-2 mt-2">🖌️ Create bot</a>
-            </div>
-        </div>
+<section id="showcase1" class="d-flex justify-content-center align-items-center shadow">
+    <div id="header" class="container text-white">
+        <h4 class="text-light">Your Telegram Bots</h4>
+        <a href="{% url 'create_bot_first_step_url' %}" style="width: 210px;"
+            class="btn btn-light shadow-sm text-dark mt-2 border-left border-bottom border-right">Create new
+            bot</a>
     </div>
-    
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-warning mt-2">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
+</section>
 
-    {% for bot in all_bots %}
-        <div class="card mb-4 box-shadow mt-2">
-            <div class="card-body">
-                <h5>{{ bot.title }} {{ bot.username }}</h5>
-                <p class="text-secondary">{{ bot.access_token }}</p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                        <a href="{% url 'delete_bot_url' bot_id=bot.id %}" class="btn btn-sm btn-outline-danger">🧹 󠁛󠁛󠁛Delete</a>
-                        <a href="{% url 'create_bot_third_step_url' %}" class="btn btn-sm btn-outline-primary">⬇️ Download</a>
-                        <a href="{% url 'create_bot_second_step_text_url' %}" class="btn btn-sm btn-outline-warning">Edit</a>
+{% if messages %}
+{% for message in messages %}
+<div class="shadow-effects shadow p-5">
+    <div class="container">
+        <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+
+{% for bot in all_bots %}
+<div class="shadow-effects shadow p-5">
+    <div class="container">
+        <div class="row mt-2">
+            <div class="col-md-7">
+                <h5 class="text-dark">Title: {{ bot.title }}</h5>
+                <h5 class="text-dark mb-3">Username: {{ bot.username }}</h5>
+            </div>
+
+            <div class="col-md-5">
+                <div class="float-right">
+                    {% if bot.file_config|check_online == 'The bot is now running' %}
+                    <div class="form-row mb-2 ml-2">
+                        <div class="col-md-12">
+                            <a href="{% url 'stop_bot_url' token=bot.access_token %}" id="stop_{{ forloop.counter0 }}"
+                                onclick="stopSpinner(`stop_{{ forloop.counter0 }}`);">Stop
+                                hosting</a>
+                        </div>
                     </div>
-                    <small class="text-muted">{{ bot.owner.user.first_name }} {{ bot.owner.user.last_name }}</small>
+                    <div class="form-row mb-2">
+                        <div class="col-md-12">
+                            <a href="{% url 'restart_bot' token=bot.access_token %}" id="restart_{{ forloop.counter0 }}"
+                                onclick="stopSpinner(`restart_{{ forloop.counter0 }}`);" class="float-right">Restart
+                                bot</a>
+                        </div>
+                    </div>
+                    <a href="{% url 'logs' token=bot.access_token %}" class="float-right">Logs</a>
+                    {% else %}
+                    <div class="form-row">
+                        <a href="{% url 'start_bot_url' token=bot.access_token %}" class="mr-1"
+                            id="start_{{ forloop.counter0 }}"
+                            onclick="stopSpinner(`start_{{ forloop.counter0 }}`);">Start hosting</a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
-    {% endfor %}
+
+        <p class="text-secondary">{{ bot.access_token }}</p>
+
+        <a href="{% url 'create_bot_second_step_text_url' token=bot.access_token %}"
+            class="btn btn-sm btn-outline-light shadow-sm mt-1 text-dark border-left border-bottom border-right"
+            style="width: 100px;">Edit</a>
+        <a href="{% url 'create_bot_third_step_url' token=bot.access_token %}"
+            class="btn btn-sm btn-outline-light shadow-sm ml-2 mr-2 mt-1 text-primary border-left border-bottom border-right"
+            style="width: 100px;">Download</a>
+        <a href="{% url 'delete_bot_url' bot_id=bot.id token=bot.access_token %}"
+            class="btn btn-sm btn-outline-light shadow-sm mt-1 text-danger border-left border-bottom border-right"
+            style="width: 100px;">󠁛󠁛󠁛Delete</a>
+
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <p class="text-muted">{{ bot.file_config|check_online }}</p>
+            </div>
+            <div class="col-md-6">
+                <small class="text-muted float-right">{{ bot.date_created }}</small>
+            </div>
+        </div>
+    </div>
 </div>
+{% endfor %}
 {% endblock main_section %}
+
+{% block javascript %}
+<script type="text/javascript" defer>
+    function stopSpinner(button) {
+        document.getElementById(button).innerHTML +=
+            `<div class="spinner-border text-primary mt-1 mr-1 ml-1" role="status"></div>`;
+    }
+</script>
+{% endblock javascript %}
