@@ -1,4 +1,3 @@
-from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render, redirect
 from django.views.generic import View
@@ -14,10 +13,8 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.core.mail import EmailMessage
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
-from django.core.mail.message import EmailMultiAlternatives
 from sys import platform
 
 import os
@@ -67,129 +64,41 @@ class UserRegistration(View):
         register_form = UserRegistrationForm(request.POST, request.FILES)
         profile_form = ProfileForm(request.POST)
 
-        if 'count_registration' in request.session.keys():
-            if request.session['count_registration'] < 2:
-                if register_form.is_valid() and profile_form.is_valid():
-                    recaptcha_response = request.POST.get(
-                        'g-recaptcha-response')
-                    validate_url = ('https://www.google.com/'
-                                    'recaptcha/api/siteverify')
-                    properties = {
-                        'secret': settings.GOOGLE_SECRET_KEY,
-                        'response': recaptcha_response
-                    }
-                    response = requests.get(validate_url, params=properties)
-                    print(response)
+        if register_form.is_valid() and profile_form.is_valid():
+            recaptcha_response = request.POST.get(
+                'g-recaptcha-response')
+            validate_url = ('https://www.google.com/'
+                            'recaptcha/api/siteverify')
+            properties = {
+                'secret': settings.GOOGLE_SECRET_KEY,
+                'response': recaptcha_response
+            }
+            response = requests.get(validate_url, params=properties)
+            if response.json()['success']:
+                username = register_form.cleaned_data['username']
+                first_name = register_form.cleaned_data['first_name']
+                last_name = register_form.cleaned_data['last_name']
+                email = register_form.cleaned_data['email']
+                password = register_form.cleaned_data['password1']
+                about = profile_form.cleaned_data['about']
 
-                    if response.json()['success']:
-                        username = register_form.cleaned_data['username']
-                        first_name = register_form.cleaned_data['first_name']
-                        last_name = register_form.cleaned_data['last_name']
-                        email = register_form.cleaned_data['email']
-                        password = register_form.cleaned_data['password_some']
-                        password_confirm = register_form.cleaned_data[
-                            'password_confirm'
-                        ]
-                        about = profile_form.cleaned_data['about']
+                if about == '':
+                    about = 'Write a little about yourself here...'
 
-                        if about == '':
-                            about = 'Write a little about yourself here...'
+                some_user = User.objects.create_user(
+                    username=username, email=email, password=password,
+                    first_name=first_name, last_name=last_name)
+                some_user.is_active = False
+                some_user.save()
 
-                        some_user = User.objects.create_user(
-                            username=username, email=email, password=password,
-                            first_name=first_name, last_name=last_name)
-                        some_user.is_active = False
-                        some_user.save()
+                some_user_profile = Profile(
+                    user=some_user, about=about)
+                some_user_profile.save()
 
-                        some_user_profile = Profile(
-                            user=some_user, about=about)
-                        some_user_profile.save()
-
-                        current_site = get_current_site(request)
-                        mail_subject = 'Activate your account'
-                        message_content = render_to_string(
-                            'ActiveEmail.html', {
-                                'user': some_user,
-                                'domain': current_site.domain,
-                                'uid': urlsafe_base64_encode(
-                                    force_bytes(some_user.pk)
-                                ),
-                                'token': account_activation_token.make_token(
-                                    some_user),
-                                'request': request
-                            })
-                        to_email = register_form.cleaned_data.get('email')
-
-                        message = Mail(
-                            from_email='noreply@bot-constructor.northeurope.'
-                            'cloudapp.azure.com',
-                            to_emails=to_email,
-                            subject=mail_subject,
-                            html_content=message_content)
-                        try:
-                            sg = SendGridAPIClient(
-                                'SG.48GCbtEqQtuRsR-25DMAZw.'
-                                'FsF0nzFOdIno4UNc_JQZLqstiaONAIn3eTOv22cJGJg'
-                            )
-                            response = sg.send(message)
-                            print(response.status_code)
-                        except Exception as e:
-                            print(e.message)
-
-                        request.session['count_registration'] += 1
-
-                        messages.error(
-                            request,
-                            'Now, a message will come to your mail'
-                        )
-                        return redirect('user_authentication_url')
-                    else:
-                        messages.error(request, 'Sorry, you are the robot')
-            else:
-                messages.error(
-                    request,
-                    'You have registered too many times...'
-                )
-                return redirect('user_authentication_url')
-        else:
-            if register_form.is_valid() and profile_form.is_valid():
-                recaptcha_response = request.POST.get('g-recaptcha-response')
-                validate_url = ('https://www.google.com/'
-                                'recaptcha/api/siteverify')
-                properties = {
-                    'secret': settings.GOOGLE_SECRET_KEY,
-                    'response': recaptcha_response
-                }
-                response = requests.get(validate_url, params=properties)
-                print(response)
-
-                if response.json()['success']:
-                    username = register_form.cleaned_data['username']
-                    first_name = register_form.cleaned_data['first_name']
-                    last_name = register_form.cleaned_data['last_name']
-                    email = register_form.cleaned_data['email']
-                    password = register_form.cleaned_data['password_some']
-                    password_confirm = register_form.cleaned_data[
-                        'password_confirm'
-                    ]
-                    about = profile_form.cleaned_data['about']
-
-                    if about == '':
-                        about = 'Write a little about yourself here...'
-
-                    some_user = User.objects.create_user(
-                        username=username, email=email, password=password,
-                        first_name=first_name, last_name=last_name)
-                    some_user.is_active = False
-                    some_user.save()
-
-                    some_user_profile = Profile(
-                        user=some_user, about=about)
-                    some_user_profile.save()
-
-                    current_site = get_current_site(request)
-                    mail_subject = 'Activate your account'
-                    message_content = render_to_string('ActiveEmail.html', {
+                current_site = get_current_site(request)
+                mail_subject = 'Activate your account'
+                message_content = render_to_string(
+                    'ActiveEmail.html', {
                         'user': some_user,
                         'domain': current_site.domain,
                         'uid': urlsafe_base64_encode(
@@ -199,33 +108,31 @@ class UserRegistration(View):
                             some_user),
                         'request': request
                     })
-                    to_email = register_form.cleaned_data.get('email')
+                to_email = register_form.cleaned_data.get('email')
 
-                    message = Mail(
-                        from_email='noreply@bot-constructor.northeurope.'
-                        'cloudapp.azure.com',
-                        to_emails=to_email,
-                        subject=mail_subject,
-                        html_content=message_content)
-
-                    try:
-                        sg = SendGridAPIClient(
-                            'SG.48GCbtEqQtuRsR-25DMAZw.'
-                            'FsF0nzFOdIno4UNc_JQZLqstiaONAIn3eTOv22cJGJg'
-                        )
-                        response = sg.send(message)
-                        print(response.status_code)
-                    except Exception as e:
-                        print(e.message)
-                    request.session['count_registration'] = 1
-
-                    messages.error(
-                        request,
-                        'Now, a message will come to your mail'
+                message = Mail(
+                    from_email='noreply@bot-constructor.northeurope.'
+                    'cloudapp.azure.com',
+                    to_emails=to_email,
+                    subject=mail_subject,
+                    html_content=message_content)
+                try:
+                    sg = SendGridAPIClient(
+                        'SG.48GCbtEqQtuRsR-25DMAZw.'
+                        'FsF0nzFOdIno4UNc_JQZLqstiaONAIn3eTOv22cJGJg'
                     )
-                    return redirect('user_authentication_url')
-                else:
-                    messages.error(request, 'Sorry, you are the robot')
+                    response = sg.send(message)
+                    print(response.status_code)
+                except Exception as e:
+                    print(e.message)
+
+                messages.error(
+                    request,
+                    'Now, a message will come to your mail'
+                )
+                return redirect('user_authentication_url')
+            else:
+                messages.error(request, 'Sorry, you are the robot')
 
         self.context.update({
             'title': 'Registration - BotConstructor',
@@ -277,19 +184,17 @@ class UserAuthentication(View):
 
         if 'tries_captcha' not in request.session.keys():
             request.session['tries_captcha'] = 0
-
-        if 'tries_captcha' in request.session.keys() and \
-                request.session['tries_captcha'] > 1:
-            is_captcha = True
         else:
-            is_captcha = False
+            if request.session['tries_captcha'] > 1:
+                is_captcha = True
+            else:
+                is_captcha = False
 
         if auth_form.is_valid():
             password = auth_form.cleaned_data['password']
             username = auth_form.cleaned_data['username']
 
-            if 'tries_captcha' in request.session.keys() and \
-                    request.session['tries_captcha'] > 1:
+            if is_captcha:
                 recaptcha_response = request.POST.get(
                     'g-recaptcha-response')
                 validate_url = ('https://www.google.com/recaptcha/'

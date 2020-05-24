@@ -51,7 +51,7 @@
 
             <div class="col-md-5">
                 <div class="float-right">
-                    {% if bot.file_config|check_online == 'The bot is now running' %}
+                    {% if bot.file_config|check_online %}
                     <div class="form-row mb-2 ml-2">
                         <div class="col-md-12">
                             <a href="{% url 'stop_bot_url' token=bot.access_token %}" id="stop_{{ forloop.counter0 }}"
@@ -92,7 +92,13 @@
 
         <div class="row mt-3">
             <div class="col-md-6">
-                <p class="text-muted">{{ bot.file_config|check_online }}</p>
+
+                {% if bot.file_config|check_online %}
+                <p class="text-muted">The bot is now running</p>
+                {% else %}
+                <p class="text-muted">The bot was not launched</p>
+                {% endif %}
+
             </div>
             <div class="col-md-6">
                 <small class="text-muted float-right">{{ bot.date_created }}</small>

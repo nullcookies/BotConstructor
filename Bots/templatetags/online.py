@@ -11,7 +11,7 @@ register = template.Library()
 
 
 @register.filter
-def check_online(value: str):
+def check_online(value: str) -> bool:
     file_name = str(value).split('/')[1]
     name = file_name.split('_')[0]
     path = os.path.join(settings.BASE_DIR,
@@ -26,8 +26,8 @@ def check_online(value: str):
         some_data = get_status_of_console(console_id)
 
         if some_data:
-            return 'The bot is now running'
+            return True
         else:
-            return 'The bot was not launched'
+            return False
     else:
-        return 'The bot was not launched'
+        return False
