@@ -87,31 +87,6 @@ def enumerate_elements(request, get_object: str, token: str) -> list:
     return elements
 
 
-def form_final_dict(obligatory_fields: list, index: int,
-                    point: bool, data: dict, checkboxes: list = None) -> dict:
-    final_data = {}
-    for item in data.items():
-        if item[0] != 'csrfmiddlewaretoken':
-            if point:
-                key = item[0][:item[0].rfind('_')]
-            else:
-                key = item[0][:item[0].rfind('_') - 2]
-
-            if key in obligatory_fields:
-                if checkboxes is not None and key in checkboxes and \
-                        item[1][0] == 'on':
-                    element = True
-                else:
-                    element = item[1][0]
-
-                final_data[key] = [index, element]
-                obligatory_fields.remove(key)
-
-    for value in obligatory_fields:
-        final_data[value] = [index, False]
-    return final_data
-
-
 def stop_hosting(obj):
     file_name = str(obj.file_config).split('/')[1]
     name = file_name.split('_')[0]

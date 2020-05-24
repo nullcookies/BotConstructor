@@ -22,15 +22,15 @@
 <section id="showcase7" class="d-flex justify-content-center align-items-center shadow">
     <div id="header" class="container text-white">
         <h4 class="text-light">Here you need to configure your bot</h4>
-        <ul class="text-light">
+        <dl class="text-light">
             {% if request.path == templates_url %}
-            <li>Select one of the proposed options here to continue editing it</li>
-            <li>After the election you will be missing the rest of the editing settings.</li>
+            <dd>— Select one of the proposed options here to continue editing it</dd>
+            <dd>— After the election you will be missing the rest of the editing settings.</dd>
             {% else %}
-            <li>Click on one of the submenu items to start the configuration.</li>
-            <li>Correctly fill in all form data</li>
+            <dd>— Click on one of the submenu items to start the configuration.</dd>
+            <dd>— Correctly fill in all form data</dd>
             {% endif %}
-        </ul>
+        </dl>
     </div>
 </section>
 

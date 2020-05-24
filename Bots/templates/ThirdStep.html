@@ -48,9 +48,10 @@
                 Download script</a>
         </div>
         <div class="col-md-6">
-            {% if config|check_online == 'The bot is now running' %}
-            <a class="btn btn-outline-light border-bottom text-muted border-left border-right shadow-sm btn-block"
-                disabled="disabled">Deploy</a>
+            {% if config|check_online %}
+            <a href="{% url 'stop_bot_url' token=token %}"
+                class="btn btn-outline-light border-bottom text-danger border-left border-right shadow-sm btn-block"
+                onclick="postload();">Stop hosting</a>
             {% else %}
             <a href="{% url 'auto_deploy_url' token=token %}"
                 class="btn btn-outline-light border-bottom text-danger border-left border-right shadow-sm btn-block"

@@ -1,67 +1,58 @@
+from __future__ import annotations
+
 import requests
 import os
 import json
 import string
 import re
 
-from pprint import pprint
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from sys import platform
-
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from django.conf import settings
 
 
 class AutoDeploy:
     def __init__(self, file_title: str):
-        self.path = os.path.join(BASE_DIR, 'BotConstructor', 'media',
+        self.path = os.path.join(settings.BASE_DIR, 'BotConstructor', 'media',
                                  'ScriptsBots', f"{file_title.split('_')[0]}",
                                  file_title.replace(':', '_'))
         self.file_title = file_title.replace(':', '_')
 
-        # ! User credencials
         self.TOKEN = '54be38d4e853d62835b2c970d6b6fc23a653b901'
-        self.HEADERS = {
-            'Authorization': f'Token {self.TOKEN}'
-        }
+        self.HEADERS = {'Authorization': f'Token {self.TOKEN}'}
         self.USERNAME = 'AlexanderIvanov20'
         self.BASE_URL = 'https://www.pythonanywhere.com'
 
-        # ? Open and write content of a file
         self.DATA = open(self.path, 'r', encoding='utf-8').read()
         self.PATH = f"/home/{self.USERNAME}/{file_title.replace(':', '_')}"
-        self.FILES = {
-            'content': self.DATA
-        }
+        self.FILES = {'content': self.DATA}
 
-        # ? Params for create console
         self.PARAMS = {
             'executable': 'bash',
             'arguments': '',
             'working_directory': f'/home/{self.USERNAME}/'
         }
 
+    # Do request for upload file
     def upload_file(self):
-        # ! Do request for upload file
         response = requests.post(
             f'{self.BASE_URL}/api/v0/user/{self.USERNAME}'
             f'/files/path{self.PATH}',
             headers=self.HEADERS, files=self.FILES
         )
 
+    # Create a console and get console id
     def create_console(self):
-        # ! Create a console
         console_response = requests.post(
             f'{self.BASE_URL}/api/v0/user/{self.USERNAME}/consoles/',
             headers=self.HEADERS, data=self.PARAMS
         )
-
-        # ! Get console id
         console_id = console_response.json()['id']
         return console_id
 
+    # Open last console to activate it
     def open_console(self):
         options = Options()
         options.headless = True
@@ -70,10 +61,8 @@ class AutoDeploy:
             executable_path = '/usr/lib/chromium-browser/chromedriver'
         elif platform == "win32":
             executable_path = os.path.join(
-                BASE_DIR, 'chromedriver.exe'
+                settings.BASE_DIR, 'chromedriver.exe'
             )
-
-        # ? Open driver
         driver = webdriver.Chrome(
             executable_path=executable_path,
             chrome_options=options
@@ -84,14 +73,10 @@ class AutoDeploy:
         username = driver.find_element_by_xpath('//*[@id="id_auth-username"]')
         password = driver.find_element_by_xpath('//*[@id="id_auth-password"]')
         button = driver.find_element_by_xpath('//*[@id="id_next"]')
-
-        # ? Authorization
         username.send_keys('AlexanderIvanov20')
         password.send_keys('QBmhyq.c_Khi62%')
         button.click()
-        sleep(2)
-
-        # ! Open last console
+        sleep(1)
         driver.get(
             f'{self.BASE_URL}/user/AlexanderIvanov20/consoles/#')
         driver.find_element_by_xpath(
@@ -99,11 +84,11 @@ class AutoDeploy:
         ).find_elements_by_tag_name('tr')[-1].find_elements_by_tag_name(
             'td'
         )[0].find_element_by_xpath('a').click()
-        sleep(5)
+        sleep(2)
         driver.close()
 
+    #  Send command to console
     def send_input(self, console_id: int):
-        # ! Send command to console
         send_console_response = requests.post(
             f'{self.BASE_URL}/api/v0/user/{self.USERNAME}'
             f'/consoles/{console_id}/send_input/',
@@ -112,10 +97,8 @@ class AutoDeploy:
                          f"{self.file_title.replace(':', '_')}\n"
             }
         )
-
-        # ! Check in success
         if send_console_response.status_code in (200, 201):
-            pprint(send_console_response.json())
+            print(send_console_response.json())
         else:
             print(send_console_response.status_code)
 
@@ -139,12 +122,14 @@ class AutoDeploy:
         self.open_console()
         self.send_input(console_id)
 
-    def _write_to_log_file(self, request, token: str,
-                           data: dict, username: str, console_id: int) -> None:
+    # Write logs in file so that the user sees, what
+    # id going on with his/her bot
+    def _write_to_log_file(self, request, token: str, console_id: int) -> None:
         path = os.path.join(
-            BASE_DIR, 'BotConstructor', 'media',
-            'ScriptsBots', username,
-            "{}_{}_output.log".format(username, token.replace(':', '_'))
+            settings.BASE_DIR, 'BotConstructor', 'media',
+            'ScriptsBots', request.user.username,
+            "{}_{}_output.log".format(
+                request.user.username, token.replace(':', '_'))
         )
         response = requests.get(
             self.BASE_URL +
@@ -152,16 +137,15 @@ class AutoDeploy:
                 username=self.USERNAME,
                 id=str(console_id)
             ),
-            headers={
-                'Authorization': 'Token {token}'.format(token=self.TOKEN)
-            }
+            headers=self.HEADERS
         )
+        print(response)
         if response.status_code == 200:
             output = response.json()["output"]
 
             ansi_escape = re.compile(
                 r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])", re.VERBOSE)
-            result = ansi_escape.sub('', output)
+            result = ansi_escape.sub('', output).replace('\r', '')
 
             printable = set(string.printable)
             new_output = ''.join(filter(lambda x: x in printable, result))
@@ -188,7 +172,6 @@ def get_status_of_console(console_id: int) -> bool:
     status_id_console = requests.get(
         current_console_url, headers=HEADERS)
     data = status_id_console.json()
-    print(data)
 
     if 'detail' in data.keys():
         return False

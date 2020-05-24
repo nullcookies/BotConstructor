@@ -22,19 +22,19 @@
 <section id="showcase8" class="d-flex justify-content-center align-items-center shadow">
     <div id="header" class="container text-white">
         <h4 class="text-light">Here you must input your token</h4>
-        <ul class="text-light">
-            <li>Go to the Telegram and find <a href="https://t.me/BotFather" style="font-size: 20px;"
-                    class="text-warning" target="_blank">@BotFather</a></li>
-            <li>Follow the instructions there and generate the token</li>
-            <li>Copy the token and enter it into the form</li>
-        </ul>
+        <dl class="text-light">
+            <dd> — Go to the Telegram and find <a href="https://t.me/BotFather" style="font-size: 20px;"
+                    class="text-warning" target="_blank">@BotFather</a></dd>
+            <dd> — Follow the instructions there and generate the token</dd>
+            <dd> — Copy the token and enter it into the form</dd>
+        </dl>
         <h5 class="text-light mt-4">Warning. If the token is invalid, the form below will not be filled out
             automatically, and you will not proceed to the next step...</h5>
-        <ul>
-            <li class="text-light">If your token is real and the form will not be completed, just wait 3 minutes before
+        <dl>
+            <dd class="text-light">— If your token is real and the form will not be completed, just wait 3 minutes before
                 creating it.
-            </li>
-        </ul>
+            </dd>
+        </dd>
     </div>
 </section>
 
@@ -50,7 +50,7 @@
 {% endfor %}
 {% endif %}
 
-<div class="shadow-effects shadow p-5">
+<div class="shadow p-5">
     <div class="container">
         <form method="POST" onchange="getCredentialsOfBot(this); return false;"
             onmouseover="getCredentialsOfBot(this); return false;">

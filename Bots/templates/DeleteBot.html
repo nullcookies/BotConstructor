@@ -1,17 +1,45 @@
 {% extends 'Base.html' %}
+{% load static %}
+
+{% block head %}
+<style>
+    #showcase1 {
+        background: url("{% static 'pictures/some6.png' %}") center center/cover no-repeat;
+        min-height: 350px;
+        max-height: 350px;
+        position: relative;
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+<meta name="description" content="Your Bots, BotConstructor">
+{% endblock head %}
 
 {% block main_section %}
 {% include 'Navbar.html' %}
-<div class="container">
-    <h5 class="text-secondary mt-4 mb-4">Are you sure that you want to delete this bot?</h5>
+<section id="showcase1" class="d-flex justify-content-center align-items-center shadow">
+    <div id="header" class="container text-white">
+        <h4 class="text-light">Are you sure that you want to delete this bot?</h4>
+    </div>
+</section>
 
-    <form method="POST">
-        {% csrf_token %}
+<div class="shadow p-5">
+    <div class="container">
+        <form method="POST">
+            {% csrf_token %}
 
-        <button type="submit" style="width: 120px;"
-            class="btn btn-outline-light text-danger shadow-sm border-bottom border-left border-right">Delete</button>
-        <a href="{% url 'base_view_url' %}"
-            class="btn btn-outline-light text-dark shadow-sm border-bottom border-left border-right ml-3">Return back...</a>
-    </form>
+            <div class="form-row">
+                <div class="col-md-6">
+                    <button type="submit"
+                        class="btn btn-outline-light text-danger shadow-sm border-bottom border-left border-right btn-block">Delete</button>
+                </div>
+                <div class="col-md-6">
+                    <a href="{% url 'show_bots_url' %}"
+                        class="btn btn-outline-light text-dark shadow-sm border-bottom border-left border-right btn-block">Return
+                        back...</a>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock main_section %}
