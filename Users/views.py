@@ -337,16 +337,3 @@ class UpdateProfile(LoginRequiredMixin, View):
             'getted_current_user': getted_current_user
         })
         return render(request, 'Users/UpdateProfile.html', self.context)
-
-
-# class UserDelete(View):
-#     def get(self, request):
-#         context = {
-#             'title': 'Delete User - BotConstructor',
-#         }
-#         return render(request, 'Users/DeleteUser.html', context)
-
-#     def post(self, request):
-#         user = User.objects.get(id=int(request.user.id))
-#         user.delete()
-#         return redirect('base_view_url')

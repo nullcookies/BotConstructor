@@ -25,10 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '9x5*helb@0lk6k+pv5xedzcd@x&tdh04my!bk_$k!#&r#33ren'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if platform == 'linux' or platform == 'linux2':
-    DEBUG = False
-elif platform == 'win32':
-    DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'bot-constructor.azurewebsites.net', '127.0.0.1',
@@ -82,56 +79,44 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'BotConstructor.wsgi.application'
 
-
-if platform == 'linux' or platform == 'linux2':
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'formatters': {
-            'console': {
-                'format': '%(name)-12s %(levelname)-8s %(message)s'
-            },
-            'file': {
-                'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
-            }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            'format': '%(name)-12s %(levelname)-8s %(message)s'
         },
-        'handlers': {
-            'file': {
-                'level': 'ERROR',
-                'class': 'logging.FileHandler',
-                'filename': 'debug.log',
-            },
+        'file': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
+        }
+    },
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
         },
-        'loggers': {
-            'django': {
-                'handlers': ['file'],
-                'level': 'ERROR',
-                'propagate': True,
-            },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
         },
-    }
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
-
-if platform == 'linux' or platform == 'linux2':
-    user = 'alexAdmin@bot-constructor'
-    password = 'liceuM@lex@aminP@$$'
-    host = 'bot-constructor.postgres.database.azure.com'
-elif platform == 'win32':
-    user = 'postgres'
-    password = 'domestosroot50'
-    host = 'localhost'
 
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'BotConstructor_DB',
-        'USER': user,
-        'PASSWORD': password,
-        'HOST': host,
+        'USER': 'alexAdmin@bot-constructor',
+        'PASSWORD': 'liceuM@lex@aminP@$$',
+        'HOST': 'bot-constructor.postgres.database.azure.com',
         'PORT': '5432'
     }
 }
