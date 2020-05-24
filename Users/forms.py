@@ -1,26 +1,45 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import UserCreationForm
+from django.utils.translation import gettext, gettext_lazy as _
+from django.contrib.auth import password_validation
 
 from .models import *
 
 
-class UserRegistrationForm(forms.ModelForm):
-    password_some = forms.CharField(label='Password',
-                                    widget=forms.PasswordInput(attrs={
-                                        'class': 'form-control shadow-sm',
-                                        'placeholder': 'Password'
-                                    }))
-    password_confirm = forms.CharField(label='Confirm password',
-                                       widget=forms.PasswordInput(attrs={
-                                           'class': 'form-control shadow-sm',
-                                           'placeholder': 'Confirm password'
-                                       }))
+class UserRegistrationForm(UserCreationForm):
+    error_messages = {
+        'password_mismatch': _('The two password fields didn’t match.'),
+    }
+
+    password1 = forms.CharField(
+        label=_("Password"),
+        strip=False,
+        widget=forms.PasswordInput(attrs={
+            'autocomplete': 'new-password',
+            "class": "form-control shadow-sm",
+            'placeholder': 'Password'
+        }),
+        help_text=password_validation.password_validators_help_texts(),
+    )
+    password2 = forms.CharField(
+        label=_("Password confirmation"),
+        widget=forms.PasswordInput(attrs={
+            'autocomplete': 'new-password',
+            "class": "form-control shadow-sm",
+            'placeholder': 'Password confirmation'
+        }),
+        strip=False,
+        help_text=_("Enter the same password as before, for verification."),
+    )
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name',
-                  'password_some', 'password_confirm')
+        fields = (
+            'username', 'email', 'first_name', 'last_name',
+            'password1', 'password2',
+        )
         widgets = {
             'username': forms.TextInput(attrs={
                 'class': 'form-control shadow-sm',
@@ -44,15 +63,31 @@ class UserRegistrationForm(forms.ModelForm):
             })
         }
 
-    def clean(self):
-        cleaned_data = super(UserRegistrationForm, self).clean()
-        password = cleaned_data.get("password_some")
-        password_confirm = cleaned_data.get("password_confirm")
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self._meta.model.USERNAME_FIELD in self.fields:
+            self.fields[
+                self._meta.model.USERNAME_FIELD
+            ].widget.attrs['autofocus'] = True
 
-        if password != password_confirm:
-            raise forms.ValidationError("Passwords does not match")
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError(
+                self.error_messages['password_mismatch'],
+                code='password_mismatch',
+            )
+        return password2
 
-        return cleaned_data
+    def _post_clean(self):
+        super()._post_clean()
+        password = self.cleaned_data.get('password2')
+        if password:
+            try:
+                password_validation.validate_password(password, self.instance)
+            except forms.ValidationError as error:
+                self.add_error('password2', error)
 
 
 class UpdatingForm(forms.ModelForm):

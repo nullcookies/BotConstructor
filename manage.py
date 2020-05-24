@@ -5,7 +5,15 @@ import sys
 
 
 def main():
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BotConstructor.settings')
+    if 'dev' in sys.argv:
+        sys.argv.remove('dev')
+        os.environ.setdefault(
+            'DJANGO_SETTINGS_MODULE', 'BotConstructor.local_settings'
+        )
+    else:
+        os.environ.setdefault(
+            'DJANGO_SETTINGS_MODULE', 'BotConstructor.settings'
+        )
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

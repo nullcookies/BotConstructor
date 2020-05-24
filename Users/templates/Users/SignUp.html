@@ -40,7 +40,9 @@
 {% if field.errors %}
 <div class="shadow-effects shadow p-5">
     <div class="container">
-        <p style="font-size: 18px;" class="mb-0">{{ field.errors }}</p>
+        {% for error in field.errors %}        
+        <p style="font-size: 18px;" class="mb-0">{{ error|escape }}</p>
+        {% endfor %}
     </div>
 </div>
 {% endif %}
@@ -50,7 +52,6 @@
     <div class="container">
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-
             <div class="form-row">
                 <div class="form-group col-md-6 mb-2">
                     <label for="id_first_name" class="mb-0">{{ register_form.first_name.label }}</label>
@@ -68,14 +69,22 @@
 
             <label for="id_username" class="mb-0">{{ register_form.username.label }}</label>
             {{ register_form.username }}
+            <p class="text-muted mb-0">{{ register_form.username.help_text }}</p>
+
             <div class="form-row">
                 <div class="col-md-6 mt-2">
-                    <label for="id_password_some" class="mb-0">{{ register_form.password_some.label }}</label>
-                    {{ register_form.password_some }}
+                    <label for="id_password_some" class="mb-0">{{ register_form.password1.label }}</label>
+                    {{ register_form.password1 }}
+                    <dl class="text-muted mb-0">
+                        {% for text in register_form.password1.help_text %}
+                        <dd class="mb-0">— {{ text }}</dd>
+                        {% endfor %}
+                    </dl>
                 </div>
                 <div class="col-md-6 mt-2">
-                    <label for="id_password_confirm" class="mb-0">{{ register_form.password_confirm.label }}</label>
-                    {{ register_form.password_confirm }}
+                    <label for="id_password_confirm" class="mb-0">{{ register_form.password2.label }}</label>
+                    {{ register_form.password2 }}
+                    <p class="text-muted">{{ register_form.password2.help_text }}</p>
                 </div>
             </div>
 
