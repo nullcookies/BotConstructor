@@ -205,7 +205,8 @@ class InlineMarkup(forms.Form):
     }))
     react_text = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control shadow-sm',
-        'placeholder': 'React Text'
+        'placeholder': 'React Text',
+        'onchange': "languageDetect(this);"
     }))
     smart = forms.MultipleChoiceField(
         required=False, choices=(

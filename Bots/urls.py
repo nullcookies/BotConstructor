@@ -173,5 +173,10 @@ urlpatterns = [
         'restartBot/<str:token>/',
         RestartBot.as_view(),
         name="restart_bot"
-    )
+    ),
+    # path(
+    #     'createBot/firstStep/editAccessToken/<str:token>/',
+    #     UpdateAccessToken.as_view(),
+    #     name='update_access_token'
+    # )
 ]

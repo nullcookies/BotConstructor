@@ -104,3 +104,4 @@ def stop_hosting(obj):
             f'{obj.owner.user.username}_{obj.access_token}_test_bot.py'
         )
         deploy.stop_bot(console_id=console_id)
+        deploy.delete_file()

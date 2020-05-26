@@ -166,8 +166,31 @@ class TextBuilder:
             @bot.message_handler(
                 func=lambda message: message.text in text_dictionary.keys())
             def response_message(message):
-                bot.send_message(chat_id=message.chat.id,
-                                text=f'{text_dictionary[message.text][0]}')
+                try:
+                    bot.send_message(
+                        chat_id=message.chat.id,
+                        text=f'{text_dictionary[message.text][0]}'.format(
+                            first_name=message.from_user.first_name,
+                            last_name=message.from_user.last_name,
+                            username=message.from_user.username,
+                            is_bot=message.from_user.is_bot,
+                            id=message.from_user.id,
+                            message_id=message.message_id
+                        ),
+                        parse_mode='Markdown'
+                    )
+                except telebot.apihelper.ApiException:
+                    bot.send_message(
+                        chat_id=message.chat.id,
+                        text=f'{text_dictionary[message.text][0]}'.format(
+                            first_name=message.from_user.first_name,
+                            last_name=message.from_user.last_name,
+                            username=message.from_user.username,
+                            is_bot=message.from_user.is_bot,
+                            id=message.from_user.id,
+                            message_id=message.message_id
+                        )
+                    )
 
             """) % self.__text_dictionary
 
@@ -177,10 +200,33 @@ class TextBuilder:
                 func=lambda message: message.text == '{key}'
             )
             def response_message_remove(message):
-                bot.send_message(chat_id=message.chat.id,
-                        text='{value[0]}',
-                        reply_markup=ReplyKeyboardRemove())
-
+                try:
+                    bot.send_message(
+                        chat_id=message.chat.id,
+                        text='{value[0]}'.format(
+                            first_name=message.from_user.first_name,
+                            last_name=message.from_user.last_name,
+                            username=message.from_user.username,
+                            is_bot=message.from_user.is_bot,
+                            id=message.from_user.id,
+                            message_id=message.message_id
+                        ),
+                        reply_markup=ReplyKeyboardRemove(),
+                        parse_mode='Markdown'
+                    )
+                except telebot.apihelper.ApiException:
+                    bot.send_message(
+                        chat_id=message.chat.id,
+                        text='{value[0]}'.format(
+                            first_name=message.from_user.first_name,
+                            last_name=message.from_user.last_name,
+                            username=message.from_user.username,
+                            is_bot=message.from_user.is_bot,
+                            id=message.from_user.id,
+                            message_id=message.message_id
+                        ),
+                        reply_markup=ReplyKeyboardRemove()
+                    )
             """)
 
         for key, value in smart_texts.items():
@@ -203,12 +249,60 @@ class TextBuilder:
             @bot.message_handler(func=check_similarity_%s)
             def handler(message: Message) -> None:
                 if %s:
-                    bot.send_message(chat_id=message.chat.id,
-                                    text='%s',
-                                    reply_markup=ReplyKeyboardRemove())
+                    try:
+                        bot.send_message(
+                            chat_id=message.chat.id,
+                            text='%s'.format(
+                                first_name=message.from_user.first_name,
+                                last_name=message.from_user.last_name,
+                                username=message.from_user.username,
+                                is_bot=message.from_user.is_bot,
+                                id=message.from_user.id,
+                                message_id=message.message_id
+                            ),
+                            reply_markup=ReplyKeyboardRemove(),
+                            parse_mode='Markdown'
+                        )
+                    except telebot.apihelper.ApiException:
+                        bot.send_message(
+                            chat_id=message.chat.id,
+                            text='%s'.format(
+                                first_name=message.from_user.first_name,
+                                last_name=message.from_user.last_name,
+                                username=message.from_user.username,
+                                is_bot=message.from_user.is_bot,
+                                id=message.from_user.id,
+                                message_id=message.message_id
+                            ),
+                            reply_markup=ReplyKeyboardRemove(),
+                            parse_mode='Markdown'
+                        )
                 else:
-                    bot.send_message(chat_id=message.chat.id,
-                                    text='%s')
+                    try:
+                        bot.send_message(
+                            chat_id=message.chat.id,
+                            text='%s'.format(
+                                first_name=message.from_user.first_name,
+                                last_name=message.from_user.last_name,
+                                username=message.from_user.username,
+                                is_bot=message.from_user.is_bot,
+                                id=message.from_user.id,
+                                message_id=message.message_id
+                            ),
+                            parse_mode='Markdown'
+                        )
+                    except telebot.apihelper.ApiException:
+                        bot.send_message(
+                            chat_id=message.chat.id,
+                            text='%s'.format(
+                                first_name=message.from_user.first_name,
+                                last_name=message.from_user.last_name,
+                                username=message.from_user.username,
+                                is_bot=message.from_user.is_bot,
+                                id=message.from_user.id,
+                                message_id=message.message_id
+                            )
+                        )
 
             """) % (key, key, key, key, value[1],
                     value[0], value[0])
@@ -273,8 +367,8 @@ class ReplyMarkupBuilder:
                 return message
 
     def __generate_reply_code(self):
-        smart_dict = {}
-        object_text = ""
+        smart_dict: dict = {}
+        object_text: str = ""
 
         for key, value in self.__reply_markup_dictionary.items():
             if self.__reply_markup_dictionary[key]['smart'] is True:
@@ -320,11 +414,33 @@ class ReplyMarkupBuilder:
                         some_list.append(button)
                     keyboard.add(*some_list)
 
-                    bot.send_message(
-                        chat_id=message.chat.id,
-                        text="%s",
-                        reply_markup=keyboard
-                    )
+                    try:
+                        bot.send_message(
+                            chat_id=message.chat.id,
+                            text="%s".format(
+                                first_name=message.from_user.first_name,
+                                last_name=message.from_user.last_name,
+                                username=message.from_user.username,
+                                is_bot=message.from_user.is_bot,
+                                id=message.from_user.id,
+                                message_id=message.message_id
+                            ),
+                            reply_markup=keyboard,
+                            parse_mode='Markdown'
+                        )
+                    except telebot.apihelper.ApiException:
+                        bot.send_message(
+                            chat_id=message.chat.id,
+                            text="%s".format(
+                                first_name=message.from_user.first_name,
+                                last_name=message.from_user.last_name,
+                                username=message.from_user.username,
+                                is_bot=message.from_user.is_bot,
+                                id=message.from_user.id,
+                                message_id=message.message_id
+                            ),
+                            reply_markup=keyboard
+                        )
 
                 """ % (
                 key, key, key, key,
@@ -361,11 +477,33 @@ reply_markup_dictionary.keys()
                     some_list.append(button)
                 keyboard.add(*some_list)
 
-                bot.send_message(
-                    chat_id=message.chat.id,
-                    text=f"{reply_markup_dictionary[message.text]['response_text']}",
-                    reply_markup=keyboard
-                )
+                try:
+                    bot.send_message(
+                        chat_id=message.chat.id,
+                        text=f"{reply_markup_dictionary[message.text]['response_text']}".format(
+                            first_name=message.from_user.first_name,
+                            last_name=message.from_user.last_name,
+                            username=message.from_user.username,
+                            is_bot=message.from_user.is_bot,
+                            id=message.from_user.id,
+                            message_id=message.message_id
+                        ),
+                        reply_markup=keyboard,
+                        parse_mode='Markdown'
+                    )
+                except telebot.apihelper.ApiException:
+                    bot.send_message(
+                        chat_id=message.chat.id,
+                        text=f"{reply_markup_dictionary[message.text]['response_text']}".format(
+                            first_name=message.from_user.first_name,
+                            last_name=message.from_user.last_name,
+                            username=message.from_user.username,
+                            is_bot=message.from_user.is_bot,
+                            id=message.from_user.id,
+                            message_id=message.message_id
+                        ),
+                        reply_markup=keyboard
+                    )
 
             """ % self.__reply_markup_dictionary)
 
@@ -471,12 +609,33 @@ class InlineMarkupBuilder:
                         some_list.append(button)
                     keyboard.add(*some_list)
 
-
-                    bot.send_message(
-                        chat_id=message.chat.id,
-                        text="%s",
-                        reply_markup=keyboard
-                    )
+                    try:
+                        bot.send_message(
+                            chat_id=message.chat.id,
+                            text="%s".format(
+                                first_name=message.from_user.first_name,
+                                last_name=message.from_user.last_name,
+                                username=message.from_user.username,
+                                is_bot=message.from_user.is_bot,
+                                id=message.from_user.id,
+                                message_id=message.message_id
+                            ),
+                            reply_markup=keyboard,
+                            parse_mode='Markdown'
+                        )
+                    except telebot.apihelper.ApiException:
+                        bot.send_message(
+                            chat_id=message.chat.id,
+                            text="%s".format(
+                                first_name=message.from_user.first_name,
+                                last_name=message.from_user.last_name,
+                                username=message.from_user.username,
+                                is_bot=message.from_user.is_bot,
+                                id=message.from_user.id,
+                                message_id=message.message_id
+                            ),
+                            reply_markup=keyboard
+                        )
 
                 """ % (
                 key, key, key, key,
@@ -508,12 +667,34 @@ inline_markup_dictionary.keys()
                         button = InlineKeyboardButton(*generator_value)
                         some_list.append(button)
                     keyboard.add(*some_list)
-
-                    bot.send_message(
-                        chat_id=message.chat.id,
-                        text=f"{inline_markup_dictionary[message.text]['response_text']}",
-                        reply_markup=keyboard
-                    )
+                    
+                    try:
+                        bot.send_message(
+                            chat_id=message.chat.id,
+                            text=f"{inline_markup_dictionary[message.text]['response_text']}".format(
+                                first_name=message.from_user.first_name,
+                                last_name=message.from_user.last_name,
+                                username=message.from_user.username,
+                                is_bot=message.from_user.is_bot,
+                                id=message.from_user.id,
+                                message_id=message.message_id
+                            ),
+                            reply_markup=keyboard,
+                            parse_mode='Markdown'
+                        )
+                    except telebot.apihelper.ApiException:
+                        bot.send_message(
+                            chat_id=message.chat.id,
+                            text=f"{inline_markup_dictionary[message.text]['response_text']}".format(
+                                first_name=message.from_user.first_name,
+                                last_name=message.from_user.last_name,
+                                username=message.from_user.username,
+                                is_bot=message.from_user.is_bot,
+                                id=message.from_user.id,
+                                message_id=message.message_id
+                            ),
+                            reply_markup=keyboard
+                        )
 
                 """ % self.__inline_markup_dictionary)
 
@@ -555,10 +736,30 @@ class CallbackBuilder:
                     func=lambda call: call.data == '%s' % '{key}')
                 def get_callback(call):
                     try:
-                        bot.send_message(chat_id=call.from_user.id,
-                                        text={repr(value['response_text'])})
+                        bot.send_message(
+                            chat_id=call.from_user.id,
+                            text={repr(value['response_text'])}.format(
+                                first_name=call.from_user.first_name,
+                                last_name=call.from_user.last_name,
+                                username=call.from_user.username,
+                                is_bot=call.from_user.is_bot,
+                                id=call.from_user.id
+                            ),
+                            parse_mode='Markdown'
+                        )
+                    except telebot.apihelper.ApiException:
+                        bot.send_message(
+                            chat_id=call.from_user.id,
+                            text={repr(value['response_text'])}.format(
+                                first_name=call.from_user.first_name,
+                                last_name=call.from_user.last_name,
+                                username=call.from_user.username,
+                                is_bot=call.from_user.is_bot,
+                                id=call.from_user.id
+                            )
+                        )
                     except Exception as error:
-                        pass
+                        print(error)
 
             """)
 
