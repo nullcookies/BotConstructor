@@ -63,18 +63,30 @@ class BotFacade:
 
     def __start(self) -> None:
         some_token = self.__token.replace('_', ':')
-        init_object = """\
+        init_object = f"""\
         import telebot
         import requests
+        import logging
+        import os
+        import sys
+
         from telebot.types import *
         from fuzzywuzzy import fuzz
 
-        bot = telebot.TeleBot(token='%s')
+        bot = telebot.TeleBot(token='{some_token}')
+        logger = telebot.logger
+        formatter = logging.Formatter(
+            '[%(asctime)s] %(levelname)s => %(message)s'
+        )
+        ch = logging.StreamHandler(sys.stdout)
+        logger.addHandler(ch)
+        logger.setLevel(logging.INFO)
+        ch.setFormatter(formatter)
 
 
         def generate_synonyms(word: str) -> None:
-            url = f'https://api.datamuse.com/words?rel_syn={word}'
-            phrase = {}
+            url = f'https://api.datamuse.com/words?rel_syn=%s' % word
+            phrase = dict()
 
             response = requests.get(url)
             if response.status_code <= 200:
@@ -91,7 +103,7 @@ class BotFacade:
                     phrase[word] = [word]
             return phrase
 
-        """ % some_token
+        """
         final_path = os.path.join(PATH, f'{self.__username}')
         path = os.path.join(
             final_path,
@@ -164,8 +176,17 @@ class TextBuilder:
             object_text += textwrap.dedent("""
             text_dictionary = %s
             @bot.message_handler(
-                func=lambda message: message.text in text_dictionary.keys())
+                func=lambda message: message.text in text_dictionary.keys()
+            )
             def response_message(message):
+                logger.info(
+                    "User -> {user_message} : Bot -> {bot_message}".format(
+                        user_message=message.text,
+                        bot_message=(text_dictionary[message.text][0]).replace(
+                            '\\n', ''
+                        )
+                    )
+                )
                 try:
                     bot.send_message(
                         chat_id=message.chat.id,
@@ -195,15 +216,23 @@ class TextBuilder:
             """) % self.__text_dictionary
 
         for key, value in new_dict.items():
-            object_text += textwrap.dedent(f"""
+            object_text += textwrap.dedent("""
             @bot.message_handler(
-                func=lambda message: message.text == '{key}'
+                func=lambda message: message.text == '%s'
             )
             def response_message_remove(message):
+                logger.info(
+                    "User -> {user_message} : Bot -> {bot_message}".format(
+                        user_message=message.text,
+                        bot_message='%s'.replace(
+                            '\\n', ''
+                        )
+                    )
+                )
                 try:
                     bot.send_message(
                         chat_id=message.chat.id,
-                        text='{value[0]}'.format(
+                        text='%s'.format(
                             first_name=message.from_user.first_name,
                             last_name=message.from_user.last_name,
                             username=message.from_user.username,
@@ -217,7 +246,7 @@ class TextBuilder:
                 except telebot.apihelper.ApiException:
                     bot.send_message(
                         chat_id=message.chat.id,
-                        text='{value[0]}'.format(
+                        text='%s'.format(
                             first_name=message.from_user.first_name,
                             last_name=message.from_user.last_name,
                             username=message.from_user.username,
@@ -227,7 +256,7 @@ class TextBuilder:
                         ),
                         reply_markup=ReplyKeyboardRemove()
                     )
-            """)
+            """ % (key, value[0], value[0], value[0]))
 
         for key, value in smart_texts.items():
             object_text += textwrap.dedent("""
@@ -248,6 +277,14 @@ class TextBuilder:
 
             @bot.message_handler(func=check_similarity_%s)
             def handler(message: Message) -> None:
+                logger.info(
+                    "User -> {user_message} : Bot -> {bot_message}".format(
+                        user_message=message.text,
+                        bot_message='%s'.replace(
+                            '\\n', ''
+                        )
+                    )
+                )
                 if %s:
                     try:
                         bot.send_message(
@@ -304,8 +341,8 @@ class TextBuilder:
                             )
                         )
 
-            """) % (key, key, key, key, value[1],
-                    value[0], value[0])
+            """) % (key, key, key, key, value[0], value[1],
+                    value[0], value[0], value[0], value[0])
 
         final_path = os.path.join(PATH, f'{self.__username}')
         path = os.path.join(
@@ -397,6 +434,14 @@ class ReplyMarkupBuilder:
 
                 @bot.message_handler(func=check_similarity_%s)
                 def handler(message: Message) -> None:
+                    logger.info(
+                        "User -> {user_message} : Bot -> {bot_message}".format(
+                            user_message=message.text,
+                            bot_message='%s'.replace(
+                                '\\n', ''
+                            )
+                        )
+                    )
                     keyboard = ReplyKeyboardMarkup(
                         resize_keyboard=%s,
                         one_time_keyboard=%s,
@@ -444,11 +489,13 @@ class ReplyMarkupBuilder:
 
                 """ % (
                 key, key, key, key,
+                value['response_text'],
                 value['resize_keyboard'],
                 value['one_time_keyboard'],
                 value['selective'],
                 value['row_width'],
                 value['buttons'],
+                value['response_text'],
                 value['response_text']
             ))
 
@@ -460,6 +507,14 @@ class ReplyMarkupBuilder:
 reply_markup_dictionary.keys()
             )
             def response_markup(message):
+                logger.info(
+                    "User -> {user_message} : Bot -> {bot_message}".format(
+                        user_message=message.text,
+                        bot_message=(reply_markup_dictionary[message.text]['response_text']).replace(
+                            '\\n', ''
+                        )
+                    )
+                )
                 keyboard = ReplyKeyboardMarkup(
                     resize_keyboard=reply_markup_dictionary[message.text]['resize_keyboard'],
                     one_time_keyboard=reply_markup_dictionary[message.text]['one_time_keyboard'],
@@ -595,15 +650,25 @@ class InlineMarkupBuilder:
 
                 @bot.message_handler(func=check_similarity_%s)
                 def handler(message: Message) -> None:
+                    logger.info(
+                        "User -> {user_message} : Bot -> {bot_message}".format(
+                            user_message=message.text,
+                            bot_message='%s'.replace(
+                                '\\n', ''
+                            )
+                        )
+                    )
                     keyboard = InlineKeyboardMarkup(
                         row_width=%s
                     )
                     some_list = []
 
                     for item in %s:
-                        generator_value = [
-                            item[value] for value in item.keys()
-                        ]
+                        generator_value = []
+                        for value in item.keys():
+                            if item[value] is False:
+                                item[value] = None
+                            generator_value.append(item[value])
 
                         button = InlineKeyboardButton(*generator_value)
                         some_list.append(button)
@@ -639,8 +704,10 @@ class InlineMarkupBuilder:
 
                 """ % (
                 key, key, key, key,
+                value['response_text'],
                 value['row_width'],
                 value['buttons'],
+                value['response_text'],
                 value['response_text']
             ))
 
@@ -652,10 +719,19 @@ class InlineMarkupBuilder:
 inline_markup_dictionary.keys()
                 )
                 def response_inline(message):
+                    logger.info(
+                        "User -> {user_message} : Bot -> {bot_message}".format(
+                            user_message=message.text,
+                            bot_message=(inline_markup_dictionary[message.text]['response_text']).replace(
+                                '\\n', ''
+                            )
+                        )
+                    )
                     keyboard = InlineKeyboardMarkup(
                         row_width=inline_markup_dictionary[
-                        message.text
-                    ]['row_width'])
+                            message.text
+                        ]['row_width']
+                    )
                     some_list = []
 
                     for item in inline_markup_dictionary[
@@ -667,7 +743,7 @@ inline_markup_dictionary.keys()
                         button = InlineKeyboardButton(*generator_value)
                         some_list.append(button)
                     keyboard.add(*some_list)
-                    
+
                     try:
                         bot.send_message(
                             chat_id=message.chat.id,

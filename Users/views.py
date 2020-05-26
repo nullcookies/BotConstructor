@@ -65,8 +65,7 @@ class UserRegistration(View):
         if register_form.is_valid() and profile_form.is_valid():
             recaptcha_response = request.POST.get(
                 'g-recaptcha-response')
-            validate_url = ('https://www.google.com/'
-                            'recaptcha/api/siteverify')
+            validate_url = 'https://www.google.com/recaptcha/api/siteverify'
             properties = {
                 'secret': settings.GOOGLE_SECRET_KEY,
                 'response': recaptcha_response
