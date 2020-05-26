@@ -30,7 +30,7 @@
 {% for message in messages %}
 <div class="shadow-effects shadow p-5">
     <div class="container">
-        <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
+        <p class="mb-0 responsive-text">{{ message }}</p>
     </div>
 </div>
 {% endfor %}
@@ -40,7 +40,7 @@
 {% if field.errors %}
 <div class="shadow-effects shadow p-5">
     <div class="container">
-        <p style="font-size: 18px;" class="mb-0">{{ field.errors }}</p>
+        <p class="mb-0 responsive-text">{{ field.errors }}</p>
     </div>
 </div>
 {% endif %}

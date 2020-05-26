@@ -238,12 +238,12 @@ class GenerateFile(LoginRequiredMixin, View):
             bot_object.file_script.save(
                 f"{request.user.username}_{token.replace(':', '_')}"
                 "_test_bot.py",
-                File(open(file_script_path))
+                File(open(file_script_path, encoding="utf8"))
             )
             bot_object.file_config.save(
                 f"{request.user.username}_{token.replace(':', '_')}"
                 "_configuration.json",
-                File(open(file_config_path))
+                File(open(file_config_path, encoding="utf8"))
             )
             bot_object.save()
         return redirect('create_bot_third_step_url', token=token)

@@ -12,22 +12,19 @@ register = template.Library()
 
 @register.filter
 def check_online(value: str) -> bool:
-    file_name = str(value).split('/')[1]
-    name = file_name.split('_')[0]
+    file_name: str = os.path.split(str(value))[-1]
+    name: str = file_name.split('_')[0]
     path = os.path.join(settings.BASE_DIR,
                         'BotConstructor', 'media', 'ScriptsBots',
                         name, file_name)
 
     with open(path, 'r', encoding='utf-8') as file:
-        data = json.load(file)
+        data: dict = json.load(file)
 
     if 'console_id' in data.keys():
         console_id = data['console_id']
         some_data = get_status_of_console(console_id)
 
-        if some_data:
-            return True
-        else:
-            return False
+        return True if some_data else False
     else:
         return False

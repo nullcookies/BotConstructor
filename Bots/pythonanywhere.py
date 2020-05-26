@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import requests
 import os
 import json
@@ -25,9 +23,7 @@ class AutoDeploy:
         self.USERNAME = 'AlexanderIvanov20'
         self.BASE_URL = 'https://www.pythonanywhere.com'
 
-        self.DATA = open(self.path, 'r', encoding='utf-8').read()
-        self.PATH = f"/home/{self.USERNAME}/{file_title.replace(':', '_')}"
-        self.FILES = {'content': self.DATA}
+        self.PATH = f"/home/{self.USERNAME}/{self.file_title}"
 
         self.PARAMS = {
             'executable': 'bash',
@@ -36,11 +32,21 @@ class AutoDeploy:
         }
 
     # Do request for upload file
-    def upload_file(self):
+    def upload_file(self) -> None:
+        self.DATA = open(self.path, 'r', encoding='utf-8').read()
+        self.FILES = {'content': self.DATA}
         response = requests.post(
             f'{self.BASE_URL}/api/v0/user/{self.USERNAME}'
             f'/files/path{self.PATH}',
             headers=self.HEADERS, files=self.FILES
+        )
+
+    # Delete file. Use this method if bot will delete.
+    def delete_file(self) -> None:
+        response = requests.delete(
+            f'{self.BASE_URL}/api/v0/user/{self.USERNAME}'
+            f'/files/path{self.PATH}',
+            headers=self.HEADERS
         )
 
     # Create a console and get console id
@@ -110,6 +116,7 @@ class AutoDeploy:
         )
 
     def run_bot(self, path) -> None:
+        self.upload_file()
         console_id = self.create_console()
 
         with open(path, 'r+', encoding='utf-8') as file:
