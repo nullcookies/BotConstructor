@@ -15,7 +15,6 @@ class Profile(models.Model):
         return self.user.username
 
     def save(self, *args, **kwargs):
-        print(self.image)
         super(Profile, self).save(*args, **kwargs)
 
         if self.id and self.image:
@@ -27,3 +26,7 @@ class Profile(models.Model):
             image.save(self.image.path)
         else:
             return
+
+    def delete(self, *args, **kwargs):
+        self.image.delete()
+        super().delete(*args, **kwargs)

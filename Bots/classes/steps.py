@@ -183,7 +183,6 @@ class CreateBotStepThree(LoginRequiredMixin, View):
         base_name = os.path.basename(config_path)
         dir_name = os.path.basename(os.path.dirname(config_path))
         some = os.path.join(dir_name, base_name)
-        print(some)
 
         context = {
             'title': 'Third Step - BotConstructor',
@@ -196,6 +195,11 @@ class CreateBotStepThree(LoginRequiredMixin, View):
     def post(self, request, token: str):
         data = dict(request.POST)
         code = data['code_editor'][0].replace('\r', '')
+
+        config_path = open_configuration(request, token)
+        base_name = os.path.basename(config_path)
+        dir_name = os.path.basename(os.path.dirname(config_path))
+        some = os.path.join(dir_name, base_name)
 
         path = open_test_bot(request, token)
         fixed_code = autopep8.fix_code(code)
@@ -211,6 +215,7 @@ class CreateBotStepThree(LoginRequiredMixin, View):
             )
         except (NameError, ValueError, TypeError, AttributeError,
                 IndentationError) as error:
+            print(error)
             messages.error(
                 request,
                 'You made a mistake in changing the program. '
@@ -220,6 +225,7 @@ class CreateBotStepThree(LoginRequiredMixin, View):
         context = {
             'title': 'Third Step - BotConstructor',
             'content': fixed_code,
-            'token': token
+            'token': token,
+            'config': some
         }
         return render(request, 'ThirdStep.html', context)
