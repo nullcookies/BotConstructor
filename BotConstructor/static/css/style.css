@@ -23,6 +23,18 @@
     clear: both;
 }
 
+@media screen and (min-width: 601px){
+    .responsive-text {
+        font-size: 18px;
+    }
+}
+
+@media screen and (max-width: 600px){
+    .responsive-text {
+        font-size: 12px;
+    }
+}
+
 .main-title {
     font-size: 5vw !important;
 }

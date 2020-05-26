@@ -33,7 +33,7 @@
 {% for message in messages %}
 <div class="shadow-effects shadow p-5">
     <div class="container">
-        <p style="font-size: 18px;" class="mb-0">{{ message }}</p>
+        <p class="mb-0 responsive-text">{{ message }}</p>
     </div>
 </div>
 {% endfor %}
@@ -52,43 +52,51 @@
             <div class="col-md-5">
                 <div class="float-right">
                     {% if bot.file_config|check_online %}
-                    <div class="form-row mb-2 ml-2">
+                    <div class="form-row">
                         <div class="col-md-12">
                             <a href="{% url 'stop_bot_url' token=bot.access_token %}" id="stop_{{ forloop.counter0 }}"
-                                onclick="stopSpinner(`stop_{{ forloop.counter0 }}`);">Stop
+                                class="btn btn-sm btn-outline-light text-primary shadow-sm mr-3 mt-2 mb-2 border-left border-bottom border-right"
+                                onclick="stopSpinner(`stop_{{ forloop.counter0 }}`);" style="width: 100px;">Stop
                                 hosting</a>
-                        </div>
-                    </div>
-                    <div class="form-row mb-2">
-                        <div class="col-md-12">
+
                             <a href="{% url 'restart_bot' token=bot.access_token %}" id="restart_{{ forloop.counter0 }}"
-                                onclick="stopSpinner(`restart_{{ forloop.counter0 }}`);" class="float-right">Restart
+                                class="btn btn-sm btn-outline-light text-primary shadow-sm mr-3 mt-2 mb-2 border-left border-bottom border-right"
+                                onclick="stopSpinner(`restart_{{ forloop.counter0 }}`);" class="float-right"
+                                style="width: 100px;">Restart
                                 bot</a>
+                            <a href="{% url 'logs' token=bot.access_token %}"
+                                class="btn btn-sm btn-outline-light text-primary shadow-sm mt-2 mb-2 border-left border-bottom border-right"
+                                style="width: 100px;">Logs</a>
                         </div>
                     </div>
-                    <a href="{% url 'logs' token=bot.access_token %}" class="float-right">Logs</a>
                     {% else %}
                     <div class="form-row">
-                        <a href="{% url 'start_bot_url' token=bot.access_token %}" class="mr-1"
-                            id="start_{{ forloop.counter0 }}"
-                            onclick="stopSpinner(`start_{{ forloop.counter0 }}`);">Start hosting</a>
+                        <div class="col-md-12">
+                            <a href="{% url 'start_bot_url' token=bot.access_token %}" id="start_{{ forloop.counter0 }}"
+                                class="btn btn-sm btn-outline-light text-primary shadow-sm mt-2 mb-2 border-left border-bottom border-right"
+                                onclick="stopSpinner(`start_{{ forloop.counter0 }}`);">Start hosting</a>
+                        </div>
                     </div>
                     {% endif %}
                 </div>
             </div>
         </div>
 
-        <p class="text-secondary">{{ bot.access_token }}</p>
+        <p class="responsive-text">{{ bot.access_token }}</p>
 
-        <a href="{% url 'create_bot_second_step_text_url' token=bot.access_token %}"
-            class="btn btn-sm btn-outline-light shadow-sm mt-1 text-dark border-left border-bottom border-right"
-            style="width: 100px;">Edit</a>
-        <a href="{% url 'create_bot_third_step_url' token=bot.access_token %}"
-            class="btn btn-sm btn-outline-light shadow-sm ml-2 mr-2 mt-1 text-primary border-left border-bottom border-right"
-            style="width: 100px;">Download</a>
-        <a href="{% url 'delete_bot_url' bot_id=bot.id token=bot.access_token %}"
-            class="btn btn-sm btn-outline-light shadow-sm mt-1 text-danger border-left border-bottom border-right"
-            style="width: 100px;">󠁛󠁛󠁛Delete</a>
+        <div class="row">
+            <div class="col-md-12">
+                <a href="{% url 'create_bot_second_step_text_url' token=bot.access_token %}"
+                    class="btn btn-sm btn-outline-light shadow-sm mr-3 mb-3 mt-3 text-dark border-left border-bottom border-right"
+                    style="width: 170px;">Edit configuration</a>
+                <a href="{% url 'create_bot_third_step_url' token=bot.access_token %}"
+                    class="btn btn-sm btn-outline-light shadow-sm mr-3 text-primary border-left border-bottom border-right"
+                    style="width: 100px;">Download</a>
+                <a href="{% url 'delete_bot_url' bot_id=bot.id token=bot.access_token %}"
+                    class="btn btn-sm btn-outline-light shadow-sm text-danger border-left border-bottom border-right"
+                    style="width: 100px;">󠁛󠁛󠁛Delete</a>
+            </div>
+        </div>
 
         <div class="row mt-3">
             <div class="col-md-6">
@@ -113,7 +121,7 @@
 <script type="text/javascript" defer>
     function stopSpinner(button) {
         document.getElementById(button).innerHTML +=
-            `<div class="spinner-border text-primary mt-1 mr-1 ml-1" role="status"></div>`;
+            `<div class="spinner-border text-primary mt-1 ml-2" role="status"></div>`;
     }
 </script>
 {% endblock javascript %}

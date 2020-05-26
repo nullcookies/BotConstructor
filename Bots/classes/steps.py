@@ -8,14 +8,10 @@ from ..functions import *
 from ..forms import GetAccessToken
 from ..models import Bot
 from Users.models import Profile
-from sys import platform
 
 import autopep8
 import logging
 import telebot
-
-
-logger = logging.getLogger(__name__)
 
 
 class CreateBotStepOne(LoginRequiredMixin, View):
@@ -79,6 +75,74 @@ class CreateBotStepOne(LoginRequiredMixin, View):
         return render(request, 'FirstStep.html', context)
 
 
+# class UpdateAccessToken(LoginRequiredMixin, View):
+#     login_url = '/signIn/'
+#     redirect_field_name = 'create_bot_first_step_url'
+
+#     def get(self, request, token: str):
+#         path = open_configuration(request, token)
+#         with open(path, 'r', encoding='utf8') as file:
+#             data = json.load(file)
+
+#         initial = {
+#             'access_token': data['access_token'],
+#             'title': data['name'],
+#             'username': data['username']
+#         }
+#         first_form = GetAccessToken(initial=initial)
+
+#         context = {
+#             'title': 'First Step - BotConstructor',
+#             'first_form': first_form
+#         }
+#         return render(request, 'FirstStep.html', context)
+
+#     def post(self, request, token: str):
+#         first_form = GetAccessToken(request.POST)
+
+#         path = open_configuration(request, token)
+#         with open(path, 'r', encoding='utf8') as file:
+#             data = json.load(file)
+
+#         if first_form.is_valid():
+#             access_token: str = first_form.cleaned_data['access_token']
+#             title: str = first_form.cleaned_data['title']
+#             username: str = first_form.cleaned_data['username']
+
+#             current_user_profile = Profile.objects.get(user=request.user)
+#             is_existed_bot: list = list(Bot.objects.filter(
+#                 access_token=access_token,
+#                 owner=current_user_profile
+#             ))
+#             if is_existed_bot != [] and access_token != data['access_token']:
+#                 messages.error(
+#                     request, 'You already had bot with this token...')
+#                 return redirect('show_bots_url')
+#             try:
+#                 bot = telebot.TeleBot(
+#                     access_token
+#                 )
+#                 data = {
+#                     'access_token': access_token,
+#                     'name': bot.get_me().first_name,
+#                     'username': bot.get_me().username
+#                 }
+
+#                 return redirect(
+#                     'show_bots_url'
+#                 )
+#             except Exception:
+#                 messages.error(
+#                     request, 'Access token is not valid... '
+#                     'Try another... or wait for 3 minutes')
+
+#         context = {
+#             'title': 'First Step - BotConstructor',
+#             'first_form': first_form
+#         }
+#         return render(request, 'FirstStep.html', context)
+
+
 class UntilFirstStep(LoginRequiredMixin, View):
     login_url = '/signIn/'
     redirect_field_name = 'until_first_step'
@@ -115,11 +179,11 @@ class CreateBotStepThree(LoginRequiredMixin, View):
             messages.error(request, 'No such bot...')
             return redirect('show_bots_url')
 
-        if platform == 'linux' or platform == 'linux2':
-            config = open_configuration(request, token).split('/')
-        else:
-            config = open_configuration(request, token).split('\\')
-        some = '/'.join([config[-2], config[-1]])
+        config_path = open_configuration(request, token)
+        base_name = os.path.basename(config_path)
+        dir_name = os.path.basename(os.path.dirname(config_path))
+        some = os.path.join(dir_name, base_name)
+        print(some)
 
         context = {
             'title': 'Third Step - BotConstructor',
