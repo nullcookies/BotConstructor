@@ -40,6 +40,14 @@
 {% endif %}
 
 
+<div class="shadow p-5">
+    <div class="container responsive-text">
+        <h5>Below, you can edit the generated code</h5>
+        <p class="mb-1">All changes will be applied at your own risk</p>
+    </div>
+</div>
+
+
 <div class="container">
     <div class="form-row mt-5">
         <div class="col-md-6">
@@ -49,21 +57,24 @@
         </div>
         <div class="col-md-6">
             {% if config|check_online %}
-            <a href="{% url 'stop_bot_url' token=token %}"
-                class="btn btn-outline-light border-bottom text-danger border-left border-right shadow-sm btn-block"
-                onclick="postload();">Stop hosting</a>
+            <div class="form-row">
+                <div class="col-md-6">
+                    <a href="{% url 'stop_bot_url' token=token %}"
+                        class="btn btn-outline-light border-bottom text-danger border-left border-right shadow-sm btn-block"
+                        onclick="postload();">Stop hosting</a>
+                </div>
+                <div class="col-md-6">
+                    <a href="{% url 'restart_bot' token=token %}"
+                        class="btn btn-outline-light border-bottom text-primary border-left border-right shadow-sm btn-block"
+                        onclick="postload();">Restart bot</a>
+                </div>
+            </div>
             {% else %}
             <a href="{% url 'auto_deploy_url' token=token %}"
                 class="btn btn-outline-light border-bottom text-danger border-left border-right shadow-sm btn-block"
                 onclick="postload();">Deploy</a>
             {% endif %}
         </div>
-    </div>
-
-    <div class="alert alert-light text-dark shadow-sm border-right border-left border-bottom border-right mt-5">
-        <h5>Below, you can edit the generated code</h5>
-        <hr class="mb-2 mt-2">
-        <p class="mb-1">All changes will be applied at your own risk</p>
     </div>
 
     <div id="editor" class="code-editor shadow mt-5">{{ content }}</div>
