@@ -6,7 +6,7 @@
 {% block head %}
 <style>
     #showcase6 {
-        background: url("{% static 'pictures/some7.png' %}") center center/cover no-repeat;
+        background: url("{% static 'pictures/some7.png' %}") top center/cover no-repeat;
         min-height: 350px;
         max-height: 350px;
         position: relative;
@@ -24,7 +24,7 @@
     <div id="header" class="container text-white">
         <h4 class="text-light mt-4 mb-3">Congratulations. You create your bot</h4>
         <h5 class="text-light ml-0 mt-4">Here you can download a script or config</h5>
-        <p class="text-light ml-0" style="line-height: 50%">This is the last step. Now you can download the
+        <p class="text-light ml-0"> — This is the last step. Now you can download the
             configuration or script of your bot</p>
     </div>
 </section>
@@ -60,7 +60,7 @@
             <div class="form-row">
                 <div class="col-md-6">
                     <a href="{% url 'stop_bot_url' token=token %}"
-                        class="btn btn-outline-light border-bottom text-danger border-left border-right shadow-sm btn-block"
+                        class="btn btn-outline-light border-bottom text-danger border-left border-right shadow-sm btn-block mb-2"
                         onclick="postload();">Stop hosting</a>
                 </div>
                 <div class="col-md-6">
