@@ -1,0 +1,182 @@
+{% extends 'Base.html' %}
+{% load static %}
+
+
+{% block head %}
+<style>
+    #showcase7 {
+        background: url("{% static 'pictures/some.png' %}") center center/cover no-repeat;
+        min-height: 350px;
+        max-height: 350px;
+        position: relative;
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+<meta name="description" content="Second step. BotConstructor">
+{% endblock head %}
+
+
+{% block main_section %}
+{% include 'Navbar.html' %}
+<section id="showcase7" class="d-flex justify-content-center align-items-center shadow">
+    <div id="header" class="container text-white">
+        <h4 class="text-light">Here you need to configure your bot</h4>
+        <dl class="text-light">
+            {% if request.path == templates_url %}
+            <dd>— Select one of the proposed options here to continue editing it</dd>
+            <dd>— After the election you will be missing the rest of the editing settings.</dd>
+            {% else %}
+            <dd>— Click on one of the submenu items to start the configuration.</dd>
+            <dd>— Correctly fill in all form data</dd>
+            {% endif %}
+            <dd>
+                — If you need a little instruction, please contact our bot, which, by the way, was
+                created using this service. (<a href="http://t.me/BotConstructorExamplebot" class="text-warning"
+                    target="_blank">@BotConstructorExamplebot</a>)
+            </dd>
+        </dl>
+    </div>
+</section>
+
+{% if messages %}
+{% for message in messages %}
+<div class="shadow-effects shadow p-5">
+    <div class="container">
+        <p class="mb-0 responsive-text">{{ message }}</p>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="container">
+    {% for field in text_form %}
+    {% if field.errors %}
+    <div
+        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
+        {{ field.errors }}
+
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    {% for field in reply_markup_form %}
+    {% if field.errors %}
+    <div
+        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
+        {{ field.errors }}
+
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    {% for field in template_form %}
+    {% if field.errors %}
+    <div
+        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
+        {{ field.errors }}
+
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    {% for field in inline_markup_form %}
+    {% if field.errors %}
+    <div
+        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
+        {{ field.errors }}
+
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    {% for field in callback_form %}
+    {% if field.errors %}
+    <div
+        class="alert alert-light text-dark border-bottom border-left border-right shadow-sm alert-dismissible fade show mt-4">
+        {{ field.errors }}
+
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    {% include 'Options.html' %}
+
+    <div class="alert alert-light shadow p-4 mt-5">
+        <div class="form-row">
+            <h5 class="ml-1 text-dark">Add usefull tips</h5>
+            <h6 class="mt-1 ml-2 text-secondary">Required settings</h6>
+        </div>
+
+        <form action="{% url 'bot_tips' token=token %}" method="POST" id="id_tips_form">
+            {% csrf_token %}
+
+            {% for pk, choice in tips_form.tips.field.widget.choices %}
+            <div class="custom-control custom-checkbox custom-control-inline mt-2 text-dark">
+                <input id="id_{{ tips_form.tips.name }}_{{ forloop.counter0 }}" name="{{ tips_form.tips.name }}"
+                    type="{{ tips_form.tips.field.widget.input_type }}" value="{{ pk }}" class="custom-control-input"
+                    {% if object_config.message_exception %} checked="checked" {% endif %} onclick="sendTip(this)">
+                <label for="id_{{ tips_form.tips.name }}_{{ forloop.counter0 }}"
+                    class="custom-control-label">{{ choice }}</label>
+            </div><br>
+            {% endfor %}
+        </form>
+    </div>
+
+    <div class="mb-5">
+        <form action="{% url 'create_bot_second_step_next_step_url' token=token %}" class="" method="POST">
+            {% csrf_token %}
+
+            <button type="submit"
+                class="btn btn-light text-dark border-bottom border-left border-right shadow btn-block mt-5">Finish
+                configurating</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" defer>
+    function sendTip(tip) {
+        var value = tip.value;
+
+        if (!tip.checked) {
+            var hello = {
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            }
+        } else {
+            var hello = {
+                tips: value,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            }
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "bot_tips" token=token %}',
+            data: hello,
+            success: function (json) {
+
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+    }
+</script>
+{% endblock javascript %}

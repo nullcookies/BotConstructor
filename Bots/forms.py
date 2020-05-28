@@ -23,6 +23,9 @@ REPLY_BUTTONS_CHOICES = (
     ('request_contact', 'Request Contact'),
     ('request_location', 'Request Location')
 )
+TIPS_CHOICES = (
+    ('message_exception', "Message exception"),
+)
 
 
 class CreateBotForm(forms.ModelForm):
@@ -357,3 +360,14 @@ class CallbackForm(forms.Form):
                 "Your config don't have a inline markup"
             )
         return self.cleaned_data
+
+
+class TipsForm(forms.Form):
+    tips = forms.MultipleChoiceField(
+        required=False, choices=TIPS_CHOICES,
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+                'class': 'custom-control-input'
+            }
+        )
+    )

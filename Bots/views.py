@@ -25,6 +25,7 @@ from .classes.inline_buttons_field import *
 from .functions import *
 from .classes.steps import *
 from .classes.callback import *
+from .classes.tips import *
 
 
 # Loading page
