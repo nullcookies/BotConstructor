@@ -218,13 +218,13 @@ class TextBuilder:
         for key, value in new_dict.items():
             object_text += textwrap.dedent("""
             @bot.message_handler(
-                func=lambda message: message.text == '%s'
+                func=lambda message: message.text == %s
             )
             def response_message_remove(message):
                 logger.info(
                     "User -> {user_message} : Bot -> {bot_message}".format(
                         user_message=message.text,
-                        bot_message='%s'.replace(
+                        bot_message=%s.replace(
                             '\\n', ''
                         )
                     )
@@ -232,7 +232,7 @@ class TextBuilder:
                 try:
                     bot.send_message(
                         chat_id=message.chat.id,
-                        text='%s'.format(
+                        text=%s.format(
                             first_name=message.from_user.first_name,
                             last_name=message.from_user.last_name,
                             username=message.from_user.username,
@@ -246,7 +246,7 @@ class TextBuilder:
                 except telebot.apihelper.ApiException:
                     bot.send_message(
                         chat_id=message.chat.id,
-                        text='%s'.format(
+                        text=%s.format(
                             first_name=message.from_user.first_name,
                             last_name=message.from_user.last_name,
                             username=message.from_user.username,
@@ -261,12 +261,12 @@ class TextBuilder:
         for key, value in smart_texts.items():
             object_text += textwrap.dedent("""
             def check_similarity_%s(word: Message) -> dict:
-                generated_phrases = generate_synonyms('%s'.lower())
+                generated_phrases = generate_synonyms(%s.lower())
 
                 word = word.text
                 params = {'word': '', 'percent': 0}
 
-                for value in generated_phrases["%s".lower()]:
+                for value in generated_phrases[%s.lower()]:
                     similarity = fuzz.ratio(word, value)
                     if similarity >= params[
                             'percent'] and similarity >= 60:
@@ -280,7 +280,7 @@ class TextBuilder:
                 logger.info(
                     "User -> {user_message} : Bot -> {bot_message}".format(
                         user_message=message.text,
-                        bot_message='%s'.replace(
+                        bot_message=%s.replace(
                             '\\n', ''
                         )
                     )
@@ -289,7 +289,7 @@ class TextBuilder:
                     try:
                         bot.send_message(
                             chat_id=message.chat.id,
-                            text='%s'.format(
+                            text=%s.format(
                                 first_name=message.from_user.first_name,
                                 last_name=message.from_user.last_name,
                                 username=message.from_user.username,
@@ -303,7 +303,7 @@ class TextBuilder:
                     except telebot.apihelper.ApiException:
                         bot.send_message(
                             chat_id=message.chat.id,
-                            text='%s'.format(
+                            text=%s.format(
                                 first_name=message.from_user.first_name,
                                 last_name=message.from_user.last_name,
                                 username=message.from_user.username,
@@ -318,7 +318,7 @@ class TextBuilder:
                     try:
                         bot.send_message(
                             chat_id=message.chat.id,
-                            text='%s'.format(
+                            text=%s.format(
                                 first_name=message.from_user.first_name,
                                 last_name=message.from_user.last_name,
                                 username=message.from_user.username,
@@ -331,7 +331,7 @@ class TextBuilder:
                     except telebot.apihelper.ApiException:
                         bot.send_message(
                             chat_id=message.chat.id,
-                            text='%s'.format(
+                            text=%s.format(
                                 first_name=message.from_user.first_name,
                                 last_name=message.from_user.last_name,
                                 username=message.from_user.username,
@@ -342,8 +342,7 @@ class TextBuilder:
                         )
 
             """) % (
-                repr(key), repr(key), repr(key), repr(
-                    key), repr(value[0]), repr(value[1]),
+                key, repr(key), repr(key), key, repr(value[0]), value[1],
                 repr(value[0]), repr(value[0]), repr(value[0]), repr(value[0])
             )
 
@@ -421,12 +420,12 @@ class ReplyMarkupBuilder:
         for key, value in smart_dict.items():
             object_text += textwrap.dedent("""
             def check_similarity_%s(word: Message) -> dict:
-                generated_phrases = generate_synonyms("%s".lower())
+                generated_phrases = generate_synonyms(%s.lower())
 
                 word = word.text
                 params = {'word': '', 'percent': 0}
 
-                for value in generated_phrases["%s".lower()]:
+                for value in generated_phrases[%s.lower()]:
                     similarity = fuzz.ratio(word, value)
                     if similarity >= params[
                             'percent'] and similarity >= 60:
@@ -440,7 +439,7 @@ class ReplyMarkupBuilder:
                 logger.info(
                     "User -> {user_message} : Bot -> {bot_message}".format(
                         user_message=message.text,
-                        bot_message='%s'.replace(
+                        bot_message=%s.replace(
                             '\\n', ''
                         )
                     )
@@ -465,7 +464,7 @@ class ReplyMarkupBuilder:
                 try:
                     bot.send_message(
                         chat_id=message.chat.id,
-                        text="%s".format(
+                        text=%s.format(
                             first_name=message.from_user.first_name,
                             last_name=message.from_user.last_name,
                             username=message.from_user.username,
@@ -479,7 +478,7 @@ class ReplyMarkupBuilder:
                 except telebot.apihelper.ApiException:
                     bot.send_message(
                         chat_id=message.chat.id,
-                        text="%s".format(
+                        text=%s.format(
                             first_name=message.from_user.first_name,
                             last_name=message.from_user.last_name,
                             username=message.from_user.username,
@@ -491,15 +490,15 @@ class ReplyMarkupBuilder:
                     )
 
             """ % (
-                repr(key), repr(key), repr(key), repr(key),
-                repr(value)['response_text'],
-                repr(value)['resize_keyboard'],
-                repr(value)['one_time_keyboard'],
-                repr(value)['selective'],
-                repr(value)['row_width'],
-                repr(value)['buttons'],
-                repr(value)['response_text'],
-                repr(value)['response_text']
+                key, repr(key), repr(key), key,
+                repr(value['response_text']),
+                value['resize_keyboard'],
+                value['one_time_keyboard'],
+                value['selective'],
+                value['row_width'],
+                value['buttons'],
+                repr(value['response_text']),
+                repr(value['response_text'])
             ))
 
         if self.__reply_markup_dictionary:
@@ -637,12 +636,12 @@ class InlineMarkupBuilder:
         for key, value in smart_dict.items():
             object_text += textwrap.dedent("""
             def check_similarity_%s(word: Message) -> dict:
-                generated_phrases = generate_synonyms("%s".lower())
+                generated_phrases = generate_synonyms(%s.lower())
 
                 word = word.text
                 params = {'word': '', 'percent': 0}
 
-                for value in generated_phrases["%s".lower()]:
+                for value in generated_phrases[%s.lower()]:
                     similarity = fuzz.ratio(word, value)
                     if similarity >= params[
                             'percent'] and similarity >= 60:
@@ -656,7 +655,7 @@ class InlineMarkupBuilder:
                 logger.info(
                     "User -> {user_message} : Bot -> {bot_message}".format(
                         user_message=message.text,
-                        bot_message='%s'.replace(
+                        bot_message=%s.replace(
                             '\\n', ''
                         )
                     )
@@ -680,7 +679,7 @@ class InlineMarkupBuilder:
                 try:
                     bot.send_message(
                         chat_id=message.chat.id,
-                        text="%s".format(
+                        text=%s.format(
                             first_name=message.from_user.first_name,
                             last_name=message.from_user.last_name,
                             username=message.from_user.username,
@@ -694,7 +693,7 @@ class InlineMarkupBuilder:
                 except telebot.apihelper.ApiException:
                     bot.send_message(
                         chat_id=message.chat.id,
-                        text="%s".format(
+                        text=%s.format(
                             first_name=message.from_user.first_name,
                             last_name=message.from_user.last_name,
                             username=message.from_user.username,
@@ -706,12 +705,12 @@ class InlineMarkupBuilder:
                     )
 
             """ % (
-                repr(key), repr(key), repr(key), repr(key),
-                repr(value)['response_text'],
-                repr(value)['row_width'],
-                repr(value)['buttons'],
-                repr(value)['response_text'],
-                repr(value)['response_text']
+                key, repr(key), repr(key), key,
+                repr(value['response_text']),
+                value['row_width'],
+                value['buttons'],
+                repr(value['response_text']),
+                repr(value['response_text'])
             ))
 
         if self.__inline_markup_dictionary:
