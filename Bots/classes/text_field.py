@@ -13,8 +13,11 @@ class CreateTextField(LoginRequiredMixin, View):
     redirect_field_name = 'create_bot_second_step_text_url'
 
     def get(self, request, token: str):
-        text_elements = enumerate_elements(request,
-                                           token=token, get_object='text')
+        text_elements = enumerate_elements(
+            request,
+            token=token,
+            get_object='text'
+        )
         text_form = TextForm(request=request, token=token)
 
         self.context.update({
@@ -27,8 +30,11 @@ class CreateTextField(LoginRequiredMixin, View):
         return response
 
     def post(self, request, token: str):
-        text_elements = enumerate_elements(request,
-                                           token=token, get_object='text')
+        text_elements = enumerate_elements(
+            request,
+            token=token,
+            get_object='text'
+        )
 
         remove_reply = request.POST.get('remove_reply_markup')
         smart = request.POST.get('smart')

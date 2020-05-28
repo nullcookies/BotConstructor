@@ -18,9 +18,11 @@ class CreateReplyButtonsField(LoginRequiredMixin, View):
     ]
 
     def get(self, request, token: str):
-        reply_markup_elements = enumerate_elements(request,
-                                                   token=token,
-                                                   get_object='reply_markup')
+        reply_markup_elements = enumerate_elements(
+            request,
+            token=token,
+            get_object='reply_markup'
+        )
         reply_button_form = ReplyButton()
 
         current_url = resolve(request.path_info).url_name
@@ -40,9 +42,11 @@ class CreateReplyButtonsField(LoginRequiredMixin, View):
         return render(request, 'SecondStep.html', self.context)
 
     def post(self, request, token: str):
-        reply_markup_elements = enumerate_elements(request,
-                                                   token=token,
-                                                   get_object='reply_markup')
+        reply_markup_elements = enumerate_elements(
+            request,
+            token=token,
+            get_object='reply_markup'
+        )
         reply_button_form = ReplyButton(request.POST)
 
         if request.POST.get('action') == 'create_reply_button':
