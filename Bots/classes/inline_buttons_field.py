@@ -14,9 +14,11 @@ class CreateInlineButtonsField(LoginRequiredMixin, View):
     redirect_field_name = 'create_bot_second_step_inline_markup_url'
 
     def get(self, request, token: str):
-        inline_markup_elements = enumerate_elements(request,
-                                                    token=token,
-                                                    get_object='inline_markup')
+        inline_markup_elements = enumerate_elements(
+            request,
+            token=token,
+            get_object='inline_markup'
+        )
         inline_button_form = InlineButton()
 
         current_url = resolve(request.path_info).url_name
@@ -36,9 +38,11 @@ class CreateInlineButtonsField(LoginRequiredMixin, View):
         return render(request, 'SecondStep.html', self.context)
 
     def post(self, request, token: str):
-        inline_markup_elements = enumerate_elements(request,
-                                                    token=token,
-                                                    get_object='inline_markup')
+        inline_markup_elements = enumerate_elements(
+            request,
+            token=token,
+            get_object='inline_markup'
+        )
         inline_button_form = InlineButton(request.POST)
 
         if inline_button_form.is_valid():
@@ -49,7 +53,6 @@ class CreateInlineButtonsField(LoginRequiredMixin, View):
             switch_inline_current = inline_button_form.cleaned_data[
                 'switch_inline_current'
             ]
-            print(text, url, callback, switch_inline, switch_inline_current)
 
             if callback == '':
                 callback = False
