@@ -1,9 +1,15 @@
 asgiref==3.2.7
 autopep8==1.5.2
+azure-common==1.1.25       
+azure-storage-blob==2.1.0  
+azure-storage-common==2.1.0
 cachetools==4.1.0
-certifi==2020.4.5.1
+certifi==2020.4.5.1        
+cffi==1.14.0
 chardet==3.0.4
+cryptography==2.9.2        
 Django==3.0.6
+django-storages==1.9.1     
 fuzzywuzzy==0.18.0
 google-api-core==1.17.0
 google-api-python-client==1.8.3
@@ -21,7 +27,9 @@ psycopg2==2.8.5
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycodestyle==2.6.0
+pycparser==2.20
 pyTelegramBotAPI==3.7.1
+python-dateutil==2.8.1
 python-http-client==3.2.7
 pytz==2020.1
 requests==2.23.0

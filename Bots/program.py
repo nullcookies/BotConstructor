@@ -62,7 +62,7 @@ class BotFacade:
         self.__end()
 
     def __start(self) -> None:
-        some_token = self.__token.replace('_', ':')
+        some_token = self.__token.replace('_', ':', 0)
         init_object = f"""\
         import telebot
         import requests
