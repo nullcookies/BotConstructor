@@ -256,7 +256,7 @@ class TextBuilder:
                         ),
                         reply_markup=ReplyKeyboardRemove()
                     )
-            """ % (key, value[0], value[0], value[0]))
+            """ % (repr(key), repr(value[0]), repr(value[0]), repr(value[0])))
 
         for key, value in smart_texts.items():
             object_text += textwrap.dedent("""
@@ -341,8 +341,11 @@ class TextBuilder:
                             )
                         )
 
-            """) % (key, key, key, key, value[0], value[1],
-                    value[0], value[0], value[0], value[0])
+            """) % (
+                repr(key), repr(key), repr(key), repr(
+                    key), repr(value[0]), repr(value[1]),
+                repr(value[0]), repr(value[0]), repr(value[0]), repr(value[0])
+            )
 
         final_path = os.path.join(PATH, f'{self.__username}')
         path = os.path.join(
@@ -488,15 +491,15 @@ class ReplyMarkupBuilder:
                     )
 
             """ % (
-                key, key, key, key,
-                value['response_text'],
-                value['resize_keyboard'],
-                value['one_time_keyboard'],
-                value['selective'],
-                value['row_width'],
-                value['buttons'],
-                value['response_text'],
-                value['response_text']
+                repr(key), repr(key), repr(key), repr(key),
+                repr(value)['response_text'],
+                repr(value)['resize_keyboard'],
+                repr(value)['one_time_keyboard'],
+                repr(value)['selective'],
+                repr(value)['row_width'],
+                repr(value)['buttons'],
+                repr(value)['response_text'],
+                repr(value)['response_text']
             ))
 
         if self.__reply_markup_dictionary:
@@ -703,12 +706,12 @@ class InlineMarkupBuilder:
                     )
 
             """ % (
-                key, key, key, key,
-                value['response_text'],
-                value['row_width'],
-                value['buttons'],
-                value['response_text'],
-                value['response_text']
+                repr(key), repr(key), repr(key), repr(key),
+                repr(value)['response_text'],
+                repr(value)['row_width'],
+                repr(value)['buttons'],
+                repr(value)['response_text'],
+                repr(value)['response_text']
             ))
 
         if self.__inline_markup_dictionary:
