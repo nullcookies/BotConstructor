@@ -6,7 +6,7 @@ urlpatterns = [
     path('', base_view, name='base_view_url'),
     path('signup/', UserRegistration.as_view(), name='user_registration_url'),
     path(
-        'login/', UserAuthentication.as_view(), name='user_authentication_url'
+        'signIn/', UserAuthentication.as_view(), name='user_authentication_url'
     ),
     path(
         'update-profile/', UpdateProfile.as_view(), name='update_profile_url'
