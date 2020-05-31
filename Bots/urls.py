@@ -119,11 +119,11 @@ urlpatterns = [
         RunBot.as_view(),
         name='auto_deploy_url'
     ),
-    path(
-        'create-bot/second-step/<str:token>/templates/',
-        ShowTemplates.as_view(),
-        name='templates'
-    ),
+    # path(
+    #     'create-bot/second-step/<str:token>/templates/',
+    #     ShowTemplates.as_view(),
+    #     name='templates'
+    # ),
     path(
         'stop-bot/<str:token>/',
         StopBot.as_view(),
