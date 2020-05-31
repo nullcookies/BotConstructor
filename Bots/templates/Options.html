@@ -1,0 +1,27 @@
+<div class="form-row mt-5 mb-5">
+    <div class="col-md-2">
+        <a href="{% url 'create_bot_second_step_text_url' token=token %}"
+            class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-2 {% if request.path == text_url %}active{% endif %}"
+            id="text">Text</a>
+    </div>
+    <div class="col-md-3">
+        <a href="{% url 'create_bot_second_step_reply_markup_url' token=token %}"
+            class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-2 {% if request.path == reply_markup_url or request.path == reply_buttons_url %}active{% endif %}"
+            id="reply">Reply Buttons</a>
+    </div>
+    <div class="col-md-3">
+        <a href="{% url 'create_bot_second_step_inline_markup_url' token=token %}"
+            class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-2 {% if request.path == inline_markup_url or request.path == inline_buttons_url %}active{% endif %}"
+            id="inline">Inline Buttons</a>
+    </div>
+    <div class="col-md-2">
+        <a href="{% url 'create_callback_url' token=token %}"
+            class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-2 {% if request.path == callback_url %}active{% endif %}"
+            id="id_menu_callback">Callback</a>
+    </div>
+    <div class="col-md-2">
+        <a href="{% url 'bot_tips' token=token %}"
+            class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-2 {% if request.path == tips_url %}active{% endif %}"
+            id="id_menu_callback">Tips</a>
+    </div>
+</div>

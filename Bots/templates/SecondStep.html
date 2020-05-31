@@ -115,6 +115,7 @@
     {% endif %}
     {% endfor %}
 
+    {% url 'bot_tips' token=token as tips_url %}
     {% url 'create_bot_second_step_text_url' token=token as text_url %}
     {% url 'create_bot_second_step_reply_markup_url' token=token as reply_markup_url %}
     {% url 'create_bot_second_step_reply_buttons_url' token=token as reply_buttons_url %}
@@ -122,28 +123,9 @@
     {% url 'create_bot_second_step_inline_buttons_url' token=token as inline_buttons_url %}
     {% url 'templates' token=token as templates_url %}
     {% url 'create_callback_url' token=token as callback_url %}
-    <div class="form-row mt-5 mb-5">
-        <div class="col-md-3">
-            <a href="{% url 'create_bot_second_step_text_url' token=token %}"
-                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-2 {% if request.path == text_url %}active{% endif %}"
-                id="text">Text</a>
-        </div>
-        <div class="col-md-3">
-            <a href="{% url 'create_bot_second_step_reply_markup_url' token=token %}"
-                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-2 {% if request.path == reply_markup_url or request.path == reply_buttons_url %}active{% endif %}"
-                id="reply">Reply Buttons</a>
-        </div>
-        <div class="col-md-3">
-            <a href="{% url 'create_bot_second_step_inline_markup_url' token=token %}"
-                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-2 {% if request.path == inline_markup_url or request.path == inline_buttons_url %}active{% endif %}"
-                id="inline">Inline Buttons</a>
-        </div>
-        <div class="col-md-3">
-            <a href="{% url 'create_callback_url' token=token %}"
-                class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-2 {% if request.path == callback_url %}active{% endif %}"
-                id="id_menu_callback">Callback</a>
-        </div>
-    </div>
+
+    <!-- Menu this possible options -->
+    {% include 'Options.html' %}
 
     <!-- Handle errors -->
     <div id="errors"></div>

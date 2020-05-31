@@ -130,7 +130,7 @@ urlpatterns = [
         name='stop_bot_url'
     ),
     path(
-        'start-bot/<str:token>',
+        'start-bot/<str:token>/',
         StartBot.as_view(),
         name='start_bot_url'
     ),
@@ -174,9 +174,9 @@ urlpatterns = [
         RestartBot.as_view(),
         name="restart_bot"
     ),
-    # path(
-    #     'createBot/firstStep/editAccessToken/<str:token>/',
-    #     UpdateAccessToken.as_view(),
-    #     name='update_access_token'
-    # )
+    path(
+        'create-bot/second-step/<str:token>/tips/',
+        Tips.as_view(),
+        name="bot_tips"
+    )
 ]

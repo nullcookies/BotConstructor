@@ -114,9 +114,24 @@ class BotFacade:
             file.write(textwrap.dedent(init_object))
 
     def __end(self):
-        polling_object = f"""
+        polling_object = ""
+        if "message_exception" in self._data and self._data[
+                "message_exception"]:
+            polling_object += textwrap.dedent("""
+            @bot.message_handler(func=lambda message: True)
+            def handler(message):
+                bot.send_message(
+                    chat_id=message.chat.id,
+                    text="Unfortunately, I don’t understand you either."
+                         "\\n\\nEnter something else..."
+                )
+
+            """)
+
+        polling_object += textwrap.dedent(f"""
         bot.polling(none_stop=True)
-        """
+
+        """)
 
         final_path = os.path.join(PATH, f'{self.__username}')
         path = os.path.join(
