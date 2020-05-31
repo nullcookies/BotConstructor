@@ -115,6 +115,7 @@
     {% endif %}
     {% endfor %}
 
+    {% url 'bot_tips' token=token as tips_url %}
     {% url 'create_bot_second_step_text_url' token=token as text_url %}
     {% url 'create_bot_second_step_reply_markup_url' token=token as reply_markup_url %}
     {% url 'create_bot_second_step_reply_buttons_url' token=token as reply_buttons_url %}

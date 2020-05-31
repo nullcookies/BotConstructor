@@ -1,4 +1,3 @@
-
 <div class="form-row mt-5 mb-5">
     <div class="col-md-2">
         <a href="{% url 'create_bot_second_step_text_url' token=token %}"
@@ -22,7 +21,7 @@
     </div>
     <div class="col-md-2">
         <a href="{% url 'bot_tips' token=token %}"
-            class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-2 {% if request.path == callback_url %}active{% endif %}"
+            class="btn btn-outline-light shadow-sm text-dark border-bottom border-left border-right btn-block mt-2 {% if request.path == tips_url %}active{% endif %}"
             id="id_menu_callback">Tips</a>
     </div>
 </div>

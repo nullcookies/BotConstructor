@@ -125,11 +125,11 @@ class UserRegistration(View):
 
                 messages.error(
                     request,
-                    'Now, a message will come to your mail'
+                    'A notification will come to your mail now'
                 )
                 return redirect('user_authentication_url')
             else:
-                messages.error(request, 'Sorry, you are the robot')
+                messages.error(request, 'Excuse me. You are a robot...')
 
         self.context.update({
             'title': 'Registration - BotConstructor',
@@ -192,10 +192,10 @@ class UserAuthentication(View):
             username = auth_form.cleaned_data['username']
 
             if is_captcha:
-                recaptcha_response = request.POST.get(
-                    'g-recaptcha-response')
-                validate_url = ('https://www.google.com/recaptcha/'
-                                'api/siteverify')
+                recaptcha_response = request.POST.get('g-recaptcha-response')
+                validate_url = (
+                    'https://www.google.com/recaptcha/api/siteverify'
+                )
                 properties = {
                     'secret': settings.GOOGLE_SECRET_KEY,
                     'response': recaptcha_response
@@ -235,7 +235,8 @@ class UserAuthentication(View):
                     current_user = User.objects.get(username=username)
                     if current_user.check_password(password):
                         new_user = authenticate(
-                            username=username, password=password)
+                            username=username, password=password
+                        )
                         try:
                             login(request, new_user)
                         except AttributeError:
@@ -304,7 +305,6 @@ class UpdateProfile(LoginRequiredMixin, View):
             username = update_form.cleaned_data['username']
             first_name = update_form.cleaned_data['first_name']
             last_name = update_form.cleaned_data['last_name']
-            email = update_form.cleaned_data['email']
             about = update_profile_form.cleaned_data['about']
 
             if about == '':
@@ -313,7 +313,6 @@ class UpdateProfile(LoginRequiredMixin, View):
             current_user.username = username
             current_user.first_name = first_name
             current_user.last_name = last_name
-            current_user.email = email
             current_user.save()
 
             getted_current_user.about = about

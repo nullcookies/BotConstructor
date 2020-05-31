@@ -179,9 +179,4 @@ urlpatterns = [
         Tips.as_view(),
         name="bot_tips"
     )
-    # path(
-    #     'createBot/firstStep/editAccessToken/<str:token>/',
-    #     UpdateAccessToken.as_view(),
-    #     name='update_access_token'
-    # )
 ]

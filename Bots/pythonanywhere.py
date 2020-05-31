@@ -90,7 +90,7 @@ class AutoDeploy:
         ).find_elements_by_tag_name('tr')[-1].find_elements_by_tag_name(
             'td'
         )[0].find_element_by_xpath('a').click()
-        sleep(2)
+        sleep(2.5)
         driver.close()
 
     #  Send command to console
