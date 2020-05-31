@@ -197,3 +197,6 @@ GOOGLE_SECRET_KEY = '6Lel7dcUAAAAAMGZJPLmh1yJW8JPkmF3KqFSthff'
 
 LOGIN_URL = '/signIn/'
 LOGOUT_REDIRECT_URL = 'base_view_url'
+
+
+DRIVER_PATH = '/usr/lib/chromium-browser/chromedriver'

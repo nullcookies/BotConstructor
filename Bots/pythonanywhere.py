@@ -7,7 +7,6 @@ import re
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from sys import platform
 from django.conf import settings
 
 
@@ -63,12 +62,7 @@ class AutoDeploy:
         options = Options()
         options.headless = True
 
-        if platform == 'linux' or platform == 'linux2':
-            executable_path = '/usr/lib/chromium-browser/chromedriver'
-        elif platform == "win32":
-            executable_path = os.path.join(
-                settings.BASE_DIR, 'chromedriver.exe'
-            )
+        executable_path = settings.DRIVER_PATH
         driver = webdriver.Chrome(
             executable_path=executable_path,
             chrome_options=options

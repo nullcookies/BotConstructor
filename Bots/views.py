@@ -92,71 +92,71 @@ class DeleteBot(LoginRequiredMixin, View):
 
 
 # TODO Rebuild system of using templates...
-class ShowTemplates(LoginRequiredMixin, View):
-    login_url = '/signIn/'
-    redirect_field_name = 'templates'
-    context = {}
+# class ShowTemplates(LoginRequiredMixin, View):
+#     login_url = '/signIn/'
+#     redirect_field_name = 'templates'
+#     context = {}
 
-    def get(self, request, token: str):
-        template_form = ChooseTamplates()
+#     def get(self, request, token: str):
+#         template_form = ChooseTamplates()
 
-        self.context.update({
-            'title': 'Second Step - BotConstructor',
-            'template_form': template_form,
-            'token': token
-        })
-        return render(request, 'SecondStep.html', self.context)
+#         self.context.update({
+#             'title': 'Second Step - BotConstructor',
+#             'template_form': template_form,
+#             'token': token
+#         })
+#         return render(request, 'SecondStep.html', self.context)
 
-    def post(self, request, token: str):
-        template_form = ChooseTamplates(request.POST)
+#     def post(self, request, token: str):
+#         template_form = ChooseTamplates(request.POST)
 
-        if template_form.is_valid():
-            current_bot_template = template_form.cleaned_data['templates']
+#         if template_form.is_valid():
+#             current_bot_template = template_form.cleaned_data['templates']
 
-            path_template = os.path.join(settings.BASE_DIR, 'Bots',
-                                         'bot_templates',
-                                         f'{current_bot_template}.py')
-            with open(path_template, 'r', encoding='utf-8') as file:
-                content = file.read()
+#             path_template = os.path.join(settings.BASE_DIR, 'Bots',
+#                                          'bot_templates',
+#                                          f'{current_bot_template}.py')
+#             with open(path_template, 'r', encoding='utf-8') as file:
+#                 content = file.read()
 
-            path_config = open_configuration(request=request, token=token)
-            with open(path_config, 'r', encoding='utf-8') as file:
-                access_token = json.load(file)['access_token']
+#             path_config = open_configuration(request=request, token=token)
+#             with open(path_config, 'r', encoding='utf-8') as file:
+#                 access_token = json.load(file)['access_token']
 
-            current_user = Profile.objects.get(user=request.user)
+#             current_user = Profile.objects.get(user=request.user)
 
-            bot_object = Bot(
-                owner=current_user,
-                access_token=access_token,
-                title='NewsBot',
-                username='NewsBotbot'
-            )
-            bot_object.save()
+#             bot_object = Bot(
+#                 owner=current_user,
+#                 access_token=access_token,
+#                 title='NewsBot',
+#                 username='NewsBotbot'
+#             )
+#             bot_object.save()
 
-            new_content = """
-            import telebot
-            from telebot.types import *
+#             new_content = """
+#             import telebot
+#             from telebot.types import *
 
 
-            bot = telebot.TeleBot(token='{0}')
-            """.format(access_token)
-            content = new_content + content
+#             bot = telebot.TeleBot(token='{0}')
+#             """.format(access_token)
+#             content = new_content + content
 
-            fixed_code = autopep8.fix_code(content)
-            path = open_test_bot(request=request, token=token)
-            with open(path, 'w', encoding='utf-8') as file:
-                file.write(fixed_code)
-            return redirect(
-                'create_bot_third_step_url',
-                token=token
-            )
+#             fixed_code = autopep8.fix_code(content)
+#             path = open_test_bot(request=request, token=token)
+#             with open(path, 'w', encoding='utf-8') as file:
+#                 file.write(fixed_code)
+#             return redirect(
+#                 'create_bot_third_step_url',
+#                 token=token
+#             )
 
-        self.context({
-            'title': 'Second Step - BotConstructor',
-            'template_form': template_form,
-            'token': token
-        })
-        return render(request, 'SecondStep.html', self.context)
+#         self.context({
+#             'title': 'Second Step - BotConstructor',
+#             'template_form': template_form,
+#             'token': token
+#         })
+#         return render(request, 'SecondStep.html', self.context)
 
 
 class GenerateFile(LoginRequiredMixin, View):
