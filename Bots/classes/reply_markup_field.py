@@ -13,9 +13,11 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
     redirect_field_name = 'create_bot_second_step_reply_markup_url'
 
     def get(self, request, token: str):
-        reply_markup_elements = enumerate_elements(request,
-                                                   token=token,
-                                                   get_object='reply_markup')
+        reply_markup_elements = enumerate_elements(
+            request,
+            token=token,
+            get_object='reply_markup'
+        )
         reply_markup_form = ReplyMarkup(request=request, token=token)
 
         self.context.update({
@@ -27,9 +29,11 @@ class CreateReplyMarkupField(LoginRequiredMixin, View):
         return render(request, 'SecondStep.html', self.context)
 
     def post(self, request, token: str):
-        reply_markup_elements = enumerate_elements(request,
-                                                   token=token,
-                                                   get_object='reply_markup')
+        reply_markup_elements = enumerate_elements(
+            request,
+            token=token,
+            get_object='reply_markup'
+        )
         smart = request.POST.get('smart')
 
         post = request.POST.copy()

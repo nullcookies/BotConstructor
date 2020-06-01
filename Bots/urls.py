@@ -5,178 +5,178 @@ from .classes.deployment import *
 
 urlpatterns = [
     path(
-        'yourBots/',
+        'your-bots/',
         ShowBots.as_view(),
         name='show_bots_url'
     ),
     path(
-        'createBot/firstStep/',
+        'create-bot/first-step/',
         CreateBotStepOne.as_view(),
         name='create_bot_first_step_url'
     ),
     path(
-        'createBot/thirdStep/<str:token>/',
+        'create-bot/third-step/<str:token>/',
         CreateBotStepThree.as_view(),
         name='create_bot_third_step_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/text/',
+        'create-bot/second-step/<str:token>/text/',
         CreateTextField.as_view(),
         name='create_bot_second_step_text_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/text/delete/',
+        'create-bot/second-step/<str:token>/text/delete/',
         DeleteTextField.as_view(),
         name='create_bot_second_step_text_delete_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/text/update/',
+        'create-bot/second-step/<str:token>/text/update/',
         UpdateTextField.as_view(),
         name='create_bot_second_step_text_update_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/replyMarkup/',
+        'create-bot/second-step/<str:token>/reply-markup/',
         CreateReplyMarkupField.as_view(),
         name='create_bot_second_step_reply_markup_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/replyMarkup/replyButtons/',
+        'create-bot/second-step/<str:token>/reply-markup/reply-buttons/',
         CreateReplyButtonsField.as_view(),
         name='create_bot_second_step_reply_buttons_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/replyMarkup/deleteReplyButton/',
+        'create-bot/second-step/<str:token>/reply-markup/delete-reply-button/',
         DeleteReplyButtonField.as_view(),
         name='create_bot_second_step_reply_button_delete_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/replyMarkup/deleteInlineButton/',
+        'create-bot/second-step/<str:token>/reply-markup/delete-inline-button/',
         DeleteInlineButtonField.as_view(),
         name='create_bot_second_step_inline_buttons_delete_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/replyMarkup/deleteReplyMarkup/',
+        'create-bot/second-step/<str:token>/reply-markup/delete-reply-markup/',
         DeleteReplyMarkupField.as_view(),
         name='create_bot_second_step_reply_markup_delete_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/replyMarkup/updateReplyMarkup/',
+        'create-bot/second-step/<str:token>/reply-markup/update-reply-markup/',
         UpdateReplyMarkupField.as_view(),
         name='create_bot_second_step_reply_markup_update_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/replyMarkup/updateReplyButtons/',
+        'create-bot/second-step/<str:token>/reply-markup/update-reply-buttons/',
         UpdateReplyButtonsField.as_view(),
         name='create_bot_second_step_reply_buttons_update_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/inlineMarkup/',
+        'create-bot/second-step/<str:token>/inline-markup/',
         CreateInlineMarkupField.as_view(),
         name='create_bot_second_step_inline_markup_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/inlineMarkup/inlineButtons/',
+        'create-bot/second-step/<str:token>/inline-markup/inline-buttons/',
         CreateInlineButtonsField.as_view(),
         name='create_bot_second_step_inline_buttons_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/inlineMarkup/updateInlineButtons',
+        'create-bot/second-step/<str:token>/inline-markup/update-inline-buttons',
         UpdateInlineButtonsField.as_view(),
         name='create_bot_second_step_inline_buttons_update_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/inlineMarkup/updateInlineMarkup',
+        'create-bot/secondstep/<str:token>/inline-markup/update-inline-markup',
         UpdateInlineMarkupField.as_view(),
         name='create_bot_second_step_inline_markup_update_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/inlineMarkup/deleteInlineMarkup/',
+        'create-bot/second-step/<str:token>/inline-markup/delete-inline-markup/',
         DeleteInlineMarkupField.as_view(),
         name='create_bot_second_step_inline_markup_delete_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/nextStep/',
+        'create-bot/second-step/<str:token>/next-step/',
         GenerateFile.as_view(),
         name='create_bot_second_step_next_step_url'
     ),
     path(
-        'createBot/thirdStep/<str:token>/downloadConfig/',
+        'create-bot/third-step/<str:token>/download-config/',
         Download.config,
         name='download_config_url'
     ),
     path(
-        'createBot/thirdStep/<str:token>/downloadScript/',
+        'create-bot/third-step/<str:token>/download-script/',
         Download.script,
         name='download_script_url'
     ),
     path(
-        'deleteBot/<int:bot_id>/<str:token>/',
+        'delete-bot/<int:bot_id>/<str:token>/',
         DeleteBot.as_view(),
         name='delete_bot_url'
     ),
     path(
-        'createBot/thirdStep/<str:token>/autoDeploy',
+        'create-bot/third-step/<str:token>/auto-deploy',
         RunBot.as_view(),
         name='auto_deploy_url'
     ),
+    # path(
+    #     'create-bot/second-step/<str:token>/templates/',
+    #     ShowTemplates.as_view(),
+    #     name='templates'
+    # ),
     path(
-        'createBot/secondStep/<str:token>/templates/',
-        ShowTemplates.as_view(),
-        name='templates'
-    ),
-    path(
-        'stopBot/<str:token>/',
+        'stop-bot/<str:token>/',
         StopBot.as_view(),
         name='stop_bot_url'
     ),
     path(
-        'startBot/<str:token>',
+        'start-bot/<str:token>/',
         StartBot.as_view(),
         name='start_bot_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/callbackAnswer/',
+        'create-bot/second-step/<str:token>/callback-answer/',
         CreateCallbackField.as_view(),
         name='create_callback_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/callbackAnswer/update/',
+        'create-bot/second-step/<str:token>/callback-answer/update/',
         UpdateCallbackField.as_view(),
         name='update_callback_url'
     ),
     path(
-        'createBot/secondStep/<str:token>/callbackAnswer/delete/',
+        'create-bot/second-step/<str:token>/callback-answer/delete/',
         DeleteCallbackField.as_view(),
         name='delete_callback_url'
     ),
     path(
-        'untilFirstStep/',
+        'until-first-step/',
         UntilFirstStep.as_view(),
         name='until_first_step'
     ),
     path(
-        'preloadingPage/',
+        'postloading-page/',
         loading_page,
         name='loading'
     ),
     path(
-        'botLogs/<str:token>/',
+        'bot-logs/<str:token>/',
         BotLogs.as_view(),
         name='logs'
     ),
     path(
-        'downloadLogs/<str:token>/',
+        'download-logs/<str:token>/',
         Download.download_log,
         name='download_log_url'
     ),
     path(
-        'restartBot/<str:token>/',
+        'restart-bot/<str:token>/',
         RestartBot.as_view(),
         name="restart_bot"
     ),
-    # path(
-    #     'createBot/firstStep/editAccessToken/<str:token>/',
-    #     UpdateAccessToken.as_view(),
-    #     name='update_access_token'
-    # )
+    path(
+        'create-bot/second-step/<str:token>/tips/',
+        Tips.as_view(),
+        name="bot_tips"
+    )
 ]

@@ -63,11 +63,11 @@
                 <div class="alert alert-light border-left border-bottom border-right shadow-sm text-dark p-4">
                     <h2 class="ml-0">@{{ current_user.user.username }}</h2>
 
-                    <h5 class="text-dark mb-1 mt-4"><i class="far fa-user-circle"></i>
+                    <h5 class="text-dark mb-1 mt-4 responsive-text"><i class="far fa-user-circle"></i>
                         {{ current_user.user.first_name }} {{ current_user.user.last_name }}
                     </h5>
-                    <h5 class="text-dark mb-1"><i class="far fa-envelope"></i> {{ current_user.user.email }}</h5>
-                    <h5 class="text-dark mb-1"><i class="fas fa-sign-in-alt"></i> Last login:
+                    <h5 class="text-dark mb-1 responsive-text"><i class="far fa-envelope"></i> {{ current_user.user.email }}</h5>
+                    <h5 class="text-dark mb-1 responsive-text"><i class="fas fa-sign-in-alt"></i> Last login:
                         {{ current_user.user.last_login }}</h5>
                 </div>
             </div>

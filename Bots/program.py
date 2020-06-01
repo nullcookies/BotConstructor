@@ -62,8 +62,8 @@ class BotFacade:
         self.__end()
 
     def __start(self) -> None:
-        some_token = self.__token.replace('_', ':')
-        init_object = f"""\
+        some_token = self.__token.replace('_', ':', 1)
+        init_object = textwrap.dedent(f"""\
         import telebot
         import requests
         import logging
@@ -103,7 +103,7 @@ class BotFacade:
                     phrase[word] = [word]
             return phrase
 
-        """
+        """)
         final_path = os.path.join(PATH, f'{self.__username}')
         path = os.path.join(
             final_path,
@@ -114,9 +114,24 @@ class BotFacade:
             file.write(textwrap.dedent(init_object))
 
     def __end(self):
-        polling_object = f"""
+        polling_object = ""
+        if "message_exception" in self._data and self._data[
+                "message_exception"]:
+            polling_object += textwrap.dedent("""
+            @bot.message_handler(func=lambda message: True)
+            def handler(message):
+                bot.send_message(
+                    chat_id=message.chat.id,
+                    text="Unfortunately, I don’t understand you either."
+                         "\\n\\nEnter something else..."
+                )
+
+            """)
+
+        polling_object += textwrap.dedent(f"""
         bot.polling(none_stop=True)
-        """
+
+        """)
 
         final_path = os.path.join(PATH, f'{self.__username}')
         path = os.path.join(
@@ -218,13 +233,13 @@ class TextBuilder:
         for key, value in new_dict.items():
             object_text += textwrap.dedent("""
             @bot.message_handler(
-                func=lambda message: message.text == '%s'
+                func=lambda message: message.text == %s
             )
             def response_message_remove(message):
                 logger.info(
                     "User -> {user_message} : Bot -> {bot_message}".format(
                         user_message=message.text,
-                        bot_message='%s'.replace(
+                        bot_message=%s.replace(
                             '\\n', ''
                         )
                     )
@@ -232,7 +247,7 @@ class TextBuilder:
                 try:
                     bot.send_message(
                         chat_id=message.chat.id,
-                        text='%s'.format(
+                        text=%s.format(
                             first_name=message.from_user.first_name,
                             last_name=message.from_user.last_name,
                             username=message.from_user.username,
@@ -246,7 +261,7 @@ class TextBuilder:
                 except telebot.apihelper.ApiException:
                     bot.send_message(
                         chat_id=message.chat.id,
-                        text='%s'.format(
+                        text=%s.format(
                             first_name=message.from_user.first_name,
                             last_name=message.from_user.last_name,
                             username=message.from_user.username,
@@ -256,17 +271,17 @@ class TextBuilder:
                         ),
                         reply_markup=ReplyKeyboardRemove()
                     )
-            """ % (key, value[0], value[0], value[0]))
+            """ % (repr(key), repr(value[0]), repr(value[0]), repr(value[0])))
 
         for key, value in smart_texts.items():
             object_text += textwrap.dedent("""
             def check_similarity_%s(word: Message) -> dict:
-                generated_phrases = generate_synonyms('%s'.lower())
+                generated_phrases = generate_synonyms(%s.lower())
 
                 word = word.text
                 params = {'word': '', 'percent': 0}
 
-                for value in generated_phrases["%s".lower()]:
+                for value in generated_phrases[%s.lower()]:
                     similarity = fuzz.ratio(word, value)
                     if similarity >= params[
                             'percent'] and similarity >= 60:
@@ -280,7 +295,7 @@ class TextBuilder:
                 logger.info(
                     "User -> {user_message} : Bot -> {bot_message}".format(
                         user_message=message.text,
-                        bot_message='%s'.replace(
+                        bot_message=%s.replace(
                             '\\n', ''
                         )
                     )
@@ -289,7 +304,7 @@ class TextBuilder:
                     try:
                         bot.send_message(
                             chat_id=message.chat.id,
-                            text='%s'.format(
+                            text=%s.format(
                                 first_name=message.from_user.first_name,
                                 last_name=message.from_user.last_name,
                                 username=message.from_user.username,
@@ -303,7 +318,7 @@ class TextBuilder:
                     except telebot.apihelper.ApiException:
                         bot.send_message(
                             chat_id=message.chat.id,
-                            text='%s'.format(
+                            text=%s.format(
                                 first_name=message.from_user.first_name,
                                 last_name=message.from_user.last_name,
                                 username=message.from_user.username,
@@ -318,7 +333,7 @@ class TextBuilder:
                     try:
                         bot.send_message(
                             chat_id=message.chat.id,
-                            text='%s'.format(
+                            text=%s.format(
                                 first_name=message.from_user.first_name,
                                 last_name=message.from_user.last_name,
                                 username=message.from_user.username,
@@ -331,7 +346,7 @@ class TextBuilder:
                     except telebot.apihelper.ApiException:
                         bot.send_message(
                             chat_id=message.chat.id,
-                            text='%s'.format(
+                            text=%s.format(
                                 first_name=message.from_user.first_name,
                                 last_name=message.from_user.last_name,
                                 username=message.from_user.username,
@@ -341,8 +356,10 @@ class TextBuilder:
                             )
                         )
 
-            """) % (key, key, key, key, value[0], value[1],
-                    value[0], value[0], value[0], value[0])
+            """) % (
+                key, repr(key), repr(key), key, repr(value[0]), value[1],
+                repr(value[0]), repr(value[0]), repr(value[0]), repr(value[0])
+            )
 
         final_path = os.path.join(PATH, f'{self.__username}')
         path = os.path.join(
@@ -417,86 +434,86 @@ class ReplyMarkupBuilder:
 
         for key, value in smart_dict.items():
             object_text += textwrap.dedent("""
-                def check_similarity_%s(word: Message) -> dict:
-                    generated_phrases = generate_synonyms("%s".lower())
+            def check_similarity_%s(word: Message) -> dict:
+                generated_phrases = generate_synonyms(%s.lower())
 
-                    word = word.text
-                    params = {'word': '', 'percent': 0}
+                word = word.text
+                params = {'word': '', 'percent': 0}
 
-                    for value in generated_phrases["%s".lower()]:
-                        similarity = fuzz.ratio(word, value)
-                        if similarity >= params[
-                                'percent'] and similarity >= 60:
-                            params['word'] = value
-                            params['percent'] = similarity
-                    return True if params['percent'] != 0 else False
+                for value in generated_phrases[%s.lower()]:
+                    similarity = fuzz.ratio(word, value)
+                    if similarity >= params[
+                            'percent'] and similarity >= 60:
+                        params['word'] = value
+                        params['percent'] = similarity
+                return True if params['percent'] != 0 else False
 
 
-                @bot.message_handler(func=check_similarity_%s)
-                def handler(message: Message) -> None:
-                    logger.info(
-                        "User -> {user_message} : Bot -> {bot_message}".format(
-                            user_message=message.text,
-                            bot_message='%s'.replace(
-                                '\\n', ''
-                            )
+            @bot.message_handler(func=check_similarity_%s)
+            def handler(message: Message) -> None:
+                logger.info(
+                    "User -> {user_message} : Bot -> {bot_message}".format(
+                        user_message=message.text,
+                        bot_message=%s.replace(
+                            '\\n', ''
                         )
                     )
-                    keyboard = ReplyKeyboardMarkup(
-                        resize_keyboard=%s,
-                        one_time_keyboard=%s,
-                        selective=%s,
-                        row_width=%s
+                )
+                keyboard = ReplyKeyboardMarkup(
+                    resize_keyboard=%s,
+                    one_time_keyboard=%s,
+                    selective=%s,
+                    row_width=%s
+                )
+                some_list = []
+
+                for item in %s:
+                    button = KeyboardButton(
+                        text=f"{item['response']}",
+                        request_contact=item['request_contact'],
+                        request_location=item['request_location']
                     )
-                    some_list = []
+                    some_list.append(button)
+                keyboard.add(*some_list)
 
-                    for item in %s:
-                        button = KeyboardButton(
-                            text=f"{item['response']}",
-                            request_contact=item['request_contact'],
-                            request_location=item['request_location']
-                        )
-                        some_list.append(button)
-                    keyboard.add(*some_list)
+                try:
+                    bot.send_message(
+                        chat_id=message.chat.id,
+                        text=%s.format(
+                            first_name=message.from_user.first_name,
+                            last_name=message.from_user.last_name,
+                            username=message.from_user.username,
+                            is_bot=message.from_user.is_bot,
+                            id=message.from_user.id,
+                            message_id=message.message_id
+                        ),
+                        reply_markup=keyboard,
+                        parse_mode='Markdown'
+                    )
+                except telebot.apihelper.ApiException:
+                    bot.send_message(
+                        chat_id=message.chat.id,
+                        text=%s.format(
+                            first_name=message.from_user.first_name,
+                            last_name=message.from_user.last_name,
+                            username=message.from_user.username,
+                            is_bot=message.from_user.is_bot,
+                            id=message.from_user.id,
+                            message_id=message.message_id
+                        ),
+                        reply_markup=keyboard
+                    )
 
-                    try:
-                        bot.send_message(
-                            chat_id=message.chat.id,
-                            text="%s".format(
-                                first_name=message.from_user.first_name,
-                                last_name=message.from_user.last_name,
-                                username=message.from_user.username,
-                                is_bot=message.from_user.is_bot,
-                                id=message.from_user.id,
-                                message_id=message.message_id
-                            ),
-                            reply_markup=keyboard,
-                            parse_mode='Markdown'
-                        )
-                    except telebot.apihelper.ApiException:
-                        bot.send_message(
-                            chat_id=message.chat.id,
-                            text="%s".format(
-                                first_name=message.from_user.first_name,
-                                last_name=message.from_user.last_name,
-                                username=message.from_user.username,
-                                is_bot=message.from_user.is_bot,
-                                id=message.from_user.id,
-                                message_id=message.message_id
-                            ),
-                            reply_markup=keyboard
-                        )
-
-                """ % (
-                key, key, key, key,
-                value['response_text'],
+            """ % (
+                key, repr(key), repr(key), key,
+                repr(value['response_text']),
                 value['resize_keyboard'],
                 value['one_time_keyboard'],
                 value['selective'],
                 value['row_width'],
                 value['buttons'],
-                value['response_text'],
-                value['response_text']
+                repr(value['response_text']),
+                repr(value['response_text'])
             ))
 
         if self.__reply_markup_dictionary:
@@ -633,146 +650,146 @@ class InlineMarkupBuilder:
 
         for key, value in smart_dict.items():
             object_text += textwrap.dedent("""
-                def check_similarity_%s(word: Message) -> dict:
-                    generated_phrases = generate_synonyms("%s".lower())
+            def check_similarity_%s(word: Message) -> dict:
+                generated_phrases = generate_synonyms(%s.lower())
 
-                    word = word.text
-                    params = {'word': '', 'percent': 0}
+                word = word.text
+                params = {'word': '', 'percent': 0}
 
-                    for value in generated_phrases["%s".lower()]:
-                        similarity = fuzz.ratio(word, value)
-                        if similarity >= params[
-                                'percent'] and similarity >= 60:
-                            params['word'] = value
-                            params['percent'] = similarity
-                    return True if params['percent'] != 0 else False
+                for value in generated_phrases[%s.lower()]:
+                    similarity = fuzz.ratio(word, value)
+                    if similarity >= params[
+                            'percent'] and similarity >= 60:
+                        params['word'] = value
+                        params['percent'] = similarity
+                return True if params['percent'] != 0 else False
 
 
-                @bot.message_handler(func=check_similarity_%s)
-                def handler(message: Message) -> None:
-                    logger.info(
-                        "User -> {user_message} : Bot -> {bot_message}".format(
-                            user_message=message.text,
-                            bot_message='%s'.replace(
-                                '\\n', ''
-                            )
+            @bot.message_handler(func=check_similarity_%s)
+            def handler(message: Message) -> None:
+                logger.info(
+                    "User -> {user_message} : Bot -> {bot_message}".format(
+                        user_message=message.text,
+                        bot_message=%s.replace(
+                            '\\n', ''
                         )
                     )
-                    keyboard = InlineKeyboardMarkup(
-                        row_width=%s
+                )
+                keyboard = InlineKeyboardMarkup(
+                    row_width=%s
+                )
+                some_list = []
+
+                for item in %s:
+                    generator_value = []
+                    for value in item.keys():
+                        if item[value] is False:
+                            item[value] = None
+                        generator_value.append(item[value])
+
+                    button = InlineKeyboardButton(*generator_value)
+                    some_list.append(button)
+                keyboard.add(*some_list)
+
+                try:
+                    bot.send_message(
+                        chat_id=message.chat.id,
+                        text=%s.format(
+                            first_name=message.from_user.first_name,
+                            last_name=message.from_user.last_name,
+                            username=message.from_user.username,
+                            is_bot=message.from_user.is_bot,
+                            id=message.from_user.id,
+                            message_id=message.message_id
+                        ),
+                        reply_markup=keyboard,
+                        parse_mode='Markdown'
                     )
-                    some_list = []
+                except telebot.apihelper.ApiException:
+                    bot.send_message(
+                        chat_id=message.chat.id,
+                        text=%s.format(
+                            first_name=message.from_user.first_name,
+                            last_name=message.from_user.last_name,
+                            username=message.from_user.username,
+                            is_bot=message.from_user.is_bot,
+                            id=message.from_user.id,
+                            message_id=message.message_id
+                        ),
+                        reply_markup=keyboard
+                    )
 
-                    for item in %s:
-                        generator_value = []
-                        for value in item.keys():
-                            if item[value] is False:
-                                item[value] = None
-                            generator_value.append(item[value])
-
-                        button = InlineKeyboardButton(*generator_value)
-                        some_list.append(button)
-                    keyboard.add(*some_list)
-
-                    try:
-                        bot.send_message(
-                            chat_id=message.chat.id,
-                            text="%s".format(
-                                first_name=message.from_user.first_name,
-                                last_name=message.from_user.last_name,
-                                username=message.from_user.username,
-                                is_bot=message.from_user.is_bot,
-                                id=message.from_user.id,
-                                message_id=message.message_id
-                            ),
-                            reply_markup=keyboard,
-                            parse_mode='Markdown'
-                        )
-                    except telebot.apihelper.ApiException:
-                        bot.send_message(
-                            chat_id=message.chat.id,
-                            text="%s".format(
-                                first_name=message.from_user.first_name,
-                                last_name=message.from_user.last_name,
-                                username=message.from_user.username,
-                                is_bot=message.from_user.is_bot,
-                                id=message.from_user.id,
-                                message_id=message.message_id
-                            ),
-                            reply_markup=keyboard
-                        )
-
-                """ % (
-                key, key, key, key,
-                value['response_text'],
+            """ % (
+                key, repr(key), repr(key), key,
+                repr(value['response_text']),
                 value['row_width'],
                 value['buttons'],
-                value['response_text'],
-                value['response_text']
+                repr(value['response_text']),
+                repr(value['response_text'])
             ))
 
         if self.__inline_markup_dictionary:
             object_text += textwrap.dedent("""
-                inline_markup_dictionary = %s
-                @bot.message_handler(
-                    func=lambda message: message.text in \
+            inline_markup_dictionary = %s
+            @bot.message_handler(
+                func=lambda message: message.text in \
 inline_markup_dictionary.keys()
+            )
+            def response_inline(message):
+                logger.info(
+                    "User -> {user_message} : Bot -> {bot_message}".format(
+                        user_message=message.text,
+                        bot_message=(inline_markup_dictionary[message.text]['response_text']).replace(
+                            '\\n', ''
+                        )
+                    )
                 )
-                def response_inline(message):
-                    logger.info(
-                        "User -> {user_message} : Bot -> {bot_message}".format(
-                            user_message=message.text,
-                            bot_message=(inline_markup_dictionary[message.text]['response_text']).replace(
-                                '\\n', ''
-                            )
-                        )
+                keyboard = InlineKeyboardMarkup(
+                    row_width=inline_markup_dictionary[
+                        message.text
+                    ]['row_width']
+                )
+                some_list = []
+
+                for item in inline_markup_dictionary[
+                        message.text]['buttons']:
+                    generator_value = [
+                        item[value] for value in item.keys()
+                    ]
+
+                    button = InlineKeyboardButton(*generator_value)
+                    some_list.append(button)
+                keyboard.add(*some_list)
+
+                try:
+                    bot.send_message(
+                        chat_id=message.chat.id,
+                        text=f"{inline_markup_dictionary[message.text]['response_text']}".format(
+                            first_name=message.from_user.first_name,
+                            last_name=message.from_user.last_name,
+                            username=message.from_user.username,
+                            is_bot=message.from_user.is_bot,
+                            id=message.from_user.id,
+                            message_id=message.message_id
+                        ),
+                        reply_markup=keyboard,
+                        parse_mode='Markdown'
                     )
-                    keyboard = InlineKeyboardMarkup(
-                        row_width=inline_markup_dictionary[
-                            message.text
-                        ]['row_width']
+                except telebot.apihelper.ApiException:
+                    bot.send_message(
+                        chat_id=message.chat.id,
+                        text=f"{inline_markup_dictionary[message.text]['response_text']}".format(
+                            first_name=message.from_user.first_name,
+                            last_name=message.from_user.last_name,
+                            username=message.from_user.username,
+                            is_bot=message.from_user.is_bot,
+                            id=message.from_user.id,
+                            message_id=message.message_id
+                        ),
+                        reply_markup=keyboard
                     )
-                    some_list = []
 
-                    for item in inline_markup_dictionary[
-                            message.text]['buttons']:
-                        generator_value = [
-                            item[value] for value in item.keys()
-                        ]
-
-                        button = InlineKeyboardButton(*generator_value)
-                        some_list.append(button)
-                    keyboard.add(*some_list)
-
-                    try:
-                        bot.send_message(
-                            chat_id=message.chat.id,
-                            text=f"{inline_markup_dictionary[message.text]['response_text']}".format(
-                                first_name=message.from_user.first_name,
-                                last_name=message.from_user.last_name,
-                                username=message.from_user.username,
-                                is_bot=message.from_user.is_bot,
-                                id=message.from_user.id,
-                                message_id=message.message_id
-                            ),
-                            reply_markup=keyboard,
-                            parse_mode='Markdown'
-                        )
-                    except telebot.apihelper.ApiException:
-                        bot.send_message(
-                            chat_id=message.chat.id,
-                            text=f"{inline_markup_dictionary[message.text]['response_text']}".format(
-                                first_name=message.from_user.first_name,
-                                last_name=message.from_user.last_name,
-                                username=message.from_user.username,
-                                is_bot=message.from_user.is_bot,
-                                id=message.from_user.id,
-                                message_id=message.message_id
-                            ),
-                            reply_markup=keyboard
-                        )
-
-                """ % self.__inline_markup_dictionary)
+            """ % self.__inline_markup_dictionary)
 
         final_path = os.path.join(PATH, f'{self.__username}')
         path = os.path.join(
@@ -808,34 +825,34 @@ class CallbackBuilder:
         object_text = ''
         for key, value in self.__callback_dictionary.items():
             object_text += textwrap.dedent(f"""
-                @bot.callback_query_handler(
-                    func=lambda call: call.data == '%s' % '{key}')
-                def get_callback(call):
-                    try:
-                        bot.send_message(
-                            chat_id=call.from_user.id,
-                            text={repr(value['response_text'])}.format(
-                                first_name=call.from_user.first_name,
-                                last_name=call.from_user.last_name,
-                                username=call.from_user.username,
-                                is_bot=call.from_user.is_bot,
-                                id=call.from_user.id
-                            ),
-                            parse_mode='Markdown'
+            @bot.callback_query_handler(
+                func=lambda call: call.data == '%s' % '{key}')
+            def get_callback(call):
+                try:
+                    bot.send_message(
+                        chat_id=call.from_user.id,
+                        text={repr(value['response_text'])}.format(
+                            first_name=call.from_user.first_name,
+                            last_name=call.from_user.last_name,
+                            username=call.from_user.username,
+                            is_bot=call.from_user.is_bot,
+                            id=call.from_user.id
+                        ),
+                        parse_mode='Markdown'
+                    )
+                except telebot.apihelper.ApiException:
+                    bot.send_message(
+                        chat_id=call.from_user.id,
+                        text={repr(value['response_text'])}.format(
+                            first_name=call.from_user.first_name,
+                            last_name=call.from_user.last_name,
+                            username=call.from_user.username,
+                            is_bot=call.from_user.is_bot,
+                            id=call.from_user.id
                         )
-                    except telebot.apihelper.ApiException:
-                        bot.send_message(
-                            chat_id=call.from_user.id,
-                            text={repr(value['response_text'])}.format(
-                                first_name=call.from_user.first_name,
-                                last_name=call.from_user.last_name,
-                                username=call.from_user.username,
-                                is_bot=call.from_user.is_bot,
-                                id=call.from_user.id
-                            )
-                        )
-                    except Exception as error:
-                        print(error)
+                    )
+                except Exception as error:
+                    print(error)
 
             """)
 

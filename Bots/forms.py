@@ -15,13 +15,16 @@ CHECKBOX_CHOICES = (
     ('one_time_keyboard', 'One Time Keyboard'),
     ('selective', 'Selective')
 )
-CHOICES = (
-    ('linkedin_mailer', 'Linked In Mailer'),
-    ('news', 'News Bot')
-)
+# CHOICES = (
+#     ('linkedin_mailer', 'Linked In Mailer'),
+#     ('news', 'News Bot')
+# )
 REPLY_BUTTONS_CHOICES = (
     ('request_contact', 'Request Contact'),
     ('request_location', 'Request Location')
+)
+TIPS_CHOICES = (
+    ('message_exception', "Message exception"),
 )
 
 
@@ -260,8 +263,8 @@ class InlineButton(forms.Form):
             return new_url
 
 
-class ChooseTamplates(forms.Form):
-    templates = forms.CharField(widget=forms.RadioSelect(choices=CHOICES))
+# class ChooseTamplates(forms.Form):
+#     templates = forms.CharField(widget=forms.RadioSelect(choices=CHOICES))
 
 
 class CallbackForm(forms.Form):
@@ -357,3 +360,14 @@ class CallbackForm(forms.Form):
                 "Your config don't have a inline markup"
             )
         return self.cleaned_data
+
+
+class TipsForm(forms.Form):
+    tips = forms.MultipleChoiceField(
+        required=False, choices=TIPS_CHOICES,
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+                'class': 'custom-control-input'
+            }
+        )
+    )

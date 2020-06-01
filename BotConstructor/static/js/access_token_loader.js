@@ -29,7 +29,7 @@ function getCredentialsOfBot(form) {
         if (Object.keys(params).length === 0) {
             $.ajax({
                 type: 'POST',
-                url: '/untilFirstStep/',
+                url: '/until-first-step/',
                 data: {
                     token: token,
                     csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),

@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import logging
-from sys import platform
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -165,25 +164,39 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = '/static/'
+AZURE_ACCOUNT_NAME = 'lyceumalexdiag'
+AZURE_ACCOUNT_KEY = (
+    'n1Gg+uSOpvzpx9YfT2b38hda9eYk1HZyRe30fN9CNdXqNH'
+    'OX035MfK5ugrI4hjqWTS9ppCSATD0t0kq+bhDmVw=='
+)
+AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+AZURE_LOCATION = (
+    'static'
+)
+AZURE_CONTAINER = (
+    'bootdiagnostics-botconstr-cbfd33ad-f8ba-42a7-8c92-354756fc4f55'
+)
+
+# STATIC_URL = '/static/'
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATIC_LOCATION = 'static'
+STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'BotConstructor', 'static')
 ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-# STATICFILES_STORAGE =
-# 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'storages.backends.azure_storage.AzureStorage'
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'BotConstructor', 'media')
 
+
 GOOGLE_SECRET_KEY = '6Lel7dcUAAAAAMGZJPLmh1yJW8JPkmF3KqFSthff'
+
 
 LOGIN_URL = '/signIn/'
 LOGOUT_REDIRECT_URL = 'base_view_url'
 
-# EMAIL_USE_TLS = True
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_HOST_USER = 'bot.constructor.service@gmail.com'
-# EMAIL_HOST_PASSWORD = 'bot-constructor21312'
-# EMAIL_PORT = 587
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+DRIVER_PATH = '/usr/lib/chromium-browser/chromedriver'
