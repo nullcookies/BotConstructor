@@ -14,6 +14,7 @@ from django.template.loader import render_to_string
 from django.http import HttpResponse
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+from django.conf import settings
 
 import os
 import requests
@@ -114,10 +115,7 @@ class UserRegistration(View):
                     subject=mail_subject,
                     html_content=message_content)
                 try:
-                    sg = SendGridAPIClient(
-                        'SG.48GCbtEqQtuRsR-25DMAZw.'
-                        'FsF0nzFOdIno4UNc_JQZLqstiaONAIn3eTOv22cJGJg'
-                    )
+                    sg = settings.SENDGRID_KEY
                     response = sg.send(message)
                     print(response.status_code)
                 except Exception as e:

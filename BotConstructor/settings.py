@@ -21,17 +21,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '9x5*helb@0lk6k+pv5xedzcd@x&tdh04my!bk_$k!#&r#33ren'
+SECRET_KEY = "9x5*helb@0lk6k+pv5xedzcd@x&tdh04my!bk_$k!#&r#33ren"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [
-    'bot-constructor.azurewebsites.net', '127.0.0.1',
-    'bot-constructor.northeurope.cloudapp.azure.com',
-    '40.113.6.80'
-]
-
+ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOST'), os.environ.get('ALLOWED_IP')]
 
 # Application definition
 
@@ -112,11 +107,11 @@ LOGGING = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'BotConstructor_DB',
-        'USER': 'alexAdmin@bot-constructor',
-        'PASSWORD': 'liceuM@lex@aminP@$$',
-        'HOST': 'bot-constructor.postgres.database.azure.com',
-        'PORT': '5432'
+        'NAME': os.environ.get('NAME'),
+        'USER': os.environ.get('USER'),
+        'PASSWORD': os.environ.get('PASSWORD'),
+        'HOST': os.environ.get('HOST'),
+        'PORT': os.environ.get('PORT')
     }
 }
 
@@ -164,18 +159,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-AZURE_ACCOUNT_NAME = 'lyceumalexdiag'
-AZURE_ACCOUNT_KEY = (
-    'n1Gg+uSOpvzpx9YfT2b38hda9eYk1HZyRe30fN9CNdXqNH'
-    'OX035MfK5ugrI4hjqWTS9ppCSATD0t0kq+bhDmVw=='
-)
+AZURE_ACCOUNT_NAME = os.environ.get('AZURE_ACCOUNT_NAME')
+AZURE_ACCOUNT_KEY = os.environ.get('AZURE_ACCOUNT_KEY')
 AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
-AZURE_LOCATION = (
-    'static'
-)
-AZURE_CONTAINER = (
-    'bootdiagnostics-botconstr-cbfd33ad-f8ba-42a7-8c92-354756fc4f55'
-)
+AZURE_LOCATION = ('static')
+AZURE_CONTAINER = os.environ.get('AZURE_CONTAINER')
 
 # STATIC_URL = '/static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -192,7 +180,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'BotConstructor', 'media')
 
 
-GOOGLE_SECRET_KEY = '6Lel7dcUAAAAAMGZJPLmh1yJW8JPkmF3KqFSthff'
+GOOGLE_SECRET_KEY = os.environ.get('GOOGLE_SECRET_KEY')
 
 
 LOGIN_URL = '/signIn/'
@@ -200,3 +188,6 @@ LOGOUT_REDIRECT_URL = 'base_view_url'
 
 
 DRIVER_PATH = '/usr/lib/chromium-browser/chromedriver'
+
+
+SENDGRID_KEY = os.environ.get('SENDGRID_KEY')
