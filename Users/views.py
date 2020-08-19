@@ -115,7 +115,7 @@ class UserRegistration(View):
                     subject=mail_subject,
                     html_content=message_content)
                 try:
-                    sg = settings.SENDGRID_KEY
+                    sg = SendGridAPIClient(settings.SENDGRID_KEY)
                     response = sg.send(message)
                     print(response.status_code)
                 except Exception as e:
