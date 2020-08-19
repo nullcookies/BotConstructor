@@ -14,10 +14,10 @@ After converting the configuration into a script, the service allows you to down
 ## User manual
 Upon entering the site, he is greeted with a welcome text with a small instruction, which briefly describes the actions that the user must take before starting work with this designer ...
 
-First of all, a potential client needs to identify himself, or register, on the service, this is done in order to bind all created chat bots to a specific user in a relational database.
+First of all, a potential client needs to identify himself, or register, on the service, this is done in order to bind all created chatbots to a specific user in a relational database.
 
 I logically divided the creation of a bot into several parts, more precisely into three. After registration, the user is redirected to the first step - the page where you need to specify the bot token, which can be obtained from the telegram, as well as the name and nickname, you need to keep records.
 
-Next, the second step is bot configuration. The client fills in the items he needs and makes a request. The request is sent via AJAX in order to speed up the response process and save traffic on hosting. All changes made are written to a JSON file. The entire filling process is protected by handlers written in advance, in order to avoid any errors from the server side and further inaccuracies.
+Next, the second step is the bot configuration. The client fills in the items he needs and makes a request. The request is sent via AJAX in order to speed up the response process and save traffic on hosting. All changes made are written to a JSON file. The entire filling process is protected by handlers written in advance, in order to avoid any errors from the server-side and further inaccuracies.
 
 Step three. When you click on the NEXT button on the previous page on the backend, the following happens ... According to the developed algorithm, all configuration from a JSON file turns into a program, script, bot and is displayed in the code editor, which is built into this page. The generated code can be downloaded, or immediately uploaded to the cloud platform for hosting Python applications, Pythonanywhere and run this bot in the bash console. Also, the execution of the program can be interrupted, that is, removed from the hosting.
