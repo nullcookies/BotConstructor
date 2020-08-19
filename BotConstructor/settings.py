@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import logging
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,10 +29,13 @@ SECRET_KEY = "9x5*helb@0lk6k+pv5xedzcd@x&tdh04my!bk_$k!#&r#33ren"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOST'), os.environ.get('ALLOWED_IP')]
+ALLOWED_HOSTS = [
+    os.environ.get('ALLOWED_HOST'),
+    os.environ.get('ALLOWED_IP'),
+    os.environ.get('ALLOWED_LOCAL')
+]
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
