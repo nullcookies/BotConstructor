@@ -1,3 +1,5 @@
+[![CodeFactor](https://www.codefactor.io/repository/github/alexanderivanov20/botconstructor/badge/master)](https://www.codefactor.io/repository/github/alexanderivanov20/botconstructor/overview/master)
+
 # BotConstructor
 
 ## Formulation of the problem
